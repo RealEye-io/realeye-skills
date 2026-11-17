@@ -1,0 +1,64 @@
+{
+ "title": "attentionpredictor.com first screen: UI/UX/CRO attention benchmark",
+ "goal": "For attentionpredictor.com the intended approach is <b>message-led</b> (the promise comes first, the product demo second), so it is validated against the 27 top-SaaS pages built that way on desktop and 58 on mobile. The approach was not stated by the owner; it is the one the page follows today.",
+ "verdict": "Nothing key is in a blind spot. As a message-led page the first screen does its main job: the headline (32.2%) and the message block (38.0%) sit above the range of the reference pages (13.9–25.2% and 18.4–29.5%), and the primary CTA (1.0%) is inside its range (0.9–1.8%). Three things fall short of the group: the <b>action block</b> as a whole is below range (1.5% vs 2.1–4.4%), the secondary \"API\" button is a <b>blind spot</b> (0.5% vs 1.0–1.6%), and there is <b>no header CTA</b> (23 of 27 reference pages have one). The message has budget to spare: giving 3–5 points to the action block would still leave it at the top of its range. On mobile every key and supporting element is in or above range.",
+ "top_actions": [
+  "<b>Fix the blind spot:</b> replace the one-word \"API\" button with a named secondary action (\"Read the docs\") at the same height as the primary. Target: 1.0–1.6% desktop (today 0.5%).",
+  "<b>Bring the action block into range:</b> a ~1.5× larger primary button with a specific label and one line of microcopy. Target: 2.1–4.4% desktop (today 1.5%), paid for by the headline (32% → about 28%, still above its range).",
+  "<b>Add a header CTA:</b> 23 of 27 message-led reference pages have one. Target: 0.2–0.3% desktop.",
+  "<b>Leave the headline, subhead and the mobile first screen alone:</b> they are in or above range; pushing them higher would take attention from the action block.",
+  "<b>Decide on the demo image:</b> it is optional for a message-led page. Moving it up is a change of approach (to balanced), not a fix - see the approach notes."
+ ],
+ "approach_notes": [
+  "<b>Why message-led:</b> message 38.0% vs hero visual 15.0% on desktop (2.5 : 1); on mobile there is no hero visual in the first screen at all.",
+  "<b>What the spread says:</b> 30.0% of desktop attention sits in a different block than in the reference group. Most of that is healthy for this approach (more on the message, less on empty background: 38% unassigned vs 61%); the part to correct is action (1.5% vs 3.6% mean) and header (3.2% vs 8.1%).",
+  "<b>If the owner wanted a balanced page instead</b> (message and product demo sharing the screen; 36 reference pages), the picture changes: the hero visual would be a blind spot (15.0% vs 19.4–31.0%). That is a redesign of the first screen, so choose the approach first and optimise second.",
+  "<b>Distance from poorly made pages:</b> their median headline share is 8.5% and message block 10.7% on desktop; this page is far above both."
+ ],
+ "target_notes": [
+  "<b>Message dominates by design:</b> headline 32.2% + subhead 5.5% + eyebrow 0.4% = 38%; attention per area of the headline (2.2) shows it is both big and attractive.",
+  "<b>Headline gives attention back over time:</b> 32.2% at 3 s → 27.3% at 10 s; attention then moves to the demo images (15.0 → 18.7%), not to the CTAs (1.5 → 1.7%).",
+  "<b>CTAs are small, not unattractive:</b> \"Talk to us\" covers 0.4% of the screen and \"API\" 0.2%; both have high attention per area (2.4, 2.0), so size and wording are the levers, not colour.",
+  "<b>Proof stats:</b> the 1.7M sessions / 34M fixations / MAE chips get 4.2%, inside the range of the 8 reference pages that show proof (3.3–4.9%). They are optional and sized right."
+ ],
+ "benchmark_notes": [
+  "For context only: among the 100 top-SaaS pages attentionpredictor.com would rank 3rd on headline share and 4th on message share on desktop. That is a consequence of the message-led approach, not a target in itself.",
+  "Message-led pages that pair a strong message (over 25%) with an in-range action block: Stripe (30.4% / 2.4%), GitLab (32.8% / 2.3%), 1Password (38.5% / 2.2%), ZoomInfo (30.9% / 3.6%), PandaDoc (28.6% / 2.3%), Asana (25.9% / 3.6%).",
+  "The hero visual gets 15.0%, more than any of the 7 message-led reference pages that show one (4.1–8.4%); for a message-led page that is acceptable as long as the action block is fixed first."
+ ],
+ "mobile_notes": [
+  "Validated as message-led against 58 reference pages. Message (44.6%), headline (26.2%) and subhead (17.4%) are above range; action block (9.3% vs 4.9–13.8%), primary CTA (5.2% vs 3.4–6.4%) and secondary CTA (4.1% vs 2.7–6.2%) are in range.",
+  "The three stats cards take 11.5%, above the range of the 7 reference pages that show proof (4.6–8.6%). They are optional; if the action block ever needs more, take it from here.",
+  "No header CTA on mobile; only 25 of 58 reference pages have one, so it is not counted as missing.",
+  "Nothing on mobile needs fixing first; carry over the secondary-CTA wording from desktop for consistency."
+ ],
+ "guidelines": [
+  {"title": "G1 · Fix the blind spot: the secondary CTA", "tag": "desktop · blind spot",
+   "points": ["Replace \"API\" with a named action: \"Read the docs\" or \"See the API reference\".", "Same height as the primary, outline style, directly beside it.", "Takes attention from: the headline (see G2)."],
+   "target": "secondary CTA 1.0–1.6% desktop (today 0.5%); stay inside 2.7–6.2% on mobile (today 4.1%).",
+   "evidence": "desktop: under the 10th percentile (0.7%) of the 12 reference pages with a secondary CTA; box area 0.2% of the screen with good attention per area (2.0), so it is too small, not unattractive."},
+  {"title": "G2 · Bring the action block into range", "tag": "desktop · below range",
+   "points": ["Primary: specific value label (\"Get API access\", \"Try it on your image\") instead of \"Talk to us\"; ≈ 180×52 px.", "One line of true, risk-reducing microcopy under the buttons.", "Takes attention from: the headline. Tighten it to 2 lines (≈ 64–70 px); 32% → about 28% keeps it above its range (13.9–25.2%)."],
+   "target": "action block 2.1–4.4% desktop (today 1.5%); keep mobile inside 4.9–13.8% (today 9.3%).",
+   "evidence": "action block below the p25 of 27 message-led reference pages; primary CTA alone is in range (1.0% vs 0.9–1.8%), so the gap is the secondary button and missing microcopy."},
+  {"title": "G3 · Add a header CTA", "tag": "desktop · missing",
+   "points": ["A filled \"Get API access\" button at the right end of the nav.", "Optional on mobile (25 of 58 reference pages have one)."],
+   "target": "nav CTA 0.2–0.3% desktop.",
+   "evidence": "23 of 27 message-led reference pages show a nav CTA; the target has none."},
+  {"title": "G4 · Keep what is in range", "tag": "do not change",
+   "points": ["Headline wording and prominence, subhead, proof chips, the whole mobile first screen.", "Do not enlarge the headline further: it is already above range and every extra point comes from action or proof."],
+   "target": "headline stays ≥ 25% desktop, ≥ 23% mobile (top of the reference range).",
+   "evidence": "headline 32.2% desktop vs 13.9–25.2%; 26.2% mobile vs 12.4–23.1%."},
+  {"title": "G5 · Validate", "tag": "process",
+   "points": ["Mock the variant (G1–G3), score it with this skill and check that every key element is in range and nothing new fell into a blind spot.", "Then run a live A/B test on API sign-ups / contact requests."],
+   "target": "", "evidence": "predicted attention screens designs; it does not prove conversion."}
+ ],
+ "scorecard": [
+  {"metric": "Headline", "today_d": "32.2% (above)", "target_d": "≥ 25% (range 13.9–25.2)", "today_m": "26.2% (above)", "target_m": "≥ 23% (range 12.4–23.1)"},
+  {"metric": "Action block", "today_d": "1.5% (below)", "target_d": "2.1–4.4%", "today_m": "9.3% (in range)", "target_m": "4.9–13.8% (keep)"},
+  {"metric": "Primary CTA", "today_d": "1.0% (in range)", "target_d": "0.9–1.8% (keep)", "today_m": "5.2% (in range)", "target_m": "3.4–6.4% (keep)"},
+  {"metric": "Secondary CTA", "today_d": "0.5% (blind spot)", "target_d": "1.0–1.6%", "today_m": "4.1% (in range)", "target_m": "2.7–6.2% (keep)"},
+  {"metric": "Header CTA", "today_d": "none (missing)", "target_d": "0.2–0.3%", "today_m": "none", "target_m": "optional"}
+ ],
+ "limits": ["The target was scored in a different Attention Predictor workspace than part of the benchmark (same model).", "Ranges for optional elements rest on few reference pages (7–12) and are indicative."]
+}

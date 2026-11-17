@@ -1,0 +1,21 @@
+{
+  "name": "realeye-skills",
+  "owner": {
+    "name": "RealEye"
+  },
+  "metadata": {
+    "description": "Agent skills for RealEye products. Each skill is its own plugin, so you can install only the ones you need.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "attention-predictor-landing-page-benchmark",
+      "description": "Analyse a landing page's first screen with the RealEye Attention Predictor and validate it against 150 SaaS landing pages; UI/UX/CRO report with blind spots, target ranges and guidelines.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/attention-predictor-landing-page-benchmark"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+{"d": {"cta_secondary": [757, 530, 822, 576], "micro": null, "trust": [354, 600, 1088, 648], "visual": [160, 680, 1280, 900],
+       "_info": {"cta_secondary": {"t": "API", "filled": false}, "cta_order": "Talk to us | API", "trust": {"label": "proof stats: 1.7M+ sessions, 34M+ fixations, 0.06064 MAE", "n": 3}, "visual": {"kind": "product demo: source creative -> predicted heatmap", "tags": "img"}}},
+ "m": {"cta_secondary": [18, 540, 372, 585], "trust": [18, 609, 372, 767],
+       "_info": {"cta_secondary": {"t": "API", "filled": false}, "cta_order": "Talk to us | API", "trust": {"label": "proof stats: 1.7M+ sessions, 34M+ fixations, 0.06064 MAE", "n": 3}}}}
