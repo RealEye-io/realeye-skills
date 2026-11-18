@@ -1,0 +1,37 @@
+name: Validate skills
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install the Agent Skills reference validator
+        run: pip install "git+https://github.com/agentskills/agentskills#subdirectory=skills-ref"
+      - name: Validate every skill folder
+        run: |
+          set -e
+          for d in skills/*/; do
+            skills-ref validate "$d"
+          done
+      - name: Check that every skill is listed in the marketplace
+        run: |
+          python - <<'EOF'
+          import json, pathlib, sys
+          m = json.loads(pathlib.Path(".claude-plugin/marketplace.json").read_text())
+          listed = {s.split("/")[-1] for p in m["plugins"] for s in p["skills"]}
+          found = {p.parent.name for p in pathlib.Path("skills").glob("*/SKILL.md")}
+          missing, extra = found - listed, listed - found
+          print("skills:", sorted(found))
+          if missing or extra:
+              sys.exit(f"marketplace.json out of sync - not listed: {sorted(missing)}, listed but missing: {sorted(extra)}")
+          EOF
+      - name: Check Python scripts compile
+        run: python -m compileall -q skills

@@ -54,7 +54,7 @@ Each skill's own README covers setup, tokens and usage.
 1. Create `skills/<skill-name>/SKILL.md` with `name` (equal to the folder name) and `description` frontmatter; keep the frontmatter to the open standard fields (`name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools`).
 2. Add a `README.md` for people and, if the skill bundles data, a `DATA-NOTICE.md`.
 3. Add a plugin entry for it in [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json).
-4. Validate: `skills-ref validate skills/<skill-name>` (install with `pip install "git+https://github.com/agentskills/agentskills#subdirectory=skills-ref"`).
+4. Validate: `skills-ref validate skills/<skill-name>` (install with `pip install "git+https://github.com/agentskills/agentskills#subdirectory=skills-ref"`). The CI workflow runs the same check on every push and pull request.
 
 ## Licence
 
