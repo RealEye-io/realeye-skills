@@ -16,6 +16,15 @@
       "skills": [
         "./skills/attention-predictor-landing-page-benchmark"
       ]
+    },
+    {
+      "name": "neuromarketing-image-report",
+      "description": "Interpret measured RealEye eye tracking for static images or video ads and write a brand-manager brief with survey-backed variant comparisons, design recommendations, and a retest plan.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/neuromarketing-image-report"
+      ]
     }
   ]
 }
