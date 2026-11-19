@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from common import ASSETS_DIR, BLOCKS, CODE, COMP, DEVICES, TR, f1, f2, html_to_pdf, load, median, nm, quantile  # noqa: E402
 
 E = lambda s: html.escape("" if s is None else str(s))  # noqa: E731
-ORDER = {"target": 0, "custom": 1, "saas": 2, "average": 3, "poor": 4}
+ORDER = {"target": 0, "previous": 0, "custom": 1, "saas": 2, "average": 3, "poor": 4}
 SHORT = {"message": "Message-led", "balanced": "Balanced", "visual": "Visual-led"}
 ST = {"blind": ("Blind spot", "#b3261e", "#fdecec"), "missing": ("Missing", "#b3261e", "#fdecec"), "low": ("Below range", "#8a5300", "#fff1d6"), "ok": ("In range", "#1e6b2a", "#e6f4e7"),
       "high": ("Above range", "#1c5cab", "#e8f1fc"), "absent": ("Not used", "#6b6a66", "#f0efea"), "na": ("n/a", "#6b6a66", "#f0efea")}
@@ -71,15 +71,21 @@ class Ctx:
         self.res, self.N = res, narrative or {}
         self.T = res["target"]; self.P = res["peers"]; self.G = res["competitor_group"]
         self.all = dict(self.P); self.all[self.T["id"]] = self.T
-        self.glabel = lambda g: res["group_labels"].get(g, g)
+        self.glabel = lambda g: res["group_labels"].get(g, g) if g != "previous" else "Previous version"
+        self.cmp = res.get("_comparison"); self.pid = None
+        if self.cmp:  # an earlier version of the same page: shown in the "Old vs new" section, the appendix and the CSV
+            self.pid = self.cmp["prev_id"]; self.all[self.pid] = self.cmp["previous"]
 
     def approach_of(self, sid, dev):
-        A = self.res["approach"][dev]; return A["current"] if sid == self.T["id"] else A["members"].get(sid, "balanced")
+        A = self.res["approach"][dev]
+        if self.pid and sid == self.pid:
+            return self.cmp["approach"][dev]["old_current"]
+        return A["current"] if sid == self.T["id"] else A["members"].get(sid, "balanced")
 
     def img(self, sid, dev):
         s = self.all[sid]
         p = Path(s[dev]["img"])
-        if s is self.T or p.is_absolute():
+        if s is self.T or p.is_absolute():  # the target and its previous version use absolute paths
             return small(p, 1100 if dev == "d" else 420)
         return (ASSETS_DIR / p).resolve().as_uri()
 
@@ -107,6 +113,10 @@ class Ctx:
             return f'<div class="hg" style="width:{w}px;grid-template-columns:repeat({cols},1fr)">{cells}</div>'
         p = ASSETS_DIR / s[dev].get("heat", "")
         return f'<img class="heat" style="width:{w}px" src="{p.resolve().as_uri()}">' if p.is_file() else ""
+
+    def heat1(self, dev, sid, w, key="composite_attention_3000"):
+        hf = self.all[sid][dev].get("heat_files", {})
+        return f'<img class="heat" style="width:{w}px" src="{small(hf[key], w * 2)}">' if key in hf else ""
 
     def links(self, dev, sid):
         s = self.all[sid]; x = s[dev]; u = s.get("url") or ""
@@ -185,13 +195,14 @@ class Ctx:
                   f'<td style="text-align:left"><svg width="{W}" height="14">{g}</svg></td><td style="white-space:nowrap">{r["n"]} / {r["of"]}</td><td>{self.chip(r["status"])}</td></tr>')
         return h + "</table>"
 
-    def spread_chart(self, dev):
+    def spread_chart(self, dev, rows=None, caption=None):
         A = self.res["approach"][dev]; R = A["reference"]; W, lab, rowH = 690, 215, 19; pw = W - lab - 6
-        rows = [(self.T["name"], A["target_spread"], True)]
-        rows.append(("Reference: " + ("hand-picked pages" if R.get("custom") else SHORT[A["intended"]]) + f" (mean of {len(R['ids'])})", R["spread"], False))
-        for a in A["by_approach"]:
-            if a != A["intended"] or R.get("custom"):
-                rows.append((f'{SHORT[a]} pages (mean of {len(A["by_approach"][a]["ids"])})', A["by_approach"][a]["spread"], False))
+        if rows is None:
+            rows = [(self.T["name"], A["target_spread"], True)]
+            rows.append(("Reference: " + ("hand-picked pages" if R.get("custom") else SHORT[A["intended"]]) + f" (mean of {len(R['ids'])})", R["spread"], False))
+            for a in A["by_approach"]:
+                if a != A["intended"] or R.get("custom"):
+                    rows.append((f'{SHORT[a]} pages (mean of {len(A["by_approach"][a]["ids"])})', A["by_approach"][a]["spread"], False))
         g = ""
         for i, (lbl, sp, me) in enumerate(rows):
             y = 3 + i * rowH; x = lab
@@ -205,9 +216,9 @@ class Ctx:
                     g += f'<text x="{x + w / 2:.1f}" y="{y + 10.5}" text-anchor="middle" style="fill:{"#0b0b0b" if k == "other" else "#fff"};font-weight:600">{f1(sp[k])}</text>'
                 x += w
         H = 3 + len(rows) * rowH
-        return (f'<figure class="chart"><figcaption>Attention spread, {DEVICES[dev]["label"]}, 3 s: where the first screen spends its attention budget (sums to 100%)</figcaption>'
+        return (f'<figure class="chart"><figcaption>{caption or "Attention spread, " + DEVICES[dev]["label"] + ", 3 s: where the first screen spends its attention budget (sums to 100%)"}</figcaption>'
                 f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}">{g}</svg><div class="leg">' + " ".join(f'<span><i class="sw" style="background:{c}"></i>{E(l)}</span>' for _, l, c in BLOCKS)
-                + f'</div><div class="small">{f1(R["distance"])}% of the target\'s attention sits in a different block than in its reference group (0% = same spread).</div></figure>')
+                + ('</div></figure>' if caption else f'</div><div class="small">{f1(R["distance"])}% of the target\'s attention sits in a different block than in its reference group (0% = same spread).</div></figure>'))
 
     def bars(self, dev, getter, title):
         """Distribution of one value over the benchmark groups (one dot per page) with the target marked."""
@@ -264,7 +275,94 @@ def tiles(c):
     out += tile(str(len(bd) + len(bm)), "Blind spots or missing elements. Desktop: " + (E(", ".join(bd)) or "none") + ". Mobile: " + (E(", ".join(bm)) or "none"))
     out += tile(f'{len(pick("d", "ok", "high"))} / {len(rated("d"))}', f'Key and supporting elements in or above the reference range on desktop. Mobile: {len(pick("m", "ok", "high"))} / {len(rated("m"))}')
     out += tile(f1(A["d"]["reference"]["distance"]) + "%", f'Of desktop attention sits in a different block than in the reference group (mobile {f1(A["m"]["reference"]["distance"])}%)')
+    if c.cmp:
+        def n_bad(dev, side): return sum(1 for e in c.cmp["elements"][dev] if e["role"] != "optional" and e["status_" + side] in ("blind", "missing", "low"))
+        out += tile(f'{n_bad("d", "old")} → {n_bad("d", "new")}', f'Key and supporting elements that are a blind spot, missing or below range, previous → new version, desktop; mobile {n_bad("m", "old")} → {n_bad("m", "new")} (same reference group for both)')
     return out + "</div>"
+
+
+def build_change(c):
+    C = c.cmp; N = c.N; T = c.T; pid = c.pid; lo, ln = C["labels"]["old"], C["labels"]["new"]
+    bl = lambda items: "<ul>" + "".join(f"<li>{x}</li>" for x in items) + "</ul>" if items else ""  # noqa: E731
+    arrow = lambda a, b, d=1: f"{f1(a)} → {f1(b)}"  # noqa: E731
+    H = f'<h2 class="pb">2 · Old vs new: what changed on the page and in predicted attention</h2>'
+    ref_txt = " and ".join(f'{c.res["approach_labels"][C["approach"][d]["new_intended"]].lower()} ({DEVICES[d]["label"]})' for d in DEVICES)
+    H += (f'<p><b>{E(lo)}</b> (captured {E(C["captured"]["old"])}) against <b>{E(ln)}</b> (captured {E(C["captured"]["new"])}), both scored with the same model and compared with the same {C["benchmark_size"]} benchmark pages. '
+          f'Statuses for both versions use <b>the same reference group</b> - top-SaaS pages built the {ref_txt} way - so a change of status is a change of the page, not of the yardstick. '
+          'The previous version\'s own status (against the approach it followed then) is shown in the scoreboard as well.</p>')
+    if C.get("warnings"):
+        H += "<p class=\"small\"><b>Note:</b> " + " ".join(E(w) for w in C["warnings"]) + "</p>"
+    if N.get("change_verdict"):
+        H += f'<div class="call"><b>What changed.</b> {N["change_verdict"]}</div>'
+    for dev in DEVICES:
+        ap = C["approach"][dev]
+        H += f'<h3>{DEVICES[dev]["label"].capitalize()}: {E(SHORT[ap["old_current"]])} → {E(SHORT[ap["new_current"]])}</h3>'
+        w = 335 if dev == "d" else 205
+        cell = lambda sid, lbl: (f'<div style="width:{w}px;flex:none"><div class="small" style="height:12pt"><b>{E(lbl)}</b></div>{c.shot(dev, sid, w)}<div class="small">Composite heatmap, 3 s</div>{c.heat1(dev, sid, w)}</div>')  # noqa: E731
+        H += f'<div class="row" style="gap:{12 if dev == "d" else 10}pt">{cell(pid, lo)}{cell(T["id"], ln)}</div>'
+        A = c.res["approach"][dev]
+        rows = [(ln, A["target_spread"], True), (lo, C["spread"][dev]["old"], False), ("Reference: " + SHORT[ap["new_intended"]] + f' (mean of {len(A["reference"]["ids"])})', C["spread"][dev]["reference"], False)]
+        dist = C.get("distance", {}).get(dev)
+        H += c.spread_chart(dev, rows, f"Attention spread, {DEVICES[dev]['label']}, 3 s: previous vs new version vs the reference group"
+                            + (f" - share of attention in a different block than in the reference group: {f1(dist['old'])}% → {f1(dist['new'])}% (0% = same spread)" if dist else ""))
+        H += ('<table class="t"><tr><th>Element (CAS 3 s, % of predicted attention)</th><th>Role</th><th>Previous</th><th>New</th><th>Change</th><th>Reference range (p25–p75)</th>'
+              '<th>Previous status<br><span class="small">own approach</span></th><th>Previous status<br><span class="small">same reference</span></th><th>New status</th></tr>')
+        for e in C["elements"][dev]:
+            d = e["delta"]
+            dcol = "#1e6b2a" if d is not None and d > 0 else ("#b3261e" if d is not None and d < 0 else "#52514e")
+            worse = e["role"] != "optional" and e["status_old"] not in ("blind", "missing", "low") and e["status_new"] in ("blind", "missing", "low")
+            better = e["role"] != "optional" and e["status_old"] in ("blind", "missing", "low") and e["status_new"] not in ("blind", "missing", "low")
+            cls = " class=bad" if worse else (" class=good" if better else "")
+            h_ = lambda v: "none" if v is None else f1(v)  # noqa: E731
+            H += (f'<tr{cls}><td>{E(e["label"])}</td><td>{ROLE[e["role"]]}</td><td>{h_(e["old"])}</td><td><b>{h_(e["new"])}</b></td>'
+                  f'<td style="color:{dcol}">{("%+.1f" % d) if d is not None else "–"}</td><td>{(f1(e["p25"]) + "–" + f1(e["p75"])) if e["n"] >= 3 else "–"}</td>'
+                  f'<td>{c.chip(e["status_old_own"])}</td><td>{c.chip(e["status_old"])}</td><td>{c.chip(e["status_new"])}</td></tr>')
+        H += "</table>"
+        H += ('<p class="small">Green row = a blind spot, missing or below-range element that is now in or above range; red row = the reverse. '
+              'Optional elements are listed for completeness and never coloured.</p>')
+        lst = []
+        if C["resolved"][dev]: lst.append("<b>Resolved:</b> " + E(", ".join(C["resolved"][dev])).lower().capitalize() + ".")
+        if C["still_open"][dev]: lst.append("<b>Still open:</b> " + E(", ".join(C["still_open"][dev])) + ".")
+        if C["introduced"][dev]: lst.append("<b>New issues:</b> " + E(", ".join(C["introduced"][dev])) + ".")
+        if not (C["resolved"][dev] or C["still_open"][dev] or C["introduced"][dev]): lst.append("No key or supporting element changed status.")
+        H += bl(lst)
+    if N.get("change_notes"):
+        H += "<h3>Reading the change</h3>" + bl(N["change_notes"])
+    # content comparison
+    H += '<h3>What the page says and shows: previous vs new (desktop; mobile where different)</h3>'
+    H += '<table class="t anat"><tr><th style="width:16%">Element</th><th style="width:42%">Previous</th><th style="width:42%">New</th></tr>'
+    names = [("eyebrow", "Eyebrow"), ("headline", "Headline"), ("subhead", "Subhead"), ("cta", "CTAs (primary | secondary)"), ("micro", "CTA microcopy"), ("rating", "Rating"),
+             ("nav_cta", "Header CTA"), ("trust", "Proof strip"), ("visual", "Hero visual")]
+    ao, an = C["anatomy"]["d"]["old"], C["anatomy"]["d"]["new"]; mo, mn = C["anatomy"]["m"]["old"], C["anatomy"]["m"]["new"]
+    def hl(a_):
+        px = f' <span class="small">({round(a_["headline_px"])} px, {a_.get("headline_words") or "?"} words)</span>' if a_.get("headline_px") else ""
+        return E(a_.get("headline") or "none") + px
+    cellv = lambda a_, k: hl(a_) if k == "headline" else (E(a_.get(k)) if a_.get(k) else "<i>none</i>")  # noqa: E731
+    for k, lbl in names:
+        H += f'<tr><td><b>{lbl}</b></td><td>{cellv(ao, k)}</td><td>{cellv(an, k)}</td></tr>'
+    diff_m = []
+    if mo.get("cta_order") != mn.get("cta_order"): diff_m.append(f'CTA order: {E(mo.get("cta_order") or "–")} → {E(mn.get("cta_order") or "–")}')
+    if mo.get("headline_px") != mn.get("headline_px"): diff_m.append(f'headline {round(mo["headline_px"]) if mo.get("headline_px") else "?"} px → {round(mn["headline_px"]) if mn.get("headline_px") else "?"} px')
+    if mo.get("visual") != mn.get("visual"): diff_m.append(f'hero visual: {E(mo.get("visual") or "none")} → {E(mn.get("visual") or "none")}')
+    if diff_m:
+        H += f'<tr><td><b>Mobile</b></td><td colspan="2">{"; ".join(diff_m)}</td></tr>'
+    H += "</table>"
+    # per-AOI
+    for dev in DEVICES:
+        H += f'<h3>Every element, {DEVICES[dev]["label"]}: previous → new</h3>'
+        H += ('<table class="t"><tr><th>AOI</th><th>Area %</th><th>CAS 3 s</th><th>CAS 6 s</th><th>CAS 10 s</th><th>Speed 3 s</th><th>Reach 3 s</th><th>Hold 3 s</th><th>Attn / area</th></tr>')
+        for r in C["aois"][dev]:
+            k = r["key"]; col = CODE.get(k, ("", "#000"))
+            def cell_(m):
+                o, n = (r["old"] or {}).get(m), (r["new"] or {}).get(m)
+                if o is None and n is None: return "–"
+                d = ("" if o is None or n is None else f' <span style="color:{"#1e6b2a" if n - o > 0.05 else ("#b3261e" if n - o < -0.05 else "#52514e")}">({n - o:+.1f})</span>')
+                return f'{"–" if o is None else f1(o)} → <b>{"–" if n is None else f1(n)}</b>{d}'
+            H += f'<tr><td><i class="sw" style="background:{col[1]}"></i>{col[0]} {E(nm(k))}</td>' + "".join(f"<td>{cell_(m)}</td>" for m in ("area", "cas_3000", "cas_6000", "cas_10000", "speed_3000", "reach_3000", "hold_3000", "density")) + "</tr>"
+        H += "</table>"
+    H += f'<p class="small">Links: {E(lo)} - {c.links("d", pid)} (desktop), {c.links("m", pid)} (mobile). {E(ln)} - {c.links("d", T["id"])} (desktop), {c.links("m", T["id"])} (mobile).</p>'
+    return H
+
 
 
 def build_main(c):
@@ -280,6 +378,8 @@ def build_main(c):
           'The aim is (1) no important element in a blind spot, (2) each element at a level similar to the best pages built the same way, and (3) an attention spread that matches that group. '
           + (N.get("goal") or "") + '</div>')
     H += f'<div class="call"><b>Verdict.</b> {N.get("verdict", "")}</div>'
+    if c.cmp and N.get("change_verdict"):
+        H += f'<div class="call"><b>Compared with the previous version.</b> {N["change_verdict"]} <span class="small">Details: section 2.</span></div>'
     if N.get("top_actions"):
         H += "<h3>Top actions (details and targets in the guidelines section)</h3><ol>" + "".join(f"<li>{x}</li>" for x in N["top_actions"]) + "</ol>"
     H += ('<p class="small">All values are <b>predicted</b> attention from the RealEye Attention Predictor, not measured eye tracking and not conversion data. '
@@ -296,6 +396,8 @@ def build_main(c):
           'Above range is not a goal: it is fine for the element the approach puts first, and worth a check when another element is short. '
           'Roles: Key = must not be missed; Supporting = should be in range; Optional = fine to leave out.</p>')
     H += bl(N.get("approach_notes"))
+    if c.cmp:
+        H += "<!--CHANGE-->"
     # 2 how to read
     H += '<h2>2 · How to read this report and dig into the numbers</h2><table class="t"><tr><th>Term</th><th style="text-align:left">Meaning</th></tr>'
     for a_, b_ in (("Speed share", "Share of the &quot;noticed first&quot; signal in the AOI (initial notice)."), ("Reach share", "Share of the &quot;noticed by many viewers&quot; signal (coverage)."),
@@ -381,13 +483,17 @@ def build_main(c):
           '"Poorly made" = pages that failed written first-screen criteria in a manual audit. Only top-SaaS pages are used as the yardstick; average and poorly made pages are context.</li>'
           '<li><b>Limits:</b> predictions, not measured gaze or clicks; mobile predictions are less validated than desktop; correlations describe this sample, not causation.</li>'
           + "".join(f"<li>{x}</li>" for x in N.get("limits", [])) + "</ul></body></html>")
+    if c.cmp:  # the old-vs-new section becomes section 2; later sections move down by one
+        import re
+        H = re.sub(r"(<h2[^>]*>)(\d+) · ", lambda m: m.group(1) + (str(int(m.group(2)) + 1) if int(m.group(2)) >= 2 else m.group(2)) + " · ", H)
+        H = H.replace("<!--CHANGE-->", build_change(c))
     return H
 
 
 def build_appendix(c, scope):
     T = c.T
     keep = set(c.res["approach"]["d"]["reference"]["ids"]) | set(c.res["approach"]["m"]["reference"]["ids"]) | set(c.res["groups"].get(c.G, []) if c.G else [])
-    ids = [T["id"]] + [sid for sid, s in sorted(c.P.items(), key=lambda kv: (ORDER.get(kv[1]["group"], 9), kv[1]["name"])) if scope == "all" or (scope == "reference" and sid in keep)]
+    ids = [T["id"]] + ([c.pid] if c.pid else []) + [sid for sid, s in sorted(c.P.items(), key=lambda kv: (ORDER.get(kv[1]["group"], 9), kv[1]["name"])) if scope == "all" or (scope == "reference" and sid in keep)]
     H = (f'<!doctype html><html><head><meta charset="utf-8"><title>{E(T["name"])} benchmark appendix</title><style>@page{{size:A4 landscape;margin:9mm 10mm}}{CSS}'
          '.pg{break-after:page} .pg:last-child{break-after:auto} .pg table.t{font-size:7.2pt} .pg .t th,.pg .t td{padding:1.2pt 3pt} h2{margin-top:0}</style></head><body>')
     H += f'<div class="pg"><h1>Appendix: {"every benchmark page" if scope == "all" else ("the target and its reference pages" if scope == "reference" else "the target")}, desktop and mobile</h1><div class="sub">{len(ids) * 2} captures. Each: screenshot with AOIs and CAS at 3 s, the heatmap grid (Composite, Speed, Reach, Hold × 3, 6, 10 s), the AOI table, hero texts and app links.</div>{c.legend()}'
@@ -440,11 +546,14 @@ def main():
     if not res:
         raise SystemExit("run analyze.py first")
     narrative = load(a.narrative or work / "narrative.json")
+    cmp_ = load(work / "comparison.json")
+    if cmp_:
+        res["_comparison"] = cmp_
     c = Ctx(res, None)
     if not narrative:
         print("no narrative.json - using data-driven defaults (write one for the full analysis; see templates/narrative.example.json)")
         import narrate  # full data-driven narrative (same as scripts/narrate.py)
-        narrative = narrate.build(res, reviewed=(work / "overrides.json").exists())
+        narrative = narrate.build(res, reviewed=(work / "overrides.json").exists(), cmp=cmp_)
     c.N = narrative
     final = Path(a.out or work / "report"); final.mkdir(parents=True, exist_ok=True)
     import shutil, tempfile

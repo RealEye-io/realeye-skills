@@ -64,6 +64,17 @@ Writes `analysis.json` and `facts.md`. Per device facts.md starts with "Approach
 
 Re-run with another `--approach` when the user's intent is known and differs, or when the page is a weak fit and the user wants to see the alternative.
 
+## 4b. Compare with an earlier version of the page (optional)
+
+```bash
+python scripts/compare.py ap-work/new --previous ap-work/old [--label-old "Old design"] [--label-new "New design"]
+# or in one go:  python scripts/run.py URL --name new --previous ap-work/old
+```
+
+Both folders need `analysis.json` from `analyze.py` (same skill version and benchmark; `compare.py` warns when the benchmark pages differ). The old page's own folder is kept as it is. `compare.py` writes `comparison.json`: the approach of each version, attention spread, every element before → after, the old page's status against the **same reference group as the new page** (so a change of status is a change of the page, not of the yardstick), the distance to that reference group, hero texts, and lists of resolved, still-open and new issues. `report.py` then adds section 2 "Old vs new", the previous version to the appendix and the CSV, and a "compared with the previous version" box on page 1; `narrate.py` writes a baseline `change_verdict` and `change_notes`.
+
+For the analysis: say which blind spots and below-range elements of the old version are resolved, which remain, and which are new; check the previous report's guidelines one by one (done, partly, not done, overshot); name what the new version gave up (an element that lost attention to fund another).
+
 ## 5. Write the analysis (`narrative.json`)
 
 ```bash

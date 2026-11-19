@@ -6,11 +6,12 @@
   python scripts/run.py https://example.com --from score           # continue after fixing boxes (overrides.json is applied)
   python scripts/run.py https://example.com --approach message     # validate against a chosen approach
   python scripts/run.py https://example.com --image-d d.png --image-m m.png --overrides boxes.json   # no Playwright
+  python scripts/run.py https://example.com --name example_v2 --previous ap-work/example_v1     # also compare with an earlier, already analysed version
 
 Stages: capture -> review -> score -> analyze -> narrate -> report. Finished stages are skipped on a re-run (resume);
 --redo STAGE re-runs from that stage. Options after the URL are passed to the matching script:
   --name --work --wait --click (capture) · --overrides (review) · --approach --approach-mobile --reference --reference-pool
-  --competitors --peers (analyze) · --appendix --out --no-pdf (report).
+  --competitors --peers (analyze) · --previous --label-old --label-new (compare, after analyze) · --appendix --out --no-pdf (report).
 The token comes from ATTENTION_PREDICTOR_API_TOKEN (or a file named in ATTENTION_PREDICTOR_API_TOKEN_FILE); it is never printed.
 Exit codes: 0 done, 2 stopped for a decision (see the printed NEXT line), 1 error.
 """
@@ -43,6 +44,7 @@ def main():
     ap.add_argument("--overrides"); ap.add_argument("--approach"); ap.add_argument("--approach-mobile"); ap.add_argument("--reference")
     ap.add_argument("--reference-pool"); ap.add_argument("--competitors"); ap.add_argument("--peers")
     ap.add_argument("--appendix"); ap.add_argument("--out"); ap.add_argument("--no-pdf", action="store_true")
+    ap.add_argument("--previous"); ap.add_argument("--label-old"); ap.add_argument("--label-new")
     a = ap.parse_args()
     url = a.url if a.url.startswith("http") else "https://" + a.url
     name = a.name or slug(url); work = Path(a.work) / name
@@ -75,6 +77,8 @@ def main():
         elif st == "analyze":
             sh("analyze.py", work, *opt("--approach", a.approach), *opt("--approach-mobile", a.approach_mobile), *opt("--reference", a.reference),
                *opt("--reference-pool", a.reference_pool), *opt("--competitors", a.competitors), *opt("--peers", a.peers))
+            if a.previous:  # old vs new section: needs the earlier version analysed with the same skill version
+                sh("compare.py", work, "--previous", a.previous, *opt("--label-old", a.label_old), *opt("--label-new", a.label_new))
         elif st == "narrate":
             sh("narrate.py", work, *(["--force"] if i >= redo and (work / "narrative.json").exists() and (load(work / "narrative.json") or {}).get("_generated_by") else []))
         elif st == "report":

@@ -4,7 +4,7 @@ description: Analyse and optimise any landing page's first screen with the RealE
 license: MIT (code and instructions). Bundled benchmark data - see DATA-NOTICE.md
 compatibility: Any agent that can run shell commands. Python 3.9+, internet access to the target site and app.attentionpredictor.com, an Attention Predictor API token. Playwright Chromium for capture and PDF (or import screenshots from your own browser).
 metadata:
-  version: "2.0.0"
+  version: "2.1.0"
   repository: "https://github.com/RealEye-io/realeye-skills"
   author: RealEye
   benchmark_captured: "2026-11-13 / 2026-11-16"
@@ -60,6 +60,10 @@ Runs capture → box review → scoring → validation → write-up → report, 
 No local browser? Take 1440×900 and 390×844 first-screen screenshots with your own browser tool and pass `--image-d desk.png --image-m phone.png --overrides boxes.json`; you then give every element box yourself.
 
 Every step can also be run on its own (`capture.py`, `review.py`, `score.py`, `analyze.py`, `narrate.py`, `report.py`) - see [references/workflow.md](references/workflow.md).
+
+## Comparing with an earlier version
+
+When the user has a new version of an already analysed page (a redesign, an A/B variant), analyse the new page as usual and add the earlier analysis: `run.py NEW_URL --name <new> --previous ap-work/<old> [--label-old "Old design" --label-new "New design"]` (or `scripts/compare.py` on its own after `analyze.py`). Keep the old work folder: it must hold `analysis.json` made with the same skill version and benchmark (re-run `analyze.py` there if not). The report gets a section "Old vs new" (side-by-side screenshots and heatmaps, attention spread, a scoreboard in which **both versions are judged against the same reference group**, what the page says, every element before → after) and a "compared with the previous version" box. In `narrative.json` add `change_verdict` and `change_notes[]`; check the previous report's guidelines one by one (done, partly, not done, overshot). Details: [references/workflow.md](references/workflow.md), step 4b.
 
 ## Hand-over
 

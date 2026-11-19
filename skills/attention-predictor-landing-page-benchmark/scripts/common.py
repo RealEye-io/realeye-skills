@@ -25,7 +25,7 @@ CODE = {"announce": ("AN", "#6b6b6b"), "header": ("HD", "#444444"), "logo": ("LG
         "eyebrow": ("EY", "#c2185b"), "headline": ("H1", "#d32f2f"), "subhead": ("SH", "#ef6c00"), "cta_primary": ("C1", "#2e7d32"), "cta_secondary": ("C2", "#00897b"),
         "form": ("FM", "#1b5e20"), "micro": ("MI", "#7b1fa2"), "visual": ("VI", "#b28704"), "trust": ("TR", "#00838f"), "rating": ("RT", "#0097a7"),
         "video_link": ("VL", "#6d4c41"), "eu_banner": ("EU", "#455a64")}
-GROUP_LABEL = {"target": "Target", "saas": "Top SaaS", "average": "Average SaaS", "poor": "Poorly made SaaS", "custom": "Custom peers"}
+GROUP_LABEL = {"target": "Target", "saas": "Top SaaS", "average": "Average SaaS", "poor": "Poorly made SaaS", "custom": "Custom peers", "previous": "Previous version"}
 TIERS = ["average", "poor"]  # context groups: never the yardstick
 MESSAGE_KEYS = ["eyebrow", "headline", "subhead"]
 ACTION_KEYS = ["cta_primary", "cta_secondary", "form"]

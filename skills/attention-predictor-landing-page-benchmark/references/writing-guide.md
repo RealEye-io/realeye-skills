@@ -4,7 +4,7 @@
 
 ## Fields
 
-`title`, `goal`, `verdict`, `top_actions[]`, `approach_notes[]`, `target_notes[]`, `benchmark_notes[]`, `patterns[]` (optional), `competitor_takeaways` (only when a competitor group is set), `mobile_notes[]`, `guidelines[]` (each: `title`, `tag`, `points[]`, `target`, `evidence`), `scorecard[]` (each: `metric`, `today_d`, `target_d`, `today_m`, `target_m`), `limits[]`. Simple HTML (`<b>`) is allowed in strings.
+`title`, `goal`, `verdict`, `top_actions[]`, `approach_notes[]`, `target_notes[]`, `benchmark_notes[]`, `patterns[]` (optional), `competitor_takeaways` (only when a competitor group is set), `change_verdict` and `change_notes[]` (only when a previous version is compared, see workflow step 4b), `mobile_notes[]`, `guidelines[]` (each: `title`, `tag`, `points[]`, `target`, `evidence`), `scorecard[]` (each: `metric`, `today_d`, `target_d`, `today_m`, `target_m`), `limits[]`. Simple HTML (`<b>`) is allowed in strings.
 
 ## Rules
 

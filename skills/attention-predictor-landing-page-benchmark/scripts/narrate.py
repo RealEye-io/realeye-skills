@@ -122,7 +122,37 @@ def spec(c, dev, r):
     return [f"Bring the {lab(r)} into the reference range."]
 
 
-def build(res, reviewed=False):
+def change_text(cmp):
+    """Summary of old vs new from comparison.json (see compare.py): a verdict sentence per device and bullet notes."""
+    from analyze import STATUS_LABEL
+    V, notes = [], []
+    for dev in DEVICES:
+        ap = cmp["approach"][dev]; low = lambda xs: ", ".join(lab({"label": x}) for x in xs)  # noqa: E731
+        s = f"<b>{DEV[dev].capitalize()}:</b> {SHORT[ap['old_current']]} → {SHORT[ap['new_current']]}. "
+        s += (f"Resolved (blind spot, missing or below range before, in or above range now): {low(cmp['resolved'][dev])}. " if cmp["resolved"][dev] else "")
+        s += (f"Still open: {low(cmp['still_open'][dev])}. " if cmp["still_open"][dev] else "")
+        s += (f"New issues: {low(cmp['introduced'][dev])}. " if cmp["introduced"][dev] else "")
+        if not (cmp["resolved"][dev] or cmp["still_open"][dev] or cmp["introduced"][dev]):
+            s += "No key or supporting element changed status. "
+        V.append(s.strip())
+        for e in cmp["elements"][dev]:
+            moved = e["status_old"] != e["status_new"] and "na" not in (e["status_old"], e["status_new"])
+            if e["delta"] is None and not moved:
+                continue
+            if not moved and abs(e["delta"] or 0) < 2:
+                continue
+            old = "none" if e["old"] is None else f"{f1(e['old'])}%"; new = "none" if e["new"] is None else f"{f1(e['new'])}%"
+            rg = f" (reference range {f1(e['p25'])}–{f1(e['p75'])}%)" if e["n"] >= 3 and e["p25"] is not None else ""
+            st = f"{STATUS_LABEL[e['status_old']]} → {STATUS_LABEL[e['status_new']]}" if moved else f"stays {STATUS_LABEL[e['status_new']]}"
+            notes.append(f"<b>{DEV[dev].capitalize()} - {lab(e)}:</b> {old} → {new}" + (f" ({e['delta']:+.1f} pts)" if e["delta"] is not None else "") + f"; {st}{rg}.")
+        sp_o, sp_n = cmp["spread"][dev]["old"], cmp["spread"][dev]["new"]
+        mv = sorted(((sp_n[k] - sp_o[k], k) for k in sp_n), key=lambda x: -abs(x[0]))[:2]
+        names = {"message": "message", "action": "action", "visual": "hero visual", "trust": "proof", "nav": "header", "other": "unassigned background"}
+        notes.append(f"<b>{DEV[dev].capitalize()} - where the attention moved:</b> " + "; ".join(f"{names[k]} {f1(sp_o[k])}% → {f1(sp_n[k])}% ({d:+.1f} pts)" for d, k in mv) + ".")
+    return " ".join(V), notes
+
+
+def build(res, reviewed=False, cmp=None):
     c = Ctx(res); T = c.T; name = T["name"]; A, R = c.A, c.R
     N = {"title": f"{name} first screen: UI/UX/CRO attention benchmark"}
     ad = A["d"]
@@ -236,6 +266,8 @@ def build(res, reviewed=False):
         SC.append({"metric": rd["label"], "today_d": f"{val(rd)} ({stl[rd['status']]})", "target_d": tgt(rd),
                    "today_m": f"{val(rm)} ({stl[rm['status']]})" if rm else "–", "target_m": tgt(rm)})
     N["scorecard"] = SC
+    if cmp:
+        N["change_verdict"], N["change_notes"] = change_text(cmp)
     N["limits"] = ["This analysis text was generated automatically from the range check (scripts/narrate.py); copy suggestions are generic directions, not tested copy."]
     if not reviewed:
         N["limits"].append("AOI boxes were detected automatically and not reviewed by eye; check review_d.png / review_m.png if a number looks implausible.")
@@ -253,7 +285,7 @@ def main():
     if out.exists() and not a.force:
         print(f"{out} exists - kept (use --force to overwrite)"); return
     meta = load(work / "meta.json", {}) or {}
-    save(out, build(res, reviewed=bool(meta.get("aoi_reviewed")) or (work / "overrides.json").exists()))
+    save(out, build(res, reviewed=bool(meta.get("aoi_reviewed")) or (work / "overrides.json").exists(), cmp=load(work / "comparison.json")))
     print(f"wrote {out}")
 
 
