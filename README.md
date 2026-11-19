@@ -9,6 +9,7 @@ Install only the skills you need - every skill can be installed on its own.
 | Skill | What it does | Needs |
 |---|---|---|
 | [attention-predictor-landing-page-benchmark](skills/attention-predictor-landing-page-benchmark) | Analyses a landing page's first screen with the RealEye Attention Predictor and validates it against 150 SaaS landing pages (100 top, 25 average, 25 poorly made). Finds blind spots and gives target ranges and guidelines in a PDF report. | Attention Predictor API token, Python 3.9+ |
+| [neuromarketing-image-report](skills/neuromarketing-image-report) | Turns measured RealEye eye tracking for images and video ads into a brand-manager brief. Explains what people looked at and uses survey or choice outcomes to compare variants. | RealEye results (CSV, image AOI VAI Report or authorised dashboard access); tested creative for layout recommendations; outcome data to pick a winner |
 
 ## Install one skill
 
