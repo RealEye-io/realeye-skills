@@ -12,7 +12,7 @@ Image paths in the JSON are relative to the JSON file.
 
 Main sections, written for brand managers (plain language, no technical detail):
 
-1. **Header** with one plain line: the test ran on the **RealEye platform with webcam eye tracking**
+1. **Header** with one plain line: the test ran on the **RealEye platform with webcam eye tracking**, then the **tested designs and the elements analysed**: each image with its AOIs outlined (switchable), a legend saying what each AOI covers, the viewer count and links to the dashboard heatmap, AOI report and AOI VAI report
 2. **Overall findings and conclusions** (first): verdict, KPI tiles, key findings, conclusions, what to do next
 3. **What the scores mean (VAI)**: Reach, Speed, Hold in one line each, how to use VAI, component patterns, worked example drawn from the data
 4. **Viewing order**: the order by VAI Speed overall (numbered badges on the AOI corners and a ladder of steps with Speed bars for each window), a stability statement, the elements reached by half of the viewers or more per window, and a table for **every audience and window** listing the elements 1st to 5th with differences from the overall order outlined
@@ -89,7 +89,7 @@ Use the user's signed-in browser (read-only). Never print participant names; nev
     "heatmap":  {"src": "heatmap-A.jpg", "caption": "All viewers, first 10 seconds."},
     "heatmap_sheets": {"3": "heat-sheet-A-3.jpg", "5": "heat-sheet-A-5.jpg", "10": "heat-sheet-A-10.jpg"},
     "heatmap_note": "…",
-    "aois": [{"name": "Tagline", "role": "Claim", "color": "#96d732", "shape": [[3.5, 3.4], [44.0, 3.8], [44.4, 11.6], [35.4, 24.4], [23.5, 31.1], [4.4, 31.2]]}],
+    "aois": [{"name": "Tagline", "role": "The claim “Wake up the red in your hair.”", "color": "#96d732", "shape": [[3.5, 3.4], [44.0, 3.8], [44.4, 11.6], [35.4, 24.4], [23.5, 31.1], [4.4, 31.2]]}],
     "segments": [
       {"label": "All", "kind": "overall", "n": 229, "values": [ /* 60 numbers */ ]},
       {"label": "Men", "kind": "gender", "n": 59, "values": [ … ]},

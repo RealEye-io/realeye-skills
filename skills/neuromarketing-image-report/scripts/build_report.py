@@ -663,6 +663,25 @@ def dashboard_vai(spec, v, vi):
             f'{tabs}' + (f'<h5>Actionable insights from the dashboard report</h5>{ins}' if ins else "") + "</details>")
 
 
+def intro_section(spec):
+    """Intro card: the tested images with their AOIs outlined, what each AOI covers, and links to the RealEye dashboard."""
+    base = spec["_base"]
+    cols = ""
+    for vi, v in enumerate(spec["variants"]):
+        seg = seg_of(v, "All")
+        links = open_links(spec, v)
+        items = "".join(f'<div class="li">{swatch(a.get("color", "#999"))}<div><b>{e(a["name"])}</b><span>{e(a.get("role", ""))}</span></div></div>' for a in v["aois"])
+        cols += (f'<div class="aoitog tcol"><div class="thead">{chip(v["id"], e(v["id"]), "badge", "background:" + vcolor(vi))}'
+                 f'<div><h4>Design {e(v["id"])}: {e(v["name"])}</h4><p class="muted">{e(v.get("description", ""))}</p></div></div>'
+                 f'<div class="stagebox">{stage(base, v)}</div>'
+                 '<label class="switch"><input type="checkbox" class="sw-in" checked><span class="trk"></span><span>Show AOIs</span></label>'
+                 f'<div class="alist">{items}</div>'
+                 f'<p class="links small">{seg["n"]} viewers' + (f" · Open in RealEye: {links}" if links else "") + "</p></div>")
+    body = ('<p class="hint">The images tested in this study and the elements analysed. Each outlined element is an Area of Interest (AOI) that is measured separately; '
+            'the same elements are used throughout the report. Switch the outlines off to see the clean image.</p>' + f'<div class="two">{cols}</div>')
+    return section("tested", "Tested designs and the elements analysed", body)
+
+
 def method_block(spec):
     m = spec["method"]
     rows = "".join(f'<div><dt>{e(k)}</dt><dd>{rich(x)}</dd></div>' for k, x in (
@@ -705,7 +724,7 @@ h3{font-size:18px;margin:28px 0 10px;color:var(--strong);padding-top:18px;border
 .cards3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}.aoicard2{border:1px solid var(--line);position:relative;background:#fff}.aoicard2 .meta{padding:12px 14px 14px}.aoicard2 .meta p{margin:6px 0 0;color:var(--muted);font-size:14px}.aoicard2 .meta p b{color:var(--strong)}.aoicard2 .meta span{margin:0 6px;color:#c9c5bf}.aoicard2 .cbar{display:block;height:3px}
 .crop{width:100%;background-repeat:no-repeat;background-color:#eee}
 .pic{background-repeat:no-repeat;background-size:100% 100%;width:100%}.stage{position:relative;max-width:520px}.aoi-svg{position:absolute;inset:0;width:100%;height:100%}.stagebox{max-width:520px}
-.aoicard{display:grid;grid-template-columns:minmax(220px,520px) 1fr;gap:24px;align-items:start}.legend2 .li{display:flex;align-items:center;gap:8px;margin:6px 0}.aoicard:has(.sw-in:not(:checked)) .aoi-svg{display:none}
+.aoicard{display:grid;grid-template-columns:minmax(220px,520px) 1fr;gap:24px;align-items:start}.legend2 .li{display:flex;align-items:center;gap:8px;margin:6px 0}.aoicard:has(.sw-in:not(:checked)) .aoi-svg,.aoitog:has(.sw-in:not(:checked)) .aoi-svg{display:none}
 .switch{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--strong);cursor:pointer;position:relative}.switch input{position:absolute;opacity:0}.switch .trk{width:44px;height:24px;background:#d9d5cf;position:relative;flex:none}.switch .trk:after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff}
 .switch input:checked+.trk{background:var(--accent)}.switch input:checked+.trk:after{left:23px}
 .mk{position:absolute;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;background:#212529;color:#fff;font-weight:700;font-size:15px;display:grid;place-items:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.45)}
@@ -727,6 +746,7 @@ tr.grp th,tr.grp td{border-top:2px solid var(--line)}td.vc b{font-size:16px;colo
 .flow{margin:4px 0 6px}.step{display:grid;grid-template-columns:26px minmax(130px,170px) 1fr 108px;gap:10px;align-items:center;border-left:3px solid var(--c);background:#fff;padding:7px 10px;margin:4px 0;border-top:1px solid var(--line2);border-bottom:1px solid var(--line2);border-right:1px solid var(--line2)}.step .no{display:grid;place-items:center;width:24px;height:24px;background:#212529;color:#fff;font-weight:700;font-size:13px}.step small{color:var(--muted);font-size:12px;text-align:right;white-space:nowrap;margin:0}.step .track{margin:0}.arr{display:none}
 .ochip{display:inline-flex;align-items:center;font-weight:600;color:var(--strong);font-size:14px;line-height:1.2}
 table.ord td.oc{text-align:left;padding:9px 10px;min-width:118px}table.ord td.oc.diff{box-shadow:inset 0 0 0 2px var(--accent);background:var(--insight)}table.ord td.oc small{margin-top:2px}table.ord td.st{font-size:13px;color:var(--muted);white-space:nowrap}table.ord td.st .ok{color:var(--best-fg);font-weight:600}table.ord th[scope=row]{white-space:nowrap}
+.thead{display:flex;gap:12px;align-items:center;margin-bottom:12px}.thead h4{margin:0}.thead p{margin:2px 0 0}.tcol .switch{margin-top:12px}.alist{margin-top:10px}.alist .li{display:flex;gap:8px;margin:7px 0;align-items:flex-start}.alist .li .sw{margin-top:4px;flex:none}.alist .li span{display:block;color:var(--muted);font-size:13.5px}
 .legend{display:flex;gap:16px;flex-wrap:wrap;margin:8px 0;font-size:13.5px;color:var(--muted)}.legend.small{font-size:13px}.legend span{display:inline-flex;align-items:center}
 .chart{width:100%;height:auto;display:block;max-width:440px}.chart.wide{max-width:none}.chart .grid{stroke:var(--line);stroke-width:1}.chart text{fill:var(--ink);font-size:12px}.chart .axis{fill:var(--soft)}.chart .val{font-weight:600}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px}.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:28px}
@@ -778,7 +798,7 @@ def build(spec, base):
                        + f'<h3>Evidence and limits</h3><ul class="plain">{limits}</ul>' + (f'<h4>What would change the recommendation</h4><ul class="plain">{changes}</ul>' if changes else "")
                        + f'<h3>Definitions</h3><dl class="kv">{defs}</dl><h3>Sources</h3><ul class="plain">{sources}</ul><h3>Dashboard AOI VAI report (unfiltered copy)</h3>'
                        + "".join(dashboard_vai(spec, v, i) for i, v in enumerate(variants)))
-    nav = "".join(f'<a href="#{i}">{t}</a>' for i, t in (("overall", "Findings"), ("vai", "VAI"), ("order", "Viewing order"), ("design-A", "Designs"), ("compare", "Comparison"),
+    nav = "".join(f'<a href="#{i}">{t}</a>' for i, t in (("tested", "Designs tested"), ("overall", "Findings"), ("vai", "VAI"), ("order", "Viewing order"), ("design-A", "Analysis"), ("compare", "Comparison"),
                                                           ("audience", "Gender and age"), ("actions", "Next steps"), ("technical", "Appendix")))
     body = "".join(('<a id="design-A"></a>' if i == 0 else "") + design_sections(spec, v, i) for i, v in enumerate(variants))
     study = spec.get("app_title") or m.get("study") or spec.get("title", "")
@@ -788,7 +808,7 @@ def build(spec, base):
             f'<div class="hd"><div><h1>{e(spec.get("title", ""))}</h1><p>{e(spec.get("subtitle", ""))} {e(spec.get("date", ""))}{" · " + e(spec["prepared_for"]) if spec.get("prepared_for") else ""}</p></div>'
             f'<button class="btn" onclick="window.print()">{printer} Print / Save as PDF</button></div>'
             f'<div class="strip">{info}<div><b>How this was measured</b><span>{e(m.get("banner", "RealEye platform, webcam eye tracking."))}</span></div></div>'
-            f'<div class="tiles">{tiles}</div>{overall}{vai_guide(spec)}{order_section(spec)}{body}{compare_section(spec)}{audience_section(spec)}{retest}{appendix}'
+            f'{intro_section(spec)}<div class="tiles">{tiles}</div>{overall}{vai_guide(spec)}{order_section(spec)}{body}{compare_section(spec)}{audience_section(spec)}{retest}{appendix}'
             '<footer>Generated with the RealEye neuromarketing-image-report skill. Eye tracking shows where people looked, not what they understood, liked or will buy.</footer>')
     css_imgs = "".join(f".{c}{{background-image:url('{u}')}}" for u, c in IMAGES.items())
     return (f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'

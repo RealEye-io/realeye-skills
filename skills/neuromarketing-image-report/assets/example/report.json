@@ -112,7 +112,7 @@
    "aois": [
     {
      "name": "Tagline",
-     "role": "Claim",
+     "role": "The claim “Wake up the red in your hair.”",
      "color": "#96d732",
      "shape": [
       [
@@ -147,7 +147,7 @@
     },
     {
      "name": "Pack (product)",
-     "role": "Pack shot",
+     "role": "The shampoo tube (pack shot)",
      "color": "#d73296",
      "shape": [
       [
@@ -174,7 +174,7 @@
     },
     {
      "name": "Face",
-     "role": "Model",
+     "role": "The model’s face",
      "color": "#6ec850",
      "shape": [
       [
@@ -201,7 +201,7 @@
     },
     {
      "name": "Logo",
-     "role": "Brand mark on pack",
+     "role": "The “b” logo on the pack",
      "color": "#3296d7",
      "shape": [
       [
@@ -228,7 +228,7 @@
     },
     {
      "name": "Brand name (banner)",
-     "role": "Brand name, bottom banner",
+     "role": "The BunnyEnchantment brand name banner at the bottom",
      "color": "#d77732",
      "shape": [
       [
@@ -1263,7 +1263,7 @@
    "aois": [
     {
      "name": "Tagline",
-     "role": "Claim",
+     "role": "The claim “Wake up the red in your hair.”",
      "color": "#96d732",
      "shape": [
       [
@@ -1298,7 +1298,7 @@
     },
     {
      "name": "Pack (product)",
-     "role": "Pack shot",
+     "role": "The shampoo tube (pack shot)",
      "color": "#d73296",
      "shape": [
       [
@@ -1325,7 +1325,7 @@
     },
     {
      "name": "Face",
-     "role": "Model",
+     "role": "The model’s face",
      "color": "#6ec850",
      "shape": [
       [
@@ -1352,7 +1352,7 @@
     },
     {
      "name": "Logo",
-     "role": "Brand mark on pack",
+     "role": "The “b” logo on the pack",
      "color": "#3296d7",
      "shape": [
       [
@@ -1379,7 +1379,7 @@
     },
     {
      "name": "Brand name (banner)",
-     "role": "Brand name, bottom banner",
+     "role": "The BunnyEnchantment brand name banner at the bottom",
      "color": "#d77732",
      "shape": [
       [
