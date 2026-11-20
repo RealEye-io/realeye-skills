@@ -25,7 +25,8 @@ from pathlib import Path
 VARIANT_COLORS = ["#fc7753", "#3b82e0", "#27a85a", "#ae3ec9"]
 COMP_COLORS = {"vai": "#fc7753", "reach": "#3b82e0", "speed": "#e3ac1c", "hold": "#27a85a"}
 AOI_COLORS = ["#d77732", "#6ec850", "#3296d7", "#d73296", "#96d732", "#7048e8", "#f08c00"]
-MIN_N = 30
+MIN_N = 30        # under this many viewers a group is anecdotal (†)
+CERTAIN_N = 100   # a group needs at least this many viewers for a result to be certain; 30 to 99 is indicative (‡)
 WIN = ["3", "5", "10"]
 WIN_LABEL = {"3": "first 3 s", "5": "first 5 s", "10": "first 10 s"}
 COMP = [("vai", "VAI"), ("reach", "Reach"), ("speed", "Speed"), ("hold", "Hold")]
@@ -206,6 +207,11 @@ def rank_names(spec, seg, w, key="speed"):
 
 def small(seg):
     return seg["n"] < MIN_N
+
+
+def mk(seg):
+    # sample-size marker: † anecdotal (under 30), ‡ indicative (30 to 99), none when the group has at least 100 viewers
+    return "†" if seg["n"] < MIN_N else ("‡" if seg["n"] < CERTAIN_N else "")
 
 
 def lst(words):
@@ -450,7 +456,7 @@ def segment_chart(spec, v, kind, title):
         series = []
         for i, sg in enumerate(segs):
             idx = i % 3 if kind == "gender_age" else i
-            series.append((f'{sg["label"]} (N={sg["n"]}{", †" if small(sg) else ""})', aud_color(sg["label"], idx), [val(sg, w, k, "vai") for k in range(len(n))]))
+            series.append((f'{sg["label"]} (N={sg["n"]}{(", " + mk(sg)) if mk(sg) else ""})', aud_color(sg["label"], idx), [val(sg, w, k, "vai") for k in range(len(n))]))
         leg = '<div class="legend">' + "".join(f"<span>{swatch(c)}{e(l)}</span>" for l, c, _ in series) + "</div>"
         panes[w] = leg + hbars(n, series, f"VAI by audience, {WIN_LABEL[w]}", bh=9 if len(series) > 3 else 12, gap=2)
     return f'<h5>{e(title)}: chart (VAI per element)</h5>' + window_tabs(panes)
@@ -614,7 +620,7 @@ def segment_table(spec, v, kind, title):
     segs = [s for s in v["segments"] if s["kind"] == kind]
     if not segs:
         return ""
-    head = "".join(f'<th>{alink(dash_url(spec, v, "aoi", s["label"]), s["label"])}<small>N = {s["n"]}{" †" if small(s) else ""}</small></th>' for s in segs)
+    head = "".join(f'<th>{alink(dash_url(spec, v, "aoi", s["label"]), s["label"])}<small>N = {s["n"]}{(" " + mk(s)) if mk(s) else ""}</small></th>' for s in segs)
     rows = ""
     for ai, nm in enumerate(names(spec)):
         for wi, w in enumerate(WIN):
@@ -681,7 +687,7 @@ def vai_tech_notes():
     return f"""<h3>Technical notes on VAI</h3><ul class="plain">
 <li><b>Compare like with like:</b> the same element, the same time window and a similar number of viewers (N). Large elements, and elements that overlap others, naturally score higher.</li>
 <li><b>Windows are cumulative.</b> "First 3 s" is 0.5–3 s, "first 5 s" is 0.5–5 s and "first 10 s" is 0.5–10 s. The first 0.5 s is skipped to reduce the effect of where viewers happened to be looking when the image appeared. Reach and Speed can only rise as the window grows; Hold is relative to the window, so it can fall even when viewers keep looking.</li>
-<li><b>Small groups are noisy.</b> Audiences with fewer than {MIN_N} viewers are marked † and should be read as anecdotal.</li>
+<li><b>Group size decides how certain a result is.</b> To be certain, every group you want to analyse needs at least {CERTAIN_N} viewers. Groups of {MIN_N} to {CERTAIN_N - 1} viewers are marked ‡ (indicative, not certain) and groups under {MIN_N} are marked † (anecdotal).</li>
 <li><b>VAI is the equal-weight mean of Reach, Speed and Hold</b> and is not a share of the image's attention.</li></ul>"""
 
 
@@ -715,12 +721,12 @@ def order_by_audience(spec, v):
             order = rank_names(spec, sg, w)
             same = order == base_order
             if not same and sg["label"] != "All":
-                differ.append(sg["label"] + (" †" if small(sg) else ""))
+                differ.append(sg["label"] + (" " + mk(sg) if mk(sg) else ""))
             cells = "".join(
                 f'<td class="oc{"" if order[i] == base_order[i] else " diff"}{" low" if small(sg) else ""}">{ochip(v, order[i], n.index(order[i]))}'
                 f'<small>Speed {val(sg, w, n.index(order[i]), "speed"):.0f}</small></td>' for i in range(len(n)))
             status = '<span class="ok">same as overall</span>' if same else "differs"
-            rows += (f'<tr><th scope="row">{e(sg["label"])}<small>N = {sg["n"]}{" †" if small(sg) else ""}</small></th>{cells}<td class="st">{status if sg["label"] != "All" else "overall"}</td></tr>')
+            rows += (f'<tr><th scope="row">{e(sg["label"])}<small>N = {sg["n"]}{(" " + mk(sg)) if mk(sg) else ""}</small></th>{cells}<td class="st">{status if sg["label"] != "All" else "overall"}</td></tr>')
         total = len(v["segments"]) - 1
         summary = (f'{total - len(differ)} of {total} audiences notice the elements in the same order as all viewers.'
                    + (f' Different order: {e(", ".join(differ))}.' if differ else ""))
@@ -802,7 +808,7 @@ def design_sections(spec, v, vi):
     mini = "".join(f'<div><h5>{lab} by window</h5>{lines(series(k), xl, lab)}</div>' for k, lab in COMP)
     build_up = section(f'd{v["id"]}-build', "How attention builds up over time", legend([(nm, acolor(v, nm, i)) for i, nm in enumerate(n)]) + f'<div class="grid2">{mini}</div>')
     aud = section(f'd{v["id"]}-audience', "By gender, age and gender × age",
-                  '<p class="hint">Each cell is the VAI for that audience, element and window, with Reach · Speed · Hold underneath. † marks a small audience (fewer than %d viewers): read it as indicative.</p>' % MIN_N
+                  '<p class="hint">Each cell is the VAI for that audience, element and window, with Reach · Speed · Hold underneath. ‡ marks a group of %d to %d viewers (indicative, not certain: a result needs at least %d viewers in the group to be certain); † marks a group under %d viewers (anecdotal).</p>' % (MIN_N, CERTAIN_N - 1, CERTAIN_N, MIN_N)
                   + f'<span id="d{v["id"]}-gender"></span>' + segment_chart(spec, v, "gender", "By gender") + segment_table(spec, v, "gender", "By gender")
                   + f'<span id="d{v["id"]}-age"></span>' + segment_chart(spec, v, "age", "By age") + segment_table(spec, v, "age", "By age")
                   + f'<span id="d{v["id"]}-gender_age"></span>' + segment_chart(spec, v, "gender_age", "By gender × age") + segment_table(spec, v, "gender_age", "By gender × age"))
@@ -847,14 +853,15 @@ def compare_section(spec):
 
 def audience_section(spec):
     variants = spec["variants"]
-    text = "".join(insight_card(spec, x, f"seg-finding-{k + 1}", ["audience"] + [f'd{v["id"]}-audience' for v in variants]) for k, x in enumerate(spec.get("segment_findings", [])))
+    cnote = certainty_note(spec, True)
+    text = cnote + "".join(insight_card(spec, x, f"seg-finding-{k + 1}", ["audience"] + [f'd{v["id"]}-audience' for v in variants]) for k, x in enumerate(spec.get("segment_findings", [])))
     ages = [s["label"] for s in variants[0]["segments"] if s["kind"] == "age"]
     ga = gap_table(spec, variants, "18–24", "25–34", "Viewers 25–34 minus viewers 18–24 (the 25–34 group is small: anecdotal)") if "18–24" in ages and "25–34" in ages else ""
     lk = ' · '.join('Design ' + e(x["id"]) + ': ' + open_links(spec, x, "Women", None, ("aoi", "heatmap")) + ' (women)' for x in variants) if open_links(spec, variants[0]) else ""
     gc = "".join(gap_chart(spec, v, vi, "Men", "Women", "Women minus men (VAI points)") for vi, v in enumerate(variants))
     gc2 = "".join(gap_chart(spec, v, vi, "Men 18–24", "Women 18–24", "Women 18–24 minus men 18–24 (VAI points)") for vi, v in enumerate(variants))
     body = (text + gc + gap_table(spec, variants, "Men", "Women", "Women minus men (VAI points)") + gc2 + gap_table(spec, variants, "Men 18–24", "Women 18–24", "Women 18–24 minus men 18–24 (the largest groups)") + ga
-            + f'<p class="hint">† Small audiences (fewer than {MIN_N} viewers) are indicative only. Full tables and heatmaps are in each design\'s section.</p>' + (f'<p class="links small">Open in RealEye: {lk}</p>' if lk else ""))
+            + f'<p class="hint">‡ under {CERTAIN_N} viewers: indicative, not certain. † under {MIN_N} viewers: anecdotal. Full tables and heatmaps are in each design\'s section.</p>' + (f'<p class="links small">Open in RealEye: {lk}</p>' if lk else ""))
     return section("audience", "Gender and age insights", body)
 
 
@@ -933,7 +940,7 @@ def data_tables(spec):
         ("title", spec.get("title", "")), ("date", spec.get("date", "")), ("platform", spec["method"].get("platform", "")), ("eye_tracking", spec["method"].get("tracking", "")),
         ("study", spec["method"].get("study", "")), ("participants_analysed", spec["method"].get("participants", "")), ("quality_filter", spec["method"].get("quality_filter", "")),
         ("windows", spec["method"].get("windows", "")), ("audiences", spec["method"].get("segments", "")), ("task", spec["method"].get("task", "")),
-        ("small_audience_threshold", f"fewer than {MIN_N} viewers"), ("report_generated_by", f"{SKILL_NAME} v{SKILL_VERSION} (report format {SCHEMA_VERSION})"), ("report_generated_on", spec.get("_generated", ""))) if v]
+        ("sample_size_rule", f"a group needs at least {CERTAIN_N} viewers for a result to be certain; {MIN_N} to {CERTAIN_N - 1} is indicative (marked with a double dagger); under {MIN_N} is anecdotal (marked with a dagger)"), ("report_generated_by", f"{SKILL_NAME} v{SKILL_VERSION} (report format {SCHEMA_VERSION})"), ("report_generated_on", spec.get("_generated", ""))) if v]
     si = spec.get("study_info") or {}
     for k, vv in si.items():
         t["study"].append(["study_" + k, re.sub(r"\{([A-Z])\}", r"\1", str(vv))])
@@ -1051,7 +1058,7 @@ def agent_prompt(spec):
     add("- Speed: how soon the element is noticed after it becomes visible. Ranking elements by Speed gives the viewing order (a relative hierarchy across viewers, not one person's scan path).")
     add("- Hold: how long attention stays on the element relative to the window. It can fall as the window grows even when viewers keep looking.")
     add("- Windows are cumulative and start at 0.5 s: 'first 3 s' = 0.5-3 s, 'first 5 s' = 0.5-5 s, 'first 10 s' = 0.5-10 s.")
-    add(f"- Audiences with fewer than {MIN_N} viewers are anecdotal (marked with a dagger in the report); say so when you use them. Viewers with other or unspecified gender, or no recorded age, are in 'All' but not in the gender or age cuts.")
+    add(f"- A result is certain only when every group it compares has at least {CERTAIN_N} viewers. Groups of {MIN_N} to {CERTAIN_N - 1} viewers are indicative (marked with a double dagger) and groups under {MIN_N} are anecdotal (marked with a dagger): say so whenever you use them and never call such a result certain. Viewers with other or unspecified gender, or no recorded age, are in 'All' but not in the gender or age cuts.")
     add("- VAI shows attention, not understanding, liking, recall or purchase. Never claim an effectiveness winner without outcome data.")
     add("")
     add("=== DESIGNS AND ELEMENTS (AOIs) ===")
@@ -1241,11 +1248,11 @@ def point(spec, p):
         ERRORS.append(f"evidence data point {json.dumps(p, ensure_ascii=False)} says {p['value']} but the report data gives {got:.1f}")
     mname = dict(COMP)[k]
     if mi:
-        lab = f"{{{v['id']}}} {aud} − {{{v2['id']}}} {aud2}"
+        lab = f"{{{v['id']}}} {aud} (N={sa['n']}{' ' + mk(sa) if mk(sa) else ''}) − {{{v2['id']}}} {aud2} (N={sb['n']}{' ' + mk(sb) if mk(sb) else ''})"
         shown = f"{got:+.1f}"
         refs = ["compare"] if v2["id"] != v["id"] else [f"d{v['id']}-{sa.get('kind', 'audience')}" if sa.get("kind") in ("gender", "age", "gender_age") else f"d{v['id']}-audience", "audience"]
     else:
-        lab = f"{{{v['id']}}} · {aud} (N={sa['n']})"
+        lab = f"{{{v['id']}}} · {aud} (N={sa['n']}{' ' + mk(sa) if mk(sa) else ''})"
         shown = f"{got:.1f}"
         refs = [f"d{v['id']}-summary" if aud == "All" else (f"d{v['id']}-{sa['kind']}" if sa.get("kind") in ("gender", "age", "gender_age") else f"d{v['id']}-audience")]
     dashes = [{"design": v["id"], "kind": "aoi", "audience": aud}]
@@ -1333,6 +1340,7 @@ def finding_card(spec, f, n):
     concl = f.get("conclusion") or f.get("text") or ""
     if not concl:
         ERRORS.append(f"{where}: missing 'conclusion'")
+    confidence_vs_sample(spec, f, where)
     tag = f.get("tag", "")
     col = TAG_COLORS.get(tag, "#fc7753")
     conf = f.get("confidence", "")
@@ -1381,7 +1389,7 @@ def findings_section(spec):
         acts += (f'<article class="finding mini" id="a{i + 1}"><h4>{rich(a.get("title", ""))}</h4><p>{rich(a.get("text", ""))}'
                  + (f' <b>Preserve:</b> {rich(a["preserve"])}' if a.get("preserve") else "") + '</p>' + based_on(spec, a, f"action {i + 1}", len(fs)) + '</article>')
     return section("overall", "Overall findings and conclusions",
-                   f'<div class="callout big"><span class="lab">{rich(o.get("verdict_label", "Conclusion"))}</span><p>{rich(o.get("verdict_text", ""))}</p></div><p class="lead">{rich(o.get("summary", ""))}</p><div class="readnote"><b>How to read the scores.</b> The higher the VAI score (and its Reach, Speed and Hold), the better that element is at attracting visual attention. Compare like with like, and judge each element against its role.</div>'
+                   f'<div class="callout big"><span class="lab">{rich(o.get("verdict_label", "Conclusion"))}</span><p>{rich(o.get("verdict_text", ""))}</p></div><p class="lead">{rich(o.get("summary", ""))}</p>{certainty_note(spec)}<div class="readnote"><b>How to read the scores.</b> The higher the VAI score (and its Reach, Speed and Hold), the better that element is at attracting visual attention. Compare like with like, and judge each element against its role.</div>'
                    f'<div class="tiles">{kp}</div><h3>The findings at a glance</h3><ol class="glance">{glance}</ol>'
                    f'<h3>The findings, and the evidence behind each</h3><p class="hint">Every finding states what we conclude, why, and the numbers that prove it, each linked to its table, chart or heatmap in this report and in the RealEye dashboard.</p>{cards}'
                    + (f"<h3>Conclusions</h3>{concl}" if concl else "") + f"<h3>What to do next</h3>{acts}"
@@ -1419,7 +1427,7 @@ def blueprint_data(spec):
             "study": {"title": spec.get("title", ""), "study_id": d.get("study_id"), "dashboard": d.get("base"), "info": spec.get("study_info", {}), "setup": {k: x for k, x in bp.items() if k != "recreate_steps"}},
             "stimuli": [{"design": v["id"], "name": v["name"], "item_id": v.get("item_id"), "image_px": _img_px(spec, v), "aois": aoi_records(spec, v)} for v in spec["variants"]],
             "analysis": {"metric": "VAI = mean of Reach, Speed and Hold", "windows_s": [[0.5, 3], [0.5, 5], [0.5, 10]], "min_data_quality": f"Average or better (grade {d.get('min_quality', 3)} or higher)",
-                         "small_audience_below_viewers": MIN_N, "audiences": [s["label"] for s in spec["variants"][0]["segments"]], "aoi_order": names(spec)},
+                         "small_audience_below_viewers": MIN_N, "certain_at_viewers": CERTAIN_N, "audiences": [s["label"] for s in spec["variants"][0]["segments"]], "aoi_order": names(spec)},
             "participants": spec.get("participants", {})}
 
 
@@ -1469,7 +1477,7 @@ def blueprint_section(spec):
     analysis = ('<dl class="kv">'
                 f'<dt>Metric</dt><dd>VAI = equal-weight mean of Reach, Speed and Hold (0–100)</dd><dt>Time windows</dt><dd>{wins}</dd>'
                 f'<dt>Viewer filter</dt><dd>Data quality Average or better (grade {d.get("min_quality", 3)} or higher; grades: 1 Very low, 2 Low, 3 Average, 4 Good, 5 Very good, 6 Perfect)</dd>'
-                f'<dt>Audiences</dt><dd>{e(", ".join(s["label"] for s in variants[0]["segments"]))}</dd><dt>Small audiences</dt><dd>fewer than {MIN_N} viewers: indicative only</dd>'
+                f'<dt>Audiences</dt><dd>{e(", ".join(s["label"] for s in variants[0]["segments"]))}</dd><dt>Group size</dt><dd>at least {CERTAIN_N} viewers per group for a certain result; {MIN_N} to {CERTAIN_N - 1} indicative (‡); under {MIN_N} anecdotal (†)</dd>'
                 f'<dt>Element order</dt><dd>{e(", ".join(names(spec)))}</dd></dl>')
     wh = d.get("base", "https://app.realeye.io")
     steps = [
@@ -1479,7 +1487,7 @@ def blueprint_section(spec):
         ("These AOIs were proposed for this report and are not yet saved in the study. " if any(v.get("aoi_source") == "proposed" for v in variants) else "")
         + "Open each stimulus' AOI editor and draw the elements from the tables above, using the pixel coordinates (image size as shown). Keep the same names and, if you want the new report to look the same, the same colours.",
         "Add the participant questions (at least gender and age) so audience cuts work: " + e(bp.get("demographics_asked") or "gender and age") + ".",
-        "Invite participants: share the study link with your own participants or order RealEye panel participants. Plan for at least 100 viewers with Average or better data quality per design, and 30 or more in every audience you want to compare.",
+        "Invite participants: share the study link with your own participants or order RealEye panel participants. Plan for at least 100 viewers with Average or better data quality in every group you want to analyse (each design, each gender, each age band, each gender × age cell): below 100 a result is only indicative.",
         "When data has come in, give an AI agent that has the neuromarketing-image-report skill the new study and item ids together with this report's data (download below). It collects the numbers, rebuilds the report and can compare it with this one.",
     ] + [rich(x) for x in bp.get("recreate_steps", [])]
     note = ('<p class="hint">The same study can also simply keep running: collect more participants, then rebuild the report. The report always states the collection dates and the number of viewers analysed, so two versions can be compared fairly.</p>')
@@ -1581,6 +1589,46 @@ def lint_differences(spec):
         print("WARNING: numbers for two designs without their difference (use {{cmp:metric:AOI:window:A,B}}): " + s_, file=sys.stderr)
 
 
+# ------------------------------------------------------------------ how certain: group sizes
+def certainty_note(spec, compact=False):
+    variants = spec["variants"]
+    ok, weak = [], []
+    for sg in variants[0]["segments"]:
+        ns = [(seg_of(v, sg["label"]) or {"n": 0})["n"] for v in variants]
+        txt = f'{sg["label"]} ({", ".join("{" + v["id"] + "} " + str(n) for v, n in zip(variants, ns))})'
+        (ok if min(ns) >= CERTAIN_N else weak).append(txt)
+    head = ('<b>How certain are these results?</b> ' + rich("To be certain, every group you want to analyse needs at least ") + f"<b>{CERTAIN_N} viewers</b>. "
+            + rich(("Groups of that size here: " + "; ".join(ok) + ". ") if ok else "No group here reaches that size. "))
+    if compact:
+        return f'<div class="readnote">{head}' + (rich(str(len(weak)) + " groups are smaller (marked ‡ or †): read their results as indicative, not certain.") if weak else "") + "</div>"
+    return (f'<div class="readnote">{head}'
+            + (rich("Smaller groups, whose results are indicative and not certain (‡ 30 to " + str(CERTAIN_N - 1) + " viewers, † under " + str(MIN_N) + "): " + "; ".join(weak) + ". ") if weak else "")
+            + rich("Collect more viewers in the groups that matter to you before acting on their differences.") + "</div>")
+
+
+def min_group_n(spec, evs):
+    ns = []
+    for x in evs:
+        if isinstance(x, str):
+            continue
+        for p_ in x.get("data", []):
+            try:
+                v = next(v_ for v_ in spec["variants"] if v_["id"] == p_["design"])
+                ns.append(seg_of(v, p_.get("audience", "All"))["n"])
+                if p_.get("minus"):
+                    v2 = next(v_ for v_ in spec["variants"] if v_["id"] == p_["minus"].get("design", p_["design"]))
+                    ns.append(seg_of(v2, p_["minus"].get("audience", p_.get("audience", "All")))["n"])
+            except Exception:
+                pass
+    return min(ns) if ns else None
+
+
+def confidence_vs_sample(spec, item, where):
+    n = min_group_n(spec, item.get("evidence", []))
+    if item.get("confidence") == "high" and n is not None and n < CERTAIN_N:
+        ERRORS.append(f"{where}: confidence 'high' but its evidence uses a group of {n} viewers (under {CERTAIN_N}). Lower the confidence to medium or low, or base the finding on larger groups")
+
+
 # ------------------------------------------------------------------ the designs at the very top
 def designs_band(spec):
     cards = ""
@@ -1622,6 +1670,7 @@ def hypotheses_section(spec):
         if vd and vd not in VERDICTS:
             ERRORS.append(f"{where}: verdict must be one of {', '.join(VERDICTS)}")
         col = VERDICTS.get(vd, "#5c5c5c")
+        confidence_vs_sample(spec, h, where)
         ev = evidence_html(spec, h.get("evidence", []), where)
         rows += f'<li><a href="#h{i}"><span class="ftag" style="background:{col}">{e(vd)}</span> <b>{rich(h.get("hypothesis", ""))}</b></a></li>'
         cards += (f'<article class="finding" id="h{i}" style="--c:{col}"><div class="fhead"><span class="fnum">H{i}</span><div><span class="ftag" style="background:{col}">{e(vd)}</span>'

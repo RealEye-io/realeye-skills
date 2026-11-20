@@ -97,6 +97,12 @@ def main():
     except ValueError:
         bpd = None
     check("blueprint JSON parses, has AOIs and the skill version", bpd and all(s["aois"] for s in bpd["stimuli"]) and bpd["generated_by"]["skill_version"] == ver)
+    # sample size certainty
+    ov = plain(h[h.find('id="overall"'):h.find('id="audience"')])
+    check("findings state that certainty needs at least 100 viewers per group and list which groups reach it", "at least 100 viewers" in ov and "How certain are these results?" in ov)
+    au = plain(h[h.find('id="audience"'):h.find('id="hypotheses"')])
+    check("audience section repeats the 100-viewer rule and marks groups with the sample-size markers", "at least 100 viewers" in au and ("‡" in au))
+    check("appendix states the group-size rule", "at least 100 viewers per group for a certain result" in plain(h))
     # study facts
     for lab in ("Study created", "Data collected", "RealEye version", "Who took part"):
         check(f"study facts: {lab}", lab in h)

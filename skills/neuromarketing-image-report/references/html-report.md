@@ -139,7 +139,7 @@ Use the user's signed-in browser (read-only). Never print participant names; nev
     "study": "…", "participants": "Design A: 229 viewers (12 of 241 removed for low data quality) …",
     "quality_filter": "Only viewers with data quality Average or better are analysed.",
     "windows": "First 3 s (0.5–3 s), first 5 s, first 10 s, cumulative.",
-    "segments": "All viewers; men and women; ages …; gender × age. Audiences under 30 viewers are marked †.",
+    "segments": "All viewers; men and women; ages …; gender × age. Groups under 100 viewers are marked ‡ (indicative) and under 30 †.",
     "task": "…", "source": "…", "note": "…"},
   "dashboard": {"base": "https://app.realeye.io", "study_id": "<STUDY_ID>", "min_quality": 3},
   "agent_context": "<optional: campaign goal, decision to make, anything the AI assistant should know>",
@@ -155,7 +155,7 @@ Use the user's signed-in browser (read-only). Never print participant names; nev
                          "device": {"Desktop": 201, "Tablet": 28},
                          "tracker_text": "…", "participant_type_text": "…", "screen_text": "1512 × 900 px", "age_text": "…"}},
   "participants_note": "optional: note under the participant charts",
-  "skill_version": "1.15.1",
+  "skill_version": "1.16.0",
   "blueprint": {"study_name": "…", "target_participants": "10,000", "demographics_asked": "gender and age", "random_order": "off",
                 "stimuli": {"A": {"file_name": "shampoo product.png", "display_seconds": 10, "finish_on": "keypress", "instructions": "off"}},
                 "recreate_steps": ["optional extra steps specific to this study"]},
@@ -197,7 +197,7 @@ Notes:
 - `values` is 60 numbers: for each window (3, 5, 10 s) → for each AOI in `aoi_order` → `[vai, reach, speed, hold]`. `kind` must be one of `overall`, `gender`, `age`, `gender_age`; labels must be `All`, `Men`, `Women`, then the age bands, then `Men <band>` and `Women <band>` (the gap tables look up `Men`, `Women`, `18–24`, `25–34`, `Men 18–24`, `Women 18–24`).
 - The viewing order is derived from Speed; the audience, comparison and gap tables are computed. You write only the findings text.
 - `stimulus` is the clean analysed image (no outlines, no pointer). Each AOI has a `shape`: its polygon as `[x%, y%]` points of the image (a rectangle is four points), and the dashboard's colour. The script draws the outlines (with a *Show AOIs* switch), puts the numbered viewing-order badges on the AOI corners, and crops the AOI cards from the clean image. AOI names must be identical across designs and in `aoi_order`.
-- Audiences under 30 viewers are muted and marked † automatically.
+- Groups under 100 viewers are marked ‡ (indicative, not certain) and groups under 30 are muted and marked † (anecdotal), automatically. The report lists which groups reach 100 viewers. A finding or hypothesis with confidence `high` may not rest on a group under 100: the build fails.
 - Keep the discipline of the brief: audience, window and N with every number, no winner without an outcome, hypotheses labelled as hypotheses, no participant-level data or private links.
 
 ## Writing tips

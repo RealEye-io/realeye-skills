@@ -2,7 +2,7 @@
  "title": "“Wake up the red in your hair”: two shampoo ad versions",
  "subtitle": "What viewers noticed, in what order, and for how long, using RealEye's VAI, by gender, age and time window.",
  "date": "20 Nov 2026",
- "skill_version": "1.15.1",
+ "skill_version": "1.16.0",
  "method": {
   "platform": "RealEye platform",
   "tracking": "Webcam eye tracking: participants viewed the images in their own browsers while RealEye estimated their gaze from their webcams.",
@@ -12,7 +12,7 @@
   "participants": "Design A: 229 viewers (12 of 241 removed for low data quality). Design B: 227 viewers (5 of 232 removed).",
   "quality_filter": "Only viewers with data quality Average or better are analysed.",
   "windows": "First 3 s (0.5–3 s), first 5 s (0.5–5 s) and first 10 s (0.5–10 s), cumulative.",
-  "segments": "All viewers; men and women; ages 18–24, 25–34 and 35+; and every gender × age combination. Audiences under 30 viewers are marked †.",
+  "segments": "All viewers; men and women; ages 18–24, 25–34 and 35+; and every gender × age combination. Groups under 100 viewers are marked ‡ (indicative) and under 30 †.",
   "task": "Free viewing, up to 10 s, one image at a time (demo study).",
   "source": "RealEye dashboard: AOI report statistics, AOI VAI report and fixation data, with the filters above.",
   "note": "Viewers with other or unspecified gender, or no recorded age, are in the overall results but not in the gender and age cuts."
@@ -521,13 +521,13 @@
     ],
     "so_what": "Do not move or shrink the tagline without retesting with women.",
     "confidence": "medium",
-    "confidence_note": "Both groups have more than 50 viewers (Women 88 and 81, Men 59 and 67), and the direction is the same in both designs."
+    "confidence_note": "The direction is the same in both designs, but every group is under 100 viewers (Women 88 and 81, Men 59 and 67), so the result is indicative, not certain."
    },
    {
     "tag": "weak-evidence",
     "title": "Age groups other than 18–24 are small",
     "conclusion": "Only the 18–24 group is large enough to read; it behaves like the whole sample. Other age groups are too small to separate real differences from noise.",
-    "why": "18–24 viewers number 82 (A) and 83 (B). The 25–34 groups have 28 and 31 viewers and the 35+ groups fewer than 15, below the 30-viewer threshold for a stable score. Differences seen in those groups are marked † in the tables and are hypotheses to test, not findings.",
+    "why": "18–24 viewers number 82 (A) and 83 (B). The 25–34 groups have 28 and 31 viewers and the 35+ groups fewer than 15: under 30 is anecdotal and even 30 to 99 is only indicative. The 18–24 groups (82 and 83) are also under the 100 viewers needed to be certain. Differences seen in those groups are marked † in the tables and are hypotheses to test, not findings.",
     "evidence": [
      {
       "text": "Age mix of the analysed viewers: most are 18–24 and many gave no age.",
@@ -819,7 +819,7 @@
    ],
    "so_what": "Do not move or shrink the tagline without retesting with women.",
    "confidence": "medium",
-   "confidence_note": "Both groups have more than 50 viewers per design."
+   "confidence_note": "Every group is under 100 viewers per design (Women 88 and 81, Men 59 and 67), so the result is indicative, not certain."
   },
   {
    "hypothesis": "Viewers will remember the brand name after seeing the ad.",
@@ -873,8 +873,8 @@
   {
    "category": "respondents",
    "title": "Collect more viewers in the groups that are too small to read",
-   "text": "Aim for at least 100 viewers per design in each group you want to compare. Ages 25 and over are fewer than 50 viewers per design, and the 35+ group fewer than 15.",
-   "why": "Groups under 30 viewers are marked as indicative, so the age findings in this report are weak."
+   "text": "To be certain about a result, aim for at least 100 viewers in every group you want to compare (each design, gender, age band and gender × age cell). Ages 25 and over are fewer than 50 viewers per design, and the 35+ group fewer than 15.",
+   "why": "Groups under 100 viewers are only indicative and groups under 30 anecdotal, so most gender and age findings in this report are not certain."
   },
   {
    "category": "respondents",
@@ -3274,7 +3274,7 @@
   "Gender × age: the tagline gap is clearest among 18–24 viewers, where both groups are large enough: women minus men is +14.2 in A (57 vs 24 viewers) and +12.7 in B (44 vs 37) in the first 10 s.",
   "Gender: face, pack, logo and banner show no consistent gap between women and men; banner VAI differences are 3 points or less in every window.",
   "Age: 18–24 viewers behave like the overall sample. In A, viewers aged 25–34 score higher on the logo (34.2 vs 28.3) and banner (18.9 vs 14.4) in the first 10 s, but with 28 viewers this is a hypothesis, not a finding. In B the 25–34 group scores 12.2 on the banner against 8.5 for 18–24 (31 viewers).",
-  "Age: viewers aged 35+ (7 in A, 14 in B) and most gender × age cells outside 18–24 are under 30 viewers. Recruit at least 30 viewers per audience if audience-specific recommendations matter."
+  "Age: viewers aged 35+ (7 in A, 14 in B) and most gender × age cells outside 18–24 are under 30 viewers. Recruit at least 100 viewers per audience if audience-specific recommendations matter."
  ],
  "actions": [
   {
@@ -3311,7 +3311,7 @@
   }
  ],
  "retest": {
-  "design": "Randomly assign target viewers to one version each, in a realistic feed or shelf context, with at least 30 Average-or-better viewers per gender and age band.",
+  "design": "Randomly assign target viewers to one version each, in a realistic feed or shelf context, with at least 100 Average-or-better viewers in every group you want to analyse (each design, gender, age band and gender × age cell).",
   "primary_outcome": "Unaided brand recall and main-message recall in the same respondent, with accepted answers agreed beforehand.",
   "guardrail": "Purchase intent.",
   "diagnostic_vai_metric": "Brand name and logo VAI, Reach and Speed in the first 3 s, by gender and age."
@@ -3321,7 +3321,7 @@
   "Webcam eye tracking has less spatial precision than a lab tracker, so small AOIs are measured less precisely than large ones, and AOIs are not directly comparable by size.",
   "Only viewers with data quality Average or better are analysed (A: 229 of 241, B: 227 of 232). The embedded dashboard AOI VAI report cannot be quality-filtered and covers all participants with data.",
   "Both images sit in the same 15-stimulus study with different viewer counts, so groups probably overlap and order effects are possible; comparisons are indicative.",
-  "About a third of viewers have other or unspecified gender and about half have no recorded age; they are in the overall results but not in the audience cuts. Audiences under 30 viewers are anecdotal.",
+  "About a third of viewers have other or unspecified gender and about half have no recorded age; they are in the overall results but not in the audience cuts. Groups under 30 viewers are anecdotal and groups under 100 are indicative, not certain.",
   "Heatmaps by audience are drawn from the same fixation data as the dashboard, each scaled to its own maximum; the dashboard's own heatmap is shown for all viewers.",
   "Viewing order is a relative hierarchy across viewers (VAI Speed), not an individual scan path. AOI shapes were used as saved on each image and are not identical between the two images."
  ],

@@ -2,6 +2,9 @@
 
 The version is in `SKILL.md` (`metadata.version`) and is stamped into every report this skill builds.
 
+## 1.16.0
+- Sample-size certainty: a result is certain only with at least 100 viewers in every group analysed. The report says so, lists which groups reach 100, marks groups of 30 to 99 with ‡ (indicative) and under 30 with † (anecdotal) everywhere, and the build rejects high confidence on groups under 100.
+
 ## 1.15.1
 - `scripts/audit_report.py` checks a built report (and its JSON) against the standing rules; the bundled example passes all checks.
 - SKILL.md made consistent with the newer rules: current section order, "higher is better", duplicate rule removed.
