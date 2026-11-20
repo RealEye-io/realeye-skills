@@ -4,7 +4,7 @@ description: Interpret measured RealEye ET Platform webcam eye tracking for ads,
 license: MIT
 metadata:
   author: RealEye
-  version: "1.10.0"
+  version: "1.11.0"
 ---
 
 # Neuromarketing image report
@@ -88,7 +88,7 @@ Write in plain language. **The deliverable is a self-contained, professional HTM
 
 18. **Explain every metric name with a tooltip.** Wherever a name like VAI, VAI Reach, VAI Speed, VAI Hold, Reach, Speed, Hold or AOI appears in the report (text, table headers, legends, tiles, navigation), hovering or clicking it shows a short plain-language definition. The script adds these tooltips automatically to all report text, so write the names exactly as they are (capitalised: VAI, Reach, Speed, Hold, AOI). If the report uses another term a brand manager might not know, add it to the report's `glossary` (`{"term": "definition"}`) and it gets a tooltip everywhere it appears.
 
-19. **End the report with an AI-agent prompt.** The very last section, *Continue the analysis with an AI agent*, holds a ready-to-use prompt with a *Copy prompt* button and a *Download as .txt* button. The script builds it from the report data, so it is always complete: the study and method, how to read VAI, the designs and AOIs (with what each covers and where), every VAI, Reach, Speed and Hold number for every design, audience and window, the dashboard's AOI VAI report, the findings, actions and limits, the dashboard links, and rules for answering (cite design, audience, window and N; separate observation, interpretation and hypothesis; flag small audiences; never invent metrics; say when the data cannot answer) plus ideas to explore. The agent confirms it has read the report and asks what to explore. Set the optional `agent_context` (the campaign goal, the decision to make, anything the assistant should know) to add context to the prompt. Do not remove or shorten this section.
+19. **End the report with an AI-agent prompt.** The very last section, *Continue the analysis with an AI agent*, holds a ready-to-use prompt with a *Copy prompt* button and a *Download as .txt* button. The script builds it from the report data, so it is always complete: the study and method, how to read VAI, the designs and AOIs (with what each covers and where), every VAI, Reach, Speed and Hold number for every design, audience and window, the dashboard's AOI VAI report, the findings, actions and limits, the dashboard links, and rules for answering (cite design, audience, window and N; separate observation, interpretation and hypothesis; flag small audiences; never invent metrics; say when the data cannot answer) plus ideas to explore. The agent confirms it has read the report and asks what to explore. Set the optional `agent_context` (the campaign goal, the decision to make, anything the assistant should know) to add context to the prompt. The same section holds a collapsed **data pack** (markdown with tidy CSV tables, generated from the report data): study, designs, elements with their position, audiences and sizes, the main table (design × audience × window × element: VAI, Reach, Speed, Hold, viewing-order rank), the unfiltered dashboard AOI VAI report and the dashboard links, with *Copy data pack*, *Download data pack (.md)* and *Download main table (.csv)* buttons. The prompt includes the pack, so an assistant never has to parse the report. Do not remove or shorten this section.
 
 ### Build the report
 

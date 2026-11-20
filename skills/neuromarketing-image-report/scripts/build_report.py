@@ -719,6 +719,91 @@ def intro_section(spec):
     return section("tested", "Tested designs and the elements analysed", body)
 
 
+def _csv(rows):
+    def q(x):
+        t = f"{x:g}" if isinstance(x, float) else str(x)
+        return '"' + t.replace('"', '""') + '"' if any(ch in t for ch in ',"\n') else t
+    return "\n".join(",".join(q(x) for x in r) for r in rows)
+
+
+def _audience_parts(label):
+    lab = label.strip()
+    gender = "all"
+    if lab.startswith("Men"):
+        gender, lab = "men", lab[3:].strip()
+    elif lab.startswith("Women"):
+        gender, lab = "women", lab[5:].strip()
+    return gender, (lab if lab and lab != "All" else "all")
+
+
+def data_tables(spec):
+    """All the data the report is built from, as tidy tables (name -> list of rows, first row = header)."""
+    n, variants = names(spec), spec["variants"]
+    t = {}
+    t["study"] = [["key", "value"]] + [[k, re.sub(r"\{([A-Z])\}", r"\1", str(v))] for k, v in (
+        ("title", spec.get("title", "")), ("date", spec.get("date", "")), ("platform", spec["method"].get("platform", "")), ("eye_tracking", spec["method"].get("tracking", "")),
+        ("study", spec["method"].get("study", "")), ("participants_analysed", spec["method"].get("participants", "")), ("quality_filter", spec["method"].get("quality_filter", "")),
+        ("windows", spec["method"].get("windows", "")), ("audiences", spec["method"].get("segments", "")), ("task", spec["method"].get("task", "")),
+        ("small_audience_threshold", f"fewer than {MIN_N} viewers")) if v]
+    t["designs"] = [["design", "name", "description", "viewers_all", "item_id"]] + [[v["id"], v["name"], v.get("description", ""), seg_of(v, "All")["n"], v.get("item_id", "")] for v in variants]
+    el = [["design", "element", "covers", "color", "bbox_x0_pct", "bbox_y0_pct", "bbox_x1_pct", "bbox_y1_pct"]]
+    for v in variants:
+        for a in v["aois"]:
+            b = bbox(a["shape"]) if a.get("shape") else ("", "", "", "")
+            el.append([v["id"], a["name"], a.get("role", ""), a.get("color", ""), *[round(x, 1) if x != "" else "" for x in b]])
+    t["elements"] = el
+    au = [["design", "audience", "kind", "gender", "age_band", "viewers", "small_audience"]]
+    vai = [["design", "audience", "window_s", "element", "vai", "reach", "speed", "hold", "speed_rank", "vai_rank"]]
+    for v in variants:
+        for sg in v["segments"]:
+            g, ab = _audience_parts(sg["label"])
+            au.append([v["id"], sg["label"], sg["kind"], g, ab, sg["n"], "yes" if small(sg) else "no"])
+            for w in WIN:
+                sp = rank_names(spec, sg, w)
+                vr = sorted(n, key=lambda nm: -val(sg, w, n.index(nm), "vai"))
+                for i, nm in enumerate(n):
+                    vai.append([v["id"], sg["label"], int(w), nm, val(sg, w, i, "vai"), val(sg, w, i, "reach"), val(sg, w, i, "speed"), val(sg, w, i, "hold"), sp.index(nm) + 1, vr.index(nm) + 1])
+    t["audiences"], t["vai_by_audience"] = au, vai
+    dd = [["design", "window", "element", "vai", "reach", "speed", "hold", "participants"]]
+    for v in variants:
+        d = v.get("dashboard_vai")
+        if d:
+            for nm, sm in d["summary"].items():
+                dd.append([v["id"], "average of windows", nm, sm["vai"], sm["reach"], sm["speed"], sm["hold"], d["participants"]])
+                for wi, wl in enumerate(d["windows"]):
+                    dd.append([v["id"], wl, nm, *[d["by_window"][k][nm][wi] for k in ("vai", "reach", "speed", "hold")], d["participants"]])
+    if len(dd) > 1:
+        t["dashboard_vai_report_unfiltered"] = dd
+    lk = [["design", "view", "url"]]
+    for v in variants:
+        for kind, lab in (("heatmap", "heatmap"), ("aoi", "aoi_report"), ("vai", "aoi_vai_report")):
+            u = dash_url(spec, v, kind)
+            if u:
+                lk.append([v["id"], lab, u])
+    if len(lk) > 1:
+        t["dashboard_links"] = lk
+    return t
+
+
+def data_pack(spec):
+    """Markdown 'data pack': a short guide plus every table as CSV, so an AI assistant can use the data without parsing the report."""
+    t = data_tables(spec)
+    guide = {
+        "study": "Study context.", "designs": "The tested designs.", "elements": "AOIs (elements) per design: what each covers and its bounding box in % of the image (0,0 = top-left).",
+        "audiences": "Audiences and their sizes. kind: overall | gender | age | gender_age. small_audience = fewer than 30 viewers (anecdotal).",
+        "vai_by_audience": ("MAIN TABLE, one row per design x audience x window x element. vai, reach, speed, hold are 0-100 (vai = mean of reach, speed, hold). "
+                            "window_s = 3, 5 or 10: cumulative windows 0.5-3, 0.5-5, 0.5-10 s. speed_rank = viewing order position (1 = noticed first). vai_rank = rank by VAI."),
+        "dashboard_vai_report_unfiltered": "The dashboard AOI VAI report: all participants with data, NOT quality-filtered (the dashboard cannot filter it).",
+        "dashboard_links": "RealEye dashboard views (need a signed-in account).",
+    }
+    L = [f"# Data pack: {re.sub(r'[{}]', '', spec.get('title', 'report'))}", "",
+         "Every number behind the report, as tidy CSV tables. Only VAI and its components (reach, speed, hold) exist; there are no other metrics. "
+         "Use these tables directly instead of parsing the report. Only viewers with data quality Average or better are included, except where noted.", ""]
+    for name, rows in t.items():
+        L += [f"## {name}", guide.get(name, ""), "", "```csv", _csv(rows), "```", ""]
+    return "\n".join(L).rstrip() + "\n"
+
+
 def agent_prompt(spec):
     """A self-contained prompt for an AI agent: the whole report (method, definitions, designs, AOIs, every number, findings) plus rules for answering."""
     m, o, variants, n = spec["method"], spec["overall"], spec["variants"], names(spec)
@@ -760,25 +845,8 @@ def agent_prompt(spec):
                 where = ""
             add(f"  - {a['name']}: {c(a.get('role', ''))}.{where}")
     add("")
-    add("=== DATA: VAI / Reach / Speed / Hold (0-100) per element, design, audience and time window ===")
-    add("Format per element: Name VAI/Reach/Speed/Hold")
-    for v in variants:
-        for sg in v["segments"]:
-            add(f"Design {v['id']} | audience: {sg['label']} | N={sg['n']}{' (small, anecdotal)' if small(sg) else ''} | kind: {sg['kind']}")
-            for w in WIN:
-                cells = "; ".join(f"{nm} {val(sg, w, i, 'vai'):g}/{val(sg, w, i, 'reach'):g}/{val(sg, w, i, 'speed'):g}/{val(sg, w, i, 'hold'):g}" for i, nm in enumerate(n))
-                add(f"  {WIN_LABEL[w]}: {cells}")
-    dv = [v for v in variants if v.get("dashboard_vai")]
-    if dv:
-        add("")
-        add("=== DASHBOARD AOI VAI REPORT (all participants with data, NOT quality-filtered; windows 0.5-3, 0.5-5, 0.5-10 s) ===")
-        for v in dv:
-            d = v["dashboard_vai"]
-            add(f"Design {v['id']} | participants: {d['participants']}")
-            for nm in d["summary"]:
-                sm = d["summary"][nm]
-                add(f"  {nm}: average VAI {sm['vai']:g}, Reach {sm['reach']:g}, Speed {sm['speed']:g}, Hold {sm['hold']:g}; "
-                    + "; ".join(f"{k} by window {'/'.join(f'{x:g}' for x in d['by_window'][k][nm])}" for k in ("vai", "reach", "speed", "hold")))
+    add("=== DATA PACK (markdown with CSV tables: every number behind the report; use it directly) ===")
+    add(data_pack(spec))
     add("")
     add("=== THE REPORT'S FINDINGS AND CONCLUSIONS ===")
     add(f"Conclusion: {c(o.get('verdict_label', ''))}. {c(o.get('verdict_text', ''))}")
@@ -813,7 +881,7 @@ def agent_prompt(spec):
     add("")
     add("=== HOW TO ANSWER ===")
     add("1. Base every answer on the data above. Quote the numbers with the design, audience, time window and N (for example: 'Design A, Women, first 3 s, N=88: Tagline VAI 65.4').")
-    add("2. Compute what I ask for: differences between designs, audiences and windows; rankings; viewing order per audience; gaps; build-up over time; which audiences behave differently. Show the arithmetic briefly.")
+    add("2. Use the CSV tables in the data pack (load them into code or a spreadsheet if you can). Compute what I ask for: differences between designs, audiences and windows; rankings; viewing order per audience; gaps; build-up over time; which audiences behave differently. Show the arithmetic briefly.")
     add("3. Separate observation (the data), interpretation (what it likely means) and hypothesis (what to test). Do not present a hypothesis as a finding.")
     add("4. Flag small audiences and differences that may be noise. Do not over-read gaps of a few VAI points.")
     add("5. If I ask something the data cannot answer (recall, liking, sales, other metrics, audiences or windows not listed), say so and suggest how to measure it.")
@@ -839,19 +907,27 @@ def agent_prompt(spec):
 
 def agent_section(spec):
     prompt = agent_prompt(spec)
-    body = ('<p class="lead">Want to go further? Copy the prompt below into your AI assistant (Claude, ChatGPT or similar). It carries the whole report: the study, how to read VAI, '
+    body = ('<p class="lead">Want to go further? Copy the prompt below into your AI assistant (Claude, ChatGPT or similar). It carries the whole report: the study, how to read VAI, a data pack with every number as CSV tables, '
             'the designs and elements, every VAI, Reach, Speed and Hold number for every audience and time window, the findings, actions and limits. The assistant can then answer follow-up questions, '
             'run extra comparisons and suggest insights you did not think to ask for.</p>'
             '<div class="btnrow"><button class="btn" type="button" data-act="copy">Copy prompt</button><button class="btn" type="button" data-act="download">Download as .txt</button></div>'
             f'<textarea id="agent-prompt" readonly rows="18" spellcheck="false">{e(prompt)}</textarea>'
-            f'<p class="hint">{len(prompt):,} characters. It contains your results, so share it only with tools you trust. The dashboard links in it work only for people signed in to RealEye.</p>')
+            f'<p class="hint">{len(prompt):,} characters. It contains your results, so share it only with tools you trust. The dashboard links in it work only for people signed in to RealEye.</p>'
+            '<details class="datapack"><summary>Underlying data: markdown with CSV tables (the prompt above already includes it)</summary>'
+            '<p class="hint">Every number the report was built from, as tidy CSV tables: study, designs, elements (AOIs) with their position, audiences and sizes, the main VAI / Reach / Speed / Hold table '
+            '(design × audience × window × element, with the viewing-order rank), the unfiltered dashboard AOI VAI report and the dashboard links. Give this to an AI assistant, or load the CSV into a spreadsheet or code, instead of parsing the report.</p>'
+            '<div class="btnrow"><button class="btn" type="button" data-act="copy" data-target="data-pack">Copy data pack</button>'
+            '<button class="btn" type="button" data-act="download" data-target="data-pack" data-file="neuromarketing-report-data-pack.md">Download data pack (.md)</button>'
+            '<button class="btn" type="button" data-act="download" data-target="data-csv" data-file="vai_by_audience.csv">Download main table (.csv)</button></div>'
+            f'<textarea id="data-pack" class="dp" readonly rows="14" spellcheck="false">{e(data_pack(spec))}</textarea>'
+            f'<textarea id="data-csv" hidden>{e(_csv(data_tables(spec)["vai_by_audience"]))}</textarea></details>')
     return section("agent", "Continue the analysis with an AI agent", body)
 
 
-POP2 = ('<script>(function(){document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest("[data-act]");if(!b)return;var t=document.getElementById("agent-prompt");if(!t)return;'
+POP2 = ('<script>(function(){document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest("[data-act]");if(!b)return;var t=document.getElementById(b.dataset.target||"agent-prompt");if(!t)return;'
         'if(b.dataset.act==="copy"){var done=function(){var o=b.textContent;b.textContent="Copied to clipboard";setTimeout(function(){b.textContent=o},1800)};'
         'if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t.value).then(done,function(){t.select();document.execCommand("copy");done()})}else{t.select();document.execCommand("copy");done()}}'
-        'else if(b.dataset.act==="download"){var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t.value],{type:"text/plain"}));a.download="neuromarketing-report-ai-prompt.txt";document.body.appendChild(a);a.click();a.remove()}})})();</script>')
+        'else if(b.dataset.act==="download"){var f=b.dataset.file||"neuromarketing-report-ai-prompt.txt";var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t.value],{type:f.slice(-4)===".csv"?"text/csv":"text/plain"}));a.download=f;document.body.appendChild(a);a.click();a.remove()}})})();</script>')
 
 
 def method_block(spec):
@@ -920,7 +996,7 @@ tr.grp th,tr.grp td{border-top:2px solid var(--line)}td.vc b{font-size:16px;colo
 .flow{margin:4px 0 6px}.step{display:grid;grid-template-columns:26px minmax(130px,170px) 1fr 108px;gap:10px;align-items:center;border-left:3px solid var(--c);background:#fff;padding:7px 10px;margin:4px 0;border-top:1px solid var(--line2);border-bottom:1px solid var(--line2);border-right:1px solid var(--line2)}.step .no{display:grid;place-items:center;width:24px;height:24px;background:#212529;color:#fff;font-weight:700;font-size:13px}.step small{color:var(--muted);font-size:12px;text-align:right;white-space:nowrap;margin:0}.step .track{margin:0}.arr{display:none}
 .ochip{display:inline-flex;align-items:center;font-weight:600;color:var(--strong);font-size:14px;line-height:1.2}
 table.ord td.oc{text-align:left;padding:9px 10px;min-width:118px}table.ord td.oc.diff{box-shadow:inset 0 0 0 2px var(--accent);background:var(--insight)}table.ord td.oc small{margin-top:2px}table.ord td.st{font-size:13px;color:var(--muted);white-space:nowrap}table.ord td.st .ok{color:var(--best-fg);font-weight:600}table.ord th[scope=row]{white-space:nowrap}
-.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}#agent-prompt{width:100%;height:360px;font:12.5px/1.5 ui-monospace,Consolas,Menlo,monospace;color:var(--ink);background:var(--thbg);border:1px solid var(--line);padding:14px;resize:vertical}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}details.datapack{border:1px solid var(--line);padding:14px 18px;margin:16px 0 0}details.datapack summary{cursor:pointer;font-weight:600;color:var(--strong)}textarea.dp{width:100%;height:300px;font:12.5px/1.5 ui-monospace,Consolas,Menlo,monospace;color:var(--ink);background:var(--thbg);border:1px solid var(--line);padding:14px;resize:vertical}#agent-prompt{width:100%;height:360px;font:12.5px/1.5 ui-monospace,Consolas,Menlo,monospace;color:var(--ink);background:var(--thbg);border:1px solid var(--line);padding:14px;resize:vertical}
 .thead{display:flex;gap:12px;align-items:center;margin-bottom:12px}.thead h4{margin:0}.thead p{margin:2px 0 0}.tcol .switch{margin-top:12px}.alist{margin-top:10px}.alist .li{display:flex;gap:8px;margin:7px 0;align-items:flex-start}.alist .li .sw{margin-top:4px;flex:none}.alist .li span{display:block;color:var(--muted);font-size:13.5px}
 .legend{display:flex;gap:16px;flex-wrap:wrap;margin:8px 0;font-size:13.5px;color:var(--muted)}.legend.small{font-size:13px}.legend span{display:inline-flex;align-items:center}
 .chart{width:100%;height:auto;display:block;max-width:440px}.chart.wide{max-width:none}.chart .grid{stroke:var(--line);stroke-width:1}.chart text{fill:var(--ink);font-size:12px}.chart .axis{fill:var(--soft)}.chart .val{font-weight:600}
@@ -933,7 +1009,7 @@ dl.kv{display:grid;grid-template-columns:220px 1fr;gap:10px 18px;margin:0}dl.kv 
 details.dash{border:1px solid var(--line);padding:14px 18px;margin:12px 0}details summary{cursor:pointer;font-weight:600;color:var(--strong)}
 footer{color:var(--soft);font-size:13px;text-align:center;padding:10px 0 30px}
 @media(max-width:700px){.sec{padding:20px 16px}.aoicard{grid-template-columns:1fr}.xgrid{grid-template-columns:1fr}dl.kv{grid-template-columns:1fr}.hd{flex-direction:column}.comp-chart .crow{grid-template-columns:1fr}.bar nav{display:none}}
-@media print{#dpop,#gpop,.btnrow{display:none!important}#agent-prompt{height:auto}.bar{position:static}.bar nav,.btn{display:none}body{background:#fff}.sec{break-inside:avoid;border-color:#ddd}details{display:block}}
+@media print{#dpop,#gpop,.btnrow,details.datapack{display:none!important}#agent-prompt{height:auto}.bar{position:static}.bar nav,.btn{display:none}body{background:#fff}.sec{break-inside:avoid;border-color:#ddd}details{display:block}}
 """
 
 
