@@ -1,6 +1,6 @@
 # HTML report guide
 
-`scripts/build_report.py` turns one JSON file into a single self-contained HTML report (Python 3.8+ standard library; Pillow is optional and only shrinks large screenshots). It draws the layout, dark mode, print styling, inline SVG charts, embedded images, the viewing order, the audience tables and the head-to-head comparison. It never invents data and it **renders only VAI and its components (Reach, Speed, Hold)**: raw metrics such as TTFF are deliberately not supported.
+`scripts/build_report.py` turns one JSON file into a single self-contained HTML report (Python 3.8+ standard library; Pillow is optional and only shrinks large screenshots). It draws the layout (styled after the RealEye dashboard's AOI VAI report), print styling, inline SVG charts, embedded images, the viewing order, the audience tables and the head-to-head comparison. It never invents data and it **renders only VAI and its components (Reach, Speed, Hold)**: raw metrics such as TTFF are deliberately not supported.
 
 ```
 python scripts/build_report.py report.json -o report.html
@@ -48,7 +48,11 @@ Use the user's signed-in browser (read-only). Never print participant names; nev
 
 **Heatmaps per audience and window.** The dashboard draws heatmaps in the browser from `GET /api/item-test/data?...&include-fixations-normalized=1` (normalised fixation points per viewer, with the viewer's gender and age in the display name). `scripts/dashboard_heatmap_sheets.js` loads it with the quality filter and draws one labelled sheet per design × window (12 audiences each). Show a sheet with `window.__show('A', 10)`, move the pointer off the page, then capture the sheet region at full resolution (the zoom action at default scale; low scales give low-resolution images). Also capture the dashboard's own heatmap for all viewers.
 
-**AOI overlay image.** Open the AOI VAI report, scroll until the whole "Image with AOIs" is visible, move the pointer off the image, capture, and use `crop` (source pixels) to cut it out.
+**Clean image and AOI shapes.** The clean stimulus is the image the dashboard loads (`.../experiments/experiment_<STUDY_ID>/project_lg_<ITEM_ID>.jpg`, public CDN; open it in a tab, move the pointer off the page and capture the image at full resolution). The AOI shapes come from `GET /api/item/<ITEM_ID>/aoi/get/`: rectangles in pixels, polygons as fractions; divide by the image size (1024 × 1536 in the example) to get percentages. Use the dashboard's AOI colours (shown in its legend).
+
+**Heatmap colours.** `scripts/dashboard_heatmap_sheets.js` uses a dashboard-like colour scale (deep blue to pale yellow to orange to dark red, drawn over the whole image). Capture the main heatmap per design the same way (one large cell) so all heatmaps match.
+
+**Check the render.** Render the HTML to an image (e.g. headless Edge or Chrome with `--screenshot`) and review it before delivery.
 
 **Whole image.** Tall creatives have content below the visible viewport; check the bottom of every capture. Name AOIs by what they cover (a brand banner is not the label printed on the pack).
 
@@ -75,11 +79,11 @@ Use the user's signed-in browser (read-only). Never print participant names; nev
     "conclusions": ["…"]},
   "variants": [{
     "id": "A", "item_id": "<ITEM_ID_A>", "name": "…", "description": "…",
-    "aoi_overlay": {"src": "aoi-A.jpg", "crop": [x0, y0, x1, y1], "caption": "…"},
-    "heatmap":     {"src": "heatmap-A.png", "crop": [x0, y0, x1, y1], "caption": "…"},
-    "heatmap_sheets": {"3": "heat-sheet-A-3.png", "5": "heat-sheet-A-5.png", "10": "heat-sheet-A-10.png"},
+    "stimulus": {"src": "stimulus-A.jpg"},
+    "heatmap":  {"src": "heatmap-A.jpg", "caption": "All viewers, first 10 seconds."},
+    "heatmap_sheets": {"3": "heat-sheet-A-3.jpg", "5": "heat-sheet-A-5.jpg", "10": "heat-sheet-A-10.jpg"},
     "heatmap_note": "…",
-    "aois": [{"name": "Tagline", "role": "Claim", "color": "#82c91e", "marker": [23.7, 17.5]}],
+    "aois": [{"name": "Tagline", "role": "Claim", "color": "#96d732", "shape": [[3.5, 3.4], [44.0, 3.8], [44.4, 11.6], [35.4, 24.4], [23.5, 31.1], [4.4, 31.2]]}],
     "segments": [
       {"label": "All", "kind": "overall", "n": 229, "values": [ /* 60 numbers */ ]},
       {"label": "Men", "kind": "gender", "n": 59, "values": [ … ]},
@@ -91,7 +95,7 @@ Use the user's signed-in browser (read-only). Never print participant names; nev
       "windows": ["0.5–3 s", "0.5–5 s", "0.5–10 s"],
       "summary":   {"Tagline": {"vai": 57.1, "reach": 81.4, "speed": 68.2, "hold": 21.8}},
       "by_window": {"vai": {"Tagline": [55.3, 56.4, 59.7]}, "reach": {…}, "speed": {…}, "hold": {…}},
-      "aoi_colors": {"Tagline": "#82c91e"}, "aoi_image": {"src": "aoi-A.jpg", "crop": […], "caption": "…"},
+      "aoi_colors": {"Tagline": "#96d732"},
       "insights": ["…"], "note": "…"}
   }],
   "segment_findings": ["…"],
@@ -104,8 +108,7 @@ Use the user's signed-in browser (read-only). Never print participant names; nev
 Notes:
 - `values` is 60 numbers: for each window (3, 5, 10 s) → for each AOI in `aoi_order` → `[vai, reach, speed, hold]`. `kind` must be one of `overall`, `gender`, `age`, `gender_age`; labels must be `All`, `Men`, `Women`, then the age bands, then `Men <band>` and `Women <band>` (the gap tables look up `Men`, `Women`, `18–24`, `25–34`, `Men 18–24`, `Women 18–24`).
 - The viewing order is derived from Speed; the audience, comparison and gap tables are computed. You write only the findings text.
-- `marker` is the `[x%, y%]` position of the viewing-order number on the AOI image. AOI names must be identical across designs and in `aoi_order`.
-- `crop` is in source-image pixels and removes dashboard chrome from a screenshot.
+- `stimulus` is the clean analysed image (no outlines, no pointer). Each AOI has a `shape`: its polygon as `[x%, y%]` points of the image (a rectangle is four points), and the dashboard's colour. The script draws the outlines (with a *Show AOIs* switch), puts the numbered viewing-order badges on the AOI corners, and crops the AOI cards from the clean image. AOI names must be identical across designs and in `aoi_order`.
 - Audiences under 30 viewers are muted and marked † automatically.
 - Keep the discipline of the brief: audience, window and N with every number, no winner without an outcome, hypotheses labelled as hypotheses, no participant-level data or private links.
 

@@ -22,7 +22,7 @@ const CONFIG = {
   minQualityGrade: 3,
   ages: [[18, 24], [25, 34], [35, 99]],
   cell: { w: 300, h: 450 },           // set h/w to the stimulus aspect ratio
-  sigma: 14,                          // blur radius in canvas pixels
+  sigma: 15,                          // blur radius in canvas pixels
 };
 const base = '&genderMale=true&genderFemale=true&genderOther=true&genderNotSpecified=true&ageMin=0&ageMax=99&participantTypeRealEye=true&participantTypeOwn=true&deviceDesktop=true&deviceSmartphone=true&deviceSmartphoneVertical=true&deviceSmartphoneHorizontal=true&deviceTablet=true&setupLocal=true&setupMouse=true&setupOpengaze=true&setupReWebcamV3=true' +
   `&participantQualityGradeItemMin=${CONFIG.minQualityGrade}&participantQualityGradeItemMax=6&participantId=all&viewType=fixations&heatmapType=heatmap&fineTuneAutoAdjustment=1&itemTimeFrom=500&itemTimeTo=10000&movingMedianRangeMs=200&minFixationDurationMs=80&maxFixationDurationMs=400&gazeVelocityThreshold=30&maxSaccadeDurationMs=150&filterAnswers=[]&includeAll=0&include-fixations-normalized=1`;
@@ -33,7 +33,8 @@ const label = ([lo, hi]) => hi >= 99 ? `${lo}+` : `${lo}–${hi}`;
 for (const a of CONFIG.ages) segDefs.push([label(a), p => p.age != null && p.age >= a[0] && p.age <= a[1]]);
 for (const a of CONFIG.ages) segDefs.push(['Men ' + label(a), p => p.g === 'Male' && p.age != null && p.age >= a[0] && p.age <= a[1]]);
 for (const a of CONFIG.ages) segDefs.push(['Women ' + label(a), p => p.g === 'Female' && p.age != null && p.age >= a[0] && p.age <= a[1]]);
-const jet = v => [Math.min(1, Math.max(0, 1.5 - Math.abs(4 * v - 3))) * 255, Math.min(1, Math.max(0, 1.5 - Math.abs(4 * v - 2))) * 255, Math.min(1, Math.max(0, 1.5 - Math.abs(4 * v - 1))) * 255];
+const stops = [[0, [58, 48, 138]], [0.25, [92, 142, 206]], [0.5, [255, 242, 176]], [0.75, [242, 146, 64]], [1, [158, 10, 26]]];   // dashboard-like scale
+const ramp = v => { v = Math.min(1, Math.max(0, v)); for (let i = 1; i < stops.length; i++) { if (v <= stops[i][0]) { const [a, ca] = stops[i - 1], [b, cb] = stops[i], t = (v - a) / (b - a); return ca.map((x, k) => x + (cb[k] - x) * t); } } return stops[4][1]; };
 
 window.__sheet = (k, win) => {
   const { w: CW, h: CH } = CONFIG.cell, LB = 28, cols = 6, rows = 2;
@@ -54,8 +55,8 @@ window.__sheet = (k, win) => {
     let mx = 0; for (const v of g) if (v > mx) mx = v;
     const im = c.createImageData(CW, CH);
     for (let q = 0; q < g.length; q++) {
-      const v = mx ? g[q] / mx : 0, [r, gg, b] = jet(v);
-      im.data[q * 4] = r; im.data[q * 4 + 1] = gg; im.data[q * 4 + 2] = b; im.data[q * 4 + 3] = v < 0.08 ? 0 : Math.min(215, 35 + v * 235);
+      const v = mx ? g[q] / mx : 0, [r, gg, b] = ramp(Math.pow(v, 0.85));
+      im.data[q * 4] = r; im.data[q * 4 + 1] = gg; im.data[q * 4 + 2] = b; im.data[q * 4 + 3] = Math.round(255 * (0.62 + 0.26 * v));
     }
     const tmp = document.createElement('canvas'); tmp.width = CW; tmp.height = CH; tmp.getContext('2d').putImageData(im, 0, 0);
     c.drawImage(tmp, x0, y0 + LB);

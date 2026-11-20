@@ -4,7 +4,7 @@ description: Interpret measured RealEye ET Platform webcam eye tracking for ads,
 license: MIT
 metadata:
   author: RealEye
-  version: "1.5.0"
+  version: "1.6.0"
 ---
 
 # Neuromarketing image report
@@ -77,6 +77,9 @@ Write in plain language. **The deliverable is a self-contained, professional HTM
 10. **Never state a number you did not read.** Every value comes from RealEye data with its audience and window. Check that VAI equals the mean of its three components before using a row.
 11. **Link every table and heatmap to the RealEye dashboard.** Wherever data or a heatmap is shown, give a link to the same view in the RealEye dashboard (heatmap, AOI report, AOI VAI report), with the audience's gender, age and quality filters applied in the link. Always set `dashboard.study_id` and each design's `item_id` in the report JSON; the script then adds the links to the design headers, score tables, audience column headers, every heatmap, the viewing order, the comparison and the appendix.
 12. **Make it look like the example.** Every report must look and read like the bundled example (`assets/example/example-report.html`): same section order, same plain-language tone, same tables, charts and heatmap sheets. Start from the template (`assets/template/report.template.json`), fill every placeholder, and do not change the layout or add your own styling; use the script to build it.
+12. **Make it look like the example, and like the RealEye dashboard.** Every report must look and read like the bundled example (`assets/example/example-report.html`): same section order, same plain-language tone, same tables, charts and heatmap sheets. The design follows the RealEye dashboard's AOI VAI report: light grey surface, white square cards, Barlow type, orange accent, uppercase labels, stat tiles, a RealEye top bar, outlined AOIs on the clean image with a *Show AOIs* switch, AOI cards, best/lowest-value pills and component bars (VAI orange, Reach blue, Speed yellow, Hold green). Start from the template (`assets/template/report.template.json`), fill every placeholder, and do not change the layout or add your own styling; the script owns the look.
+13. **Use the clean image and the real AOI shapes.** Capture the clean analysed image (no outlines, no pointer) and give each AOI its polygon (`shape`, in % of the image) and dashboard colour; the script draws the outlines, the numbered viewing order and the AOI cards from them. Get the shapes from the dashboard's AOI endpoint (see the guide).
+14. **Check how it renders.** Before delivery render the HTML to an image and look at it (for example `msedge --headless=new --user-data-dir=<temp> --window-size=1200,2600 --screenshot=out.png file:///report.html`), and fix anything cut off, overlapping or unreadable.
 
 ### Build the report
 
