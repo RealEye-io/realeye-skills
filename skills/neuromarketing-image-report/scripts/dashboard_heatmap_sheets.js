@@ -69,7 +69,30 @@ window.__sheet = (k, win) => {
 window.__show = (k, win) => {
   let o = document.getElementById('__ov');
   if (!o) { o = document.createElement('div'); o.id = '__ov'; o.style.cssText = 'position:fixed;left:0;top:0;width:100vw;height:100vh;background:#fff;z-index:999999;overflow:hidden'; document.body.appendChild(o); }
-  o.innerHTML = ''; const cv = window.__sheet(k, win); cv.style.cssText = 'display:block;width:1800px;height:' + (cv.height / cv.width * 1800) + 'px'; o.appendChild(cv);
+  o.innerHTML = ''; const cv = window.__sheet(k, win); const W = window.innerWidth; cv.style.cssText = 'display:block;width:' + W + 'px;height:' + (cv.height / cv.width * W) + 'px'; o.appendChild(cv);
+};
+
+// One large heatmap for all viewers (the main heatmap of a design): window.__showOne('A', 10), then capture region [8, 8, 568, 848].
+window.__single = (k, win) => {
+  const CW = 560, CH = 840, cv = document.createElement('canvas'); cv.width = CW; cv.height = CH;
+  const c = cv.getContext('2d'); c.drawImage(window.__imgs[k], 0, 0, CW, CH);
+  const g = new Float32Array(CW * CH), sg = 27, R = Math.ceil(sg * 3);
+  for (const p of window.__D[k]) for (const [x, y, s, d] of p.fx) {
+    if (s < 500 || s >= win * 1000) continue;
+    const cx = x / 100 * CW, cy = y / 100 * CH;
+    for (let yy = Math.max(0, Math.floor(cy - R)); yy < Math.min(CH, cy + R); yy++)
+      for (let xx = Math.max(0, Math.floor(cx - R)); xx < Math.min(CW, cx + R); xx++) { const dx = xx - cx, dy = yy - cy; g[yy * CW + xx] += d * Math.exp(-(dx * dx + dy * dy) / (2 * sg * sg)); }
+  }
+  let mx = 0; for (const v of g) if (v > mx) mx = v;
+  const im = c.createImageData(CW, CH);
+  for (let q = 0; q < g.length; q++) { const v = mx ? g[q] / mx : 0, [r, gg, b] = ramp(Math.pow(v, 0.85)); im.data[q * 4] = r; im.data[q * 4 + 1] = gg; im.data[q * 4 + 2] = b; im.data[q * 4 + 3] = Math.round(255 * (0.62 + 0.26 * v)); }
+  const t = document.createElement('canvas'); t.width = CW; t.height = CH; t.getContext('2d').putImageData(im, 0, 0); c.drawImage(t, 0, 0);
+  return cv;
+};
+window.__showOne = (k, win) => {
+  let o = document.getElementById('__ov');
+  if (!o) { o = document.createElement('div'); o.id = '__ov'; o.style.cssText = 'position:fixed;left:0;top:0;width:100vw;height:100vh;background:#fff;z-index:999999;overflow:hidden'; document.body.appendChild(o); }
+  o.innerHTML = ''; const cv = window.__single(k, win); cv.style.cssText = 'display:block;width:560px;height:840px;margin:8px'; o.appendChild(cv);
 };
 
 (async () => {

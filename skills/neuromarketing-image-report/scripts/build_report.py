@@ -16,6 +16,7 @@ import html
 import json
 import math
 import mimetypes
+import re
 import struct
 import sys
 from pathlib import Path
@@ -83,6 +84,33 @@ def load_image(base, ref):
     return f"data:{mime};base64,{base64.b64encode(data).decode()}", image_size(data)
 
 
+DESIGNS = {}   # design id -> {"name", "cls"}: filled in build() so every mention can show a thumbnail
+
+
+def chip(did, label_html, cls="", style=""):
+    d = DESIGNS.get(did)
+    if not d:
+        return label_html
+    st = f' style="{style}"' if style else ""
+    return (f'<span class="dref {cls}" tabindex="0" role="button" data-id="{e(did)}" data-name="{e(d["name"])}" data-cls="{d["cls"]}"{st}>{label_html}</span>')
+
+
+def rich(text):
+    """Escape free text and turn design mentions into chips that show the design thumbnail on hover or click.
+    Recognised: {A}, "Design A", "(A)", "(A and B)", "in A", "than B", "A's", "A 14.3", "A: ...", "A and B"."""
+    t = e(text)
+    ok = lambda x: x in DESIGNS
+    c = lambda x: chip(x, x) if ok(x) else x
+    t = re.sub(r"\{([A-Z])\}", lambda m: c(m.group(1)), t)
+    t = re.sub(r"\b([Dd]esign) ([A-Z])\b", lambda m: chip(m.group(2), m.group(0)) if ok(m.group(2)) else m.group(0), t)
+    t = re.sub(r"\(([A-Z])( and ([A-Z]))?\)", lambda m: "(" + c(m.group(1)) + (" and " + c(m.group(3)) if m.group(3) else "") + ")", t)
+    t = re.sub(r"\b((?:in|In|than|vs|favours|favors|for|of|to|from|between|versus|Keep|keep|Use|use|Test|test) )([A-Z])(?![\w'])",
+               lambda m: m.group(1) + c(m.group(2)), t)
+    t = re.sub(r"(?<![\w>;])([A-Z])(?=&#x27;s\b|:| [+\-\u2212]?\d| (?:and|or) [A-Z]\b)", lambda m: c(m.group(1)), t)
+    t = re.sub(r"(?<= and )([A-Z])(?![\w'])", lambda m: c(m.group(1)) if m.group(1) != "A" else m.group(1), t)
+    return t
+
+
 def src_of(spec):
     return spec if isinstance(spec, str) else spec.get("src")
 
@@ -122,7 +150,7 @@ def acolor(v, nm, i=0):
 
 def rank_names(spec, seg, w, key="speed"):
     n = names(spec)
-    return sorted(n, key=lambda nm: -val(seg, w, n.index(nm), key))
+    return sorted(n, key=lambda nm: (-val(seg, w, n.index(nm), key), -val(seg, w, n.index(nm), "reach"), -val(seg, w, n.index(nm), "vai")))
 
 
 def small(seg):
@@ -251,11 +279,11 @@ def order_markers(spec, v):
 
 # ------------------------------------------------------------------ small components
 def tile(label, value, sub=""):
-    return f'<div class="tile"><span class="lab">{e(label)}</span><b>{e(value)}</b><span class="sub">{e(sub)}</span></div>'
+    return f'<div class="tile"><span class="lab">{e(label)}</span><b>{rich(value)}</b><span class="sub">{rich(sub)}</span></div>'
 
 
 def insight(text, lead=None):
-    inner = (f"<b>{e(lead)}</b> " if lead else "") + e(text)
+    inner = (f"<b>{rich(lead)}</b> " if lead else "") + rich(text)
     return f'<div class="insight">{CHECK}<div>{inner}</div></div>'
 
 
@@ -389,7 +417,7 @@ def gap_table(spec, variants, a_label, b_label, title):
                 dv = val(sb, w, ai, "vai") - val(sa, w, ai, "vai")
                 ds = val(sb, w, ai, "speed") - val(sa, w, ai, "speed")
                 cells += f'<td class="vc{" big" if abs(dv) >= 10 else ""}"><b>{dv:+.1f}</b><small>Speed {ds:+.1f}</small></td>'
-            rows += f'<tr><td><span class="vtag" style="background:{vcolor(vi)}">{e(v["id"])}</span> <b>{e(nm)}</b></td>{cells}</tr>'
+            rows += f'<tr><td>{chip(v["id"], e(v["id"]), "vtag", "background:" + vcolor(vi))} <b>{e(nm)}</b></td>{cells}</tr>'
     return (f'<h5>{e(title)}</h5><div class="tablewrap"><table class="re seg"><thead><tr><th>Design · element</th>' + "".join(f"<th>{WIN_LABEL[w]}</th>" for w in WIN) +
             f'</tr></thead><tbody>{rows}</tbody></table></div><p class="hint">VAI points (large) and VAI Speed points (small). Shaded cells differ by 10 or more VAI points.</p>')
 
@@ -439,6 +467,50 @@ def vai_tech_notes():
 <li><b>VAI is the equal-weight mean of Reach, Speed and Hold</b> and is not a share of the image's attention.</li></ul>"""
 
 
+def ochip(v, nm, ai=0):
+    return f'<span class="ochip" style="--c:{acolor(v, nm, ai)}">{swatch(acolor(v, nm, ai))}{e(nm)}</span>'
+
+
+def order_flow(spec, v):
+    """Overall viewing order as a flow of numbered steps with Speed bars, for each time window."""
+    n, seg, out = names(spec), seg_of(v, "All"), ""
+    for w in WIN:
+        steps = ""
+        for i, nm in enumerate(rank_names(spec, seg, w)):
+            ai = n.index(nm)
+            sp = val(seg, w, ai, "speed")
+            steps += (f'<div class="step" style="--c:{acolor(v, nm, ai)}"><span class="no">{i + 1}</span>{ochip(v, nm, ai)}'
+                      f'<div class="track"><i style="width:{max(sp, .6):.0f}%;background:{acolor(v, nm, ai)}"></i></div><small>Speed {sp:.0f} · Reach {val(seg, w, ai, "reach"):.0f}%</small></div>')
+            steps += '<span class="arr">›</span>' if i < len(n) - 1 else ""
+        out += f'<h5>{WIN_LABEL[w]}</h5><div class="flow">{steps}</div>'
+    return out
+
+
+def order_by_audience(spec, v):
+    """Viewing order for every audience and window: elements in the order they are noticed, differences from the overall order outlined."""
+    n = names(spec)
+    html_ = ""
+    for w in WIN:
+        base_order = rank_names(spec, seg_of(v, "All"), w)
+        rows, differ = "", []
+        for sg in v["segments"]:
+            order = rank_names(spec, sg, w)
+            same = order == base_order
+            if not same and sg["label"] != "All":
+                differ.append(sg["label"] + (" †" if small(sg) else ""))
+            cells = "".join(
+                f'<td class="oc{"" if order[i] == base_order[i] else " diff"}{" low" if small(sg) else ""}">{ochip(v, order[i], n.index(order[i]))}'
+                f'<small>Speed {val(sg, w, n.index(order[i]), "speed"):.0f}</small></td>' for i in range(len(n)))
+            status = '<span class="ok">same as overall</span>' if same else "differs"
+            rows += (f'<tr><th scope="row">{e(sg["label"])}<small>N = {sg["n"]}{" †" if small(sg) else ""}</small></th>{cells}<td class="st">{status if sg["label"] != "All" else "overall"}</td></tr>')
+        total = len(v["segments"]) - 1
+        summary = (f'{total - len(differ)} of {total} audiences notice the elements in the same order as all viewers.'
+                   + (f' Different order: {e(", ".join(differ))}.' if differ else ""))
+        html_ += (f'<h5>{WIN_LABEL[w]}</h5><p class="hint">{summary}</p><div class="tablewrap"><table class="re ord"><thead><tr><th>Audience</th>'
+                  + "".join(f"<th>{ordinal}</th>" for ordinal in ("1st", "2nd", "3rd", "4th", "5th")[:len(n)]) + f'<th></th></tr></thead><tbody>{rows}</tbody></table></div>')
+    return html_
+
+
 def order_section(spec):
     variants = spec["variants"]
     n = names(spec)
@@ -457,9 +529,9 @@ def order_section(spec):
         reach = "".join(
             f'<li><b>{WIN_LABEL[w]}:</b> {lst([f"{nm} ({val(seg, w, n.index(nm), "reach"):.0f}%)" for nm in orders[w] if val(seg, w, n.index(nm), "reach") >= 50]) or "no element"} reached by half of the viewers or more.</li>'
             for w in WIN)
-        blocks += (f'<div class="ordercol"><h4><span class="vtag" style="background:{vcolor(vi)}">{e(v["id"])}</span> {e(v["name"])}</h4>'
+        blocks += (f'<div class="ordercol"><h4>{chip(v["id"], e(v["id"]), "vtag", "background:" + vcolor(vi))} {e(v["name"])}</h4>'
                    f'<div class="stagebox">{stage(base, v, order_markers(spec, v))}</div>'
-                   f'<p class="seq">{e(" → ".join(orders["10"]))}</p><p class="hint">{"The order is the same in the first 3, 5 and 10 seconds." if stable else "The order changes between windows (see table)."}</p>'
+                   f'<p class="hint">{"The order is the same in the first 3, 5 and 10 seconds." if stable else "The order changes between windows (see below)."}</p>{order_flow(spec, v)}'
                    f'<div class="tablewrap"><table class="re seg"><thead><tr><th>Element</th>' + "".join(f"<th>{WIN_LABEL[w]}</th>" for w in WIN) +
                    f'</tr></thead><tbody>{rows}</tbody></table></div><ul class="plain">{reach}</ul></div>')
     same = len({tuple(rank_names(spec, seg_of(v, "All"), "10")) for v in variants}) == 1
@@ -469,7 +541,9 @@ def order_section(spec):
     olinks = " · ".join(f'Design {e(v["id"])}: ' + open_links(spec, v, parts=("aoi", "vai")) for v in variants if open_links(spec, v, parts=("aoi", "vai")))
     body = (f'<p class="lead">{lead}</p>'
             '<p class="hint">The order in which viewers notice the elements, across all viewers (not one person\'s scan path). #1 is noticed soonest; it is ranked by VAI Speed. The numbered circles show the first-10-seconds order.</p>'
-            f'<div class="two">{blocks}</div>' + (f'<p class="hint">See the data in RealEye. {olinks}</p>' if olinks else ""))
+            f'<div class="two">{blocks}</div>' + (f'<p class="hint">See the data in RealEye. {olinks}</p>' if olinks else "")
+            + '<h3>Viewing order by audience</h3><p class="hint">For every audience (all viewers, gender, age, gender × age) and time window: the elements in the order they are noticed (1st to 5th), ranked by VAI Speed. An outlined cell is an element in a different place than for all viewers. † marks a small audience (fewer than %d viewers).</p>' % MIN_N
+            + "".join(f'<h4>{chip(v["id"], e(v["id"]), "vtag", "background:" + vcolor(vi))} {e(v["name"])}</h4>{order_by_audience(spec, v)}' for vi, v in enumerate(variants)))
     return section("order", "Viewing order", body)
 
 
@@ -477,7 +551,7 @@ def design_sections(spec, v, vi):
     base, n = spec["_base"], names(spec)
     seg = seg_of(v, "All")
     links = open_links(spec, v)
-    head = (f'<section class="sec design-head"><div class="dh"><span class="badge" style="background:{vcolor(vi)}">{e(v["id"])}</span>'
+    head = (f'<section class="sec design-head"><div class="dh">{chip(v["id"], e(v["id"]), "badge", "background:" + vcolor(vi))}'
             f'<div><h2>Design {e(v["id"])}: {e(v["name"])}</h2><p class="muted">{e(v.get("description", ""))}</p>'
             + (f'<p class="links">Open in RealEye: {links}</p>' if links else "") + f'</div><div class="nbox"><b>{seg["n"]}</b><span>viewers</span></div></div></section>')
     toggle = (f'<div class="aoicard"><div class="stagebox">{stage(base, v)}</div><div class="legend2"><label class="switch"><input type="checkbox" class="sw-in" checked>'
@@ -517,7 +591,7 @@ def design_sections(spec, v, vi):
         ls = " · ".join(alink(dash_url(spec, v, "heatmap", sg["label"], int(w)), sg["label"], "ext s") for sg in v["segments"] if dash_url(spec, v, "heatmap", sg["label"], int(w)))
         return (f'<h5>Heatmaps, {WIN_LABEL[w]}</h5><div class="sheet">{figure(base, v["heatmap_sheets"][w], f"Heatmaps by audience, {WIN_LABEL[w]}")}</div>'
                 + (f'<p class="links small">Open in the RealEye heatmap: {ls}</p>' if ls else ""))
-    sheets = section(None, "Heatmaps by audience and time window", f'<p class="hint">{e(v.get("heatmap_note", ""))}</p>' + "".join(sheet(w) for w in WIN if w in v.get("heatmap_sheets", {})))
+    sheets = section(None, "Heatmaps by audience and time window", f'<p class="hint">{rich(v.get("heatmap_note", ""))}</p>' + "".join(sheet(w) for w in WIN if w in v.get("heatmap_sheets", {})))
     return head + image_card + heat_card + glance_card + insights + overview + summary + build_up + aud + sheets
 
 
@@ -547,7 +621,7 @@ def compare_section(spec):
     body = (f'<p class="hint">Differences are {e(B["id"])} minus {e(A["id"])}, in VAI points. R, S and H are the Reach, Speed and Hold differences. "Indicative" means the Reach gap is larger than chance would explain; '
             'the viewer groups may overlap, so treat it as a signal, not proof.</p>'
             f'<div class="tablewrap"><table class="re seg"><thead><tr><th>Element</th>' + "".join(f"<th>{WIN_LABEL[w]}</th>" for w in WIN) + f'</tr></thead><tbody>{rows}</tbody></table></div>'
-            + legend([(f'{A["id"]} · {A["name"]}', vcolor(0)), (f'{B["id"]} · {B["name"]}', vcolor(1))]) + charts + (f'<p class="links small">Open in RealEye: {lk}</p>' if lk else ""))
+            + '<div class="legend">' + "".join(f'<span>{swatch(vcolor(i))}{chip(x["id"], e(x["id"]))} · {e(x["name"])}</span>' for i, x in enumerate((A, B))) + '</div>' + charts + (f'<p class="links small">Open in RealEye: {lk}</p>' if lk else ""))
     return section("compare", f"Head-to-head: design {e(B['id'])} versus design {e(A['id'])}", body)
 
 
@@ -582,7 +656,7 @@ def dashboard_vai(spec, v, vi):
         r = "".join(f'<tr><td><b>{e(x)}</b></td><td><b>{summ[x][k]:.1f}</b></td>' + "".join(f"<td>{t:.1f}</td>" for t in d["by_window"][k][x]) + "</tr>" for x in nm)
         tabs += f'<h5>{lab} per cumulative window</h5><div class="tablewrap"><table class="re"><thead><tr><th>AOI</th><th>Average</th>' + "".join(f"<th>{e(w)}</th>" for w in wins) + f"</tr></thead><tbody>{r}</tbody></table></div>"
     ins = "".join(insight(x) for x in d.get("insights", []))
-    return (f'<details class="dash"><summary><span class="badge sm" style="background:{vcolor(vi)}">{e(v["id"])}</span> Dashboard AOI VAI report, design {e(v["id"])} <small class="muted">· {e(d.get("scope", ""))}</small></summary>'
+    return (f'<details class="dash"><summary>{chip(v["id"], e(v["id"]), "badge sm", "background:" + vcolor(vi))} Dashboard AOI VAI report, {chip(v["id"], "design " + e(v["id"]))} <small class="muted">· {e(d.get("scope", ""))}</small></summary>'
             f'<p class="box">{e(d.get("note", ""))} {alink(dash_url(spec, v, "vai"), "Open the AOI VAI report in RealEye")}</p>'
             f'<div class="two"><div class="stagebox">{stage(base, v)}</div><div><h5>Executive summary</h5><div class="xgrid one">{ex}</div></div></div>'
             f'<h5>VAI summary (average of the cumulative windows)</h5><div class="tablewrap"><table class="re"><thead><tr><th class="num">#</th><th>AOI name</th><th>VAI</th><th>VAI Reach</th><th>VAI Speed</th><th>VAI Hold</th><th>Participants</th></tr></thead><tbody>{rows}</tbody></table></div>'
@@ -591,12 +665,14 @@ def dashboard_vai(spec, v, vi):
 
 def method_block(spec):
     m = spec["method"]
-    rows = "".join(f'<div><dt>{e(k)}</dt><dd>{e(x)}</dd></div>' for k, x in (
+    rows = "".join(f'<div><dt>{e(k)}</dt><dd>{rich(x)}</dd></div>' for k, x in (
         ("Platform", m.get("platform")), ("Eye tracking", m.get("tracking")), ("Study", m.get("study")), ("Participants analysed", m.get("participants")),
         ("Participant quality filter", m.get("quality_filter")), ("Time windows", m.get("windows")), ("Audiences", m.get("segments")),
         ("Task and exposure", m.get("task")), ("Source", m.get("source")), ("Tracker precision", m.get("precision"))) if x)
     return f'<h3>About this study</h3><dl class="ctx">{rows}</dl><p class="hint">{e(m.get("note", ""))}</p>'
 
+
+POP = '<script>(function(){var p=document.createElement("div");p.id="dpop";document.body.appendChild(p);function show(el){while(p.firstChild)p.removeChild(p.firstChild);var t=document.createElement("div");t.className="th pic "+el.dataset.cls;var b=document.createElement("b");b.textContent="Design "+el.dataset.id;var s=document.createElement("small");s.textContent=el.dataset.name;p.appendChild(t);p.appendChild(b);p.appendChild(s);p.style.display="block";var r=el.getBoundingClientRect(),w=p.offsetWidth,h=p.offsetHeight,x=Math.min(Math.max(8,r.left),window.innerWidth-w-8),y=r.bottom+6;if(y+h>window.innerHeight-8)y=Math.max(8,r.top-h-6);p.style.left=x+"px";p.style.top=y+"px"}function hide(){p.style.display="none"}function ref(ev){return ev.target.closest&&ev.target.closest(".dref")}document.addEventListener("mouseover",function(ev){var el=ref(ev);if(el)show(el)});document.addEventListener("mouseout",function(ev){if(ref(ev))hide()});document.addEventListener("focusin",function(ev){var el=ref(ev);if(el)show(el)});document.addEventListener("focusout",function(ev){if(ref(ev))hide()});document.addEventListener("click",function(ev){var el=ref(ev);if(el)show(el);else hide()});document.addEventListener("keydown",function(ev){if(ev.key==="Escape")hide()});})();</script>'
 
 CSS = """
 :root{--bg:#f6f5f3;--card:#fff;--ink:#333;--strong:#1a1a1a;--muted:#5c5c5c;--soft:#8b8b8b;--line:#e7e4e0;--line2:#f0edea;--thbg:#fbfaf9;--accent:#fc7753;
@@ -646,6 +722,11 @@ tr.grp th,tr.grp td{border-top:2px solid var(--line)}td.vc b{font-size:16px;colo
 .vp{display:inline-block;padding:3px 9px;font-weight:600}.vp.best{background:var(--best-bg);color:var(--best-fg)}.vp.worst{background:var(--worst-bg);color:var(--worst-fg)}
 .comp-chart .crow{display:grid;grid-template-columns:200px 1fr;gap:14px;padding:12px 0;border-bottom:1px solid var(--line2);align-items:center}.cname{font-weight:600;color:var(--strong)}
 .brow{display:grid;grid-template-columns:1fr 46px;gap:10px;align-items:center;margin:3px 0}.brow b{font-size:13px;color:var(--strong)}.track{height:9px;background:#ece9e5}.track i{display:block;height:100%}
+.dref{cursor:help;border-bottom:1px dotted var(--soft)}.dref.vtag,.dref.badge{border-bottom:0}.dref:focus{outline:2px solid var(--accent);outline-offset:1px}
+#dpop{position:fixed;z-index:100;display:none;background:#fff;border:1px solid var(--line);box-shadow:0 8px 28px rgba(0,0,0,.2);padding:8px;width:152px;pointer-events:none}#dpop .th{width:136px;aspect-ratio:2/3}#dpop b{display:block;margin-top:6px;color:var(--strong)}#dpop small{display:block;color:var(--muted);line-height:1.25}
+.flow{margin:4px 0 6px}.step{display:grid;grid-template-columns:26px minmax(130px,170px) 1fr 108px;gap:10px;align-items:center;border-left:3px solid var(--c);background:#fff;padding:7px 10px;margin:4px 0;border-top:1px solid var(--line2);border-bottom:1px solid var(--line2);border-right:1px solid var(--line2)}.step .no{display:grid;place-items:center;width:24px;height:24px;background:#212529;color:#fff;font-weight:700;font-size:13px}.step small{color:var(--muted);font-size:12px;text-align:right;white-space:nowrap;margin:0}.step .track{margin:0}.arr{display:none}
+.ochip{display:inline-flex;align-items:center;font-weight:600;color:var(--strong);font-size:14px;line-height:1.2}
+table.ord td.oc{text-align:left;padding:9px 10px;min-width:118px}table.ord td.oc.diff{box-shadow:inset 0 0 0 2px var(--accent);background:var(--insight)}table.ord td.oc small{margin-top:2px}table.ord td.st{font-size:13px;color:var(--muted);white-space:nowrap}table.ord td.st .ok{color:var(--best-fg);font-weight:600}table.ord th[scope=row]{white-space:nowrap}
 .legend{display:flex;gap:16px;flex-wrap:wrap;margin:8px 0;font-size:13.5px;color:var(--muted)}.legend.small{font-size:13px}.legend span{display:inline-flex;align-items:center}
 .chart{width:100%;height:auto;display:block;max-width:440px}.chart.wide{max-width:none}.chart .grid{stroke:var(--line);stroke-width:1}.chart text{fill:var(--ink);font-size:12px}.chart .axis{fill:var(--soft)}.chart .val{font-weight:600}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px}.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:28px}
@@ -657,31 +738,34 @@ dl.kv{display:grid;grid-template-columns:220px 1fr;gap:10px 18px;margin:0}dl.kv 
 details.dash{border:1px solid var(--line);padding:14px 18px;margin:12px 0}details summary{cursor:pointer;font-weight:600;color:var(--strong)}
 footer{color:var(--soft);font-size:13px;text-align:center;padding:10px 0 30px}
 @media(max-width:700px){.sec{padding:20px 16px}.aoicard{grid-template-columns:1fr}.xgrid{grid-template-columns:1fr}dl.kv{grid-template-columns:1fr}.hd{flex-direction:column}.comp-chart .crow{grid-template-columns:1fr}.bar nav{display:none}}
-@media print{.bar{position:static}.bar nav,.btn{display:none}body{background:#fff}.sec{break-inside:avoid;border-color:#ddd}details{display:block}}
+@media print{#dpop{display:none!important}.bar{position:static}.bar nav,.btn{display:none}body{background:#fff}.sec{break-inside:avoid;border-color:#ddd}details{display:block}}
 """
 
 
 def build(spec, base):
     spec["_base"] = base
+    for v in spec["variants"]:
+        uri, _ = load_image(base, src_of(v["stimulus"]))
+        DESIGNS[v["id"]] = {"name": v["name"], "cls": reg_image(uri)}
     m, o, variants = spec["method"], spec["overall"], spec["variants"]
     tiles = "".join([
-        tile("Designs compared", str(len(variants)), " · ".join(f'{v["id"]}: {v["name"].split("(")[0].strip()}' for v in variants)),
-        tile("Viewers analysed", " · ".join(f'{v["id"]} {seg_of(v, "All")["n"]}' for v in variants), "all viewers, by design"),
+        tile("Designs compared", str(len(variants)), " · ".join("{" + v["id"] + "}: " + v["name"].split("(")[0].strip() for v in variants)),
+        tile("Viewers analysed", " · ".join("{" + v["id"] + "} " + str(seg_of(v, "All")["n"]) for v in variants), "all viewers, by design"),
         tile("Time windows", "3", "first 3, 5 and 10 seconds"),
         tile("Primary metric", "VAI", "Composite of Reach, Speed, Hold")])
     kp = "".join(tile(k["label"], k["value"], k.get("note", "")) for k in o.get("kpis", []))
-    finds = "".join(f'<div class="xtile"><span class="lab">{e(f.get("tag", "").replace("-", " "))}</span><p><b>{e(f["title"])}</b></p><p class="muted">{e(f["text"])}</p></div>' for f in o.get("findings", []))
+    finds = "".join(f'<div class="xtile"><span class="lab">{e(f.get("tag", "").replace("-", " "))}</span><p><b>{rich(f["title"])}</b></p><p class="muted">{rich(f["text"])}</p></div>' for f in o.get("findings", []))
     actions = "".join(insight(a["text"] + (f' Preserve: {a["preserve"]}' if a.get("preserve") else ""), a["title"] + ".") for a in spec.get("actions", []))
     concl = "".join(insight(x) for x in o.get("conclusions", []))
     overall = section("overall", "Overall findings and conclusions",
-                      f'<div class="callout"><span class="lab">{e(o.get("verdict_label", "Conclusion"))}</span><p>{e(o.get("verdict_text", ""))}</p></div><p>{e(o.get("summary", ""))}</p>'
+                      f'<div class="callout"><span class="lab">{rich(o.get("verdict_label", "Conclusion"))}</span><p>{rich(o.get("verdict_text", ""))}</p></div><p>{rich(o.get("summary", ""))}</p>'
                       f'<div class="tiles">{kp}</div><h4>Key findings</h4><div class="xgrid">{finds}</div>'
                       + (f"<h4>Conclusions</h4>{concl}" if concl else "") + f"<h4>What to do next</h4>{actions}"
                       '<p class="hint">The detailed analysis follows: what the scores mean, the viewing order, each design, gender and age. Technical details are in the appendix at the end.</p>')
-    retest = section("actions", "How to test it next", '<dl class="kv">' + "".join(f"<dt>{e(k.replace('_', ' ').title())}</dt><dd>{e(x)}</dd>" for k, x in spec.get("retest", {}).items()) + "</dl>")
-    limits = "".join(f"<li>{e(x)}</li>" for x in spec.get("limits", []))
-    changes = "".join(f"<li>{e(x)}</li>" for x in spec.get("would_change", []))
-    sources = "".join(f"<li>{e(x)}</li>" for x in spec.get("sources", []))
+    retest = section("actions", "How to test it next", '<dl class="kv">' + "".join(f"<dt>{e(k.replace('_', ' ').title())}</dt><dd>{rich(x)}</dd>" for k, x in spec.get("retest", {}).items()) + "</dl>")
+    limits = "".join(f"<li>{rich(x)}</li>" for x in spec.get("limits", []))
+    changes = "".join(f"<li>{rich(x)}</li>" for x in spec.get("would_change", []))
+    sources = "".join(f"<li>{rich(x)}</li>" for x in spec.get("sources", []))
     defs = "".join(f"<dt>{e(k)}</dt><dd>{e(x)}</dd>" for k, x in {
         "VAI": "RealEye's Visual Attention Index (0–100): the equal-weight mean of Reach, Speed and Hold. A relative score, not a share of viewers or of attention.",
         "Reach": "Share of viewers who looked at the AOI at least once in the window.", "Speed": "How soon the AOI is noticed after it becomes visible. Used to rank the viewing order.",
@@ -711,7 +795,7 @@ def build(spec, base):
             f'<title>{e(spec.get("title", "Neuromarketing report"))}</title>'
             '<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">'
             f'<style>{CSS}</style></head><body><div class="bar"><span class="logo"><b>Re</b>alEye</span><span class="sep"></span><span class="study">{e(study)}</span><nav>{nav}</nav></div>'
-            f'<main class="page">{page}</main><style>{css_imgs}</style></body></html>')
+            f'<main class="page">{page}</main><style>{css_imgs}</style>' + POP + '</body></html>')
 
 
 def main():

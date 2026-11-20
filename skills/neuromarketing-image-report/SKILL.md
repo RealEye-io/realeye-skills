@@ -4,7 +4,7 @@ description: Interpret measured RealEye ET Platform webcam eye tracking for ads,
 license: MIT
 metadata:
   author: RealEye
-  version: "1.6.0"
+  version: "1.7.0"
 ---
 
 # Neuromarketing image report
@@ -30,7 +30,7 @@ Read [RealEye data and metric definitions](references/realeye-data.md) before ex
 | Only a measured heatmap | Qualitative clusters and possible blind spots with the map's window and filters if known. No numbers read from colours. |
 | Creative alone, no usable results, or a link that requires unavailable access | No measured findings. Request the AOI statistics or AOI VAI report with the matching creative. Request the survey data if asked to pick a winner. If the creative is available, offer an AOI plan labelled as hypotheses. Do not substitute Attention Predictor. |
 
-Use supplied files first. A `app.realeye.io/dashboard/item/...` URL is a web UI link, not a public API endpoint. Use authorised dashboard access (the user's signed-in browser) for read-only inspection. On a login wall, ask the user to sign in or to supply exports. Do not upload private creatives or participant exports to outside services. Do not ask for passwords or tokens in chat, edit saved AOIs, change participant status, or create share links. Never print participant names or other personal data.
+**Collect the data with the browser** by following [the browser playbook](references/browser-data-collection.md): it explains every step, from the ids to the VAI numbers, AOI shapes, clean image, heatmaps and the AOI VAI report. Use supplied files first. A `app.realeye.io/dashboard/item/...` URL is a web UI link, not a public API endpoint. Use authorised dashboard access (the user's signed-in browser) for read-only inspection. On a login wall, ask the user to sign in or to supply exports. Do not upload private creatives or participant exports to outside services. Do not ask for passwords or tokens in chat, edit saved AOIs, change participant status, or create share links. Never print participant names or other personal data.
 
 ## 3. Design or audit the comparison
 
@@ -80,6 +80,9 @@ Write in plain language. **The deliverable is a self-contained, professional HTM
 12. **Make it look like the example, and like the RealEye dashboard.** Every report must look and read like the bundled example (`assets/example/example-report.html`): same section order, same plain-language tone, same tables, charts and heatmap sheets. The design follows the RealEye dashboard's AOI VAI report: light grey surface, white square cards, Barlow type, orange accent, uppercase labels, stat tiles, a RealEye top bar, outlined AOIs on the clean image with a *Show AOIs* switch, AOI cards, best/lowest-value pills and component bars (VAI orange, Reach blue, Speed yellow, Hold green). Start from the template (`assets/template/report.template.json`), fill every placeholder, and do not change the layout or add your own styling; the script owns the look.
 13. **Use the clean image and the real AOI shapes.** Capture the clean analysed image (no outlines, no pointer) and give each AOI its polygon (`shape`, in % of the image) and dashboard colour; the script draws the outlines, the numbered viewing order and the AOI cards from them. Get the shapes from the dashboard's AOI endpoint (see the guide).
 14. **Check how it renders.** Before delivery render the HTML to an image and look at it (for example `msedge --headless=new --user-data-dir=<temp> --window-size=1200,2600 --screenshot=out.png file:///report.html`), and fix anything cut off, overlapping or unreadable.
+
+15. **Show the viewing order clearly, overall and by audience.** The report must visualise the viewing order three ways: numbered badges on the AOI corners of the image, a ladder of numbered steps with Speed bars for each time window, and a table for every audience (all viewers, men, women, each age band, each gender × age) and window listing the elements 1st to 5th with differences from the overall order outlined. The script builds all three from the audience VAI values; give every audience (`segments`) so none is missing.
+16. **Make every design mention show its thumbnail.** Wherever a design is mentioned ("Design A", "A" in a table or chart legend, a badge), hovering it, focusing it or clicking it shows a small thumbnail of that design with its name, so readers always know which is A and which is B. The script does this automatically for design badges, tags and legends. In free text (verdicts, findings, actions, limits, notes) write designs as **"Design A"** or the token **`{A}`** (for example "in {A} and {B}"); common patterns such as "(A)", "in A", "A's", "A 14.3" and "A: …" are linked automatically. Do not leave a bare letter for a design elsewhere (a sentence-initial article "A" is fine).
 
 ### Build the report
 

@@ -15,7 +15,7 @@ Main sections, written for brand managers (plain language, no technical detail):
 1. **Header** with one plain line: the test ran on the **RealEye platform with webcam eye tracking**
 2. **Overall findings and conclusions** (first): verdict, KPI tiles, key findings, conclusions, what to do next
 3. **What the scores mean (VAI)**: Reach, Speed, Hold in one line each, how to use VAI, component patterns, worked example drawn from the data
-4. **Viewing order**: order by VAI Speed for every design and window, stability statement, elements reached by half of viewers or more per window, numbered markers on the image
+4. **Viewing order**: the order by VAI Speed overall (numbered badges on the AOI corners and a ladder of steps with Speed bars for each window), a stability statement, the elements reached by half of the viewers or more per window, and a table for **every audience and window** listing the elements 1st to 5th with differences from the overall order outlined
 5. **One section per design**: image with its elements outlined and the dashboard heatmap, scores for 3, 5 and 10 s, Reach · Speed · Hold chart, build-up lines, **gender, age and gender × age tables** (VAI with Reach · Speed · Hold per element and window), **heatmap sheets for every audience and window**
 6. **Head-to-head comparison** (2+ designs) and **gender and age insights** (women-vs-men, 18–24 vs 25–34 and gender × age gap tables)
 7. **How to test it next** (retest plan)
@@ -32,11 +32,17 @@ Brand-manager main sections, technical detail in the appendix · VAI only · Rea
 - `assets/example/`: a finished two-design report (`report.json`, its images, and the built `example-report.html`). Open the HTML to see the target look. The ids in it are placeholders (`STUDY_ID`, `ITEM_ID_A`), so its links are illustrative.
 - Reports must look like the example: same sections in the same order, same plain tone, same tables, charts and heatmap sheets. Do not restyle; the script owns the look.
 
+## Design mentions and thumbnails
+
+Every mention of a design shows a thumbnail of it on hover, focus or click (a small popover with the clean image and the design name). The script does this for badges, tags and legends. In the free text of the JSON write designs as `Design A` or the token `{A}`; patterns like `(A)`, `(A and B)`, `in A`, `than B`, `A's`, `A 14.3` and `A: …` are linked automatically. A sentence-initial article "A" is left alone.
+
 ## Links to the RealEye dashboard
 
 Set `dashboard.study_id` and every variant's `item_id` and the script links everything to the dashboard: the design headers (heatmap, AOI report, AOI VAI report), the scores table, each audience column header (AOI report with that audience's gender, age and quality filters applied), every heatmap sheet (one link per audience and window to the dashboard heatmap), the viewing order, the comparison, the gender and age section and the appendix copy of the AOI VAI report. Links open the signed-in dashboard in a new tab. The AOI VAI report cannot be filtered, so its link is unfiltered. If ids are missing the report still builds, without links, but a report for a real study should always have them.
 
 ## Getting the data from the RealEye dashboard
+
+The full step-by-step browser playbook is in [browser-data-collection.md](browser-data-collection.md). The notes below are the reference for the URLs and the data format.
 
 Use the user's signed-in browser (read-only). Never print participant names; never edit AOIs or share anything.
 
