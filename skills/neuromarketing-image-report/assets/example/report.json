@@ -2,7 +2,7 @@
  "title": "“Wake up the red in your hair”: two shampoo ad versions",
  "subtitle": "What viewers noticed, in what order, and for how long, using RealEye's VAI, by gender, age and time window.",
  "date": "20 Nov 2026",
- "skill_version": "1.16.0",
+ "skill_version": "1.17.0",
  "method": {
   "platform": "RealEye platform",
   "tracking": "Webcam eye tracking: participants viewed the images in their own browsers while RealEye estimated their gaze from their webcams.",
@@ -268,7 +268,7 @@
     "tag": "risk",
     "title": "The brand name banner is the weak spot",
     "conclusion": "Few viewers reach the brand name banner, late and briefly, so the brand name is mostly seen only on the pack label.",
-    "why": "The banner has the lowest VAI of the five elements in every window and in both designs, and all three components are low: Reach (how many looked) in the first 10 s is low: {{cmp:reach:Brand name (banner):10:A,B}}, Speed (how soon) puts it last in the viewing order, and Hold (how long) is about 1. The measured heatmaps show the bottom band cold in every audience, which agrees with the numbers.",
+    "why": "The banner has the lowest VAI of the five elements in every window and in both designs, and all three components are low: Reach (how many looked) in the first 10 s is low: {{cmp:reach:Brand name (banner):10:A,B}}, Speed (how soon) puts it last in the viewing order, and Hold (how long) is about 1. The heatmaps (an illustration only) look the same way, but the conclusion rests on the numbers.",
     "evidence": [
      {
       "text": "First 10 s: {{cmp:vai:Brand name (banner):10:A,B}}. It is the lowest of any element and grows only slowly from the first 3 s to the first 10 s in both designs.",
@@ -338,7 +338,7 @@
       ]
      },
      {
-      "text": "The heatmaps show the bottom band cold in every audience and window.",
+      "text": "For illustration only: the heatmaps show the bottom band cold. The numbers above carry the conclusion.",
       "ref": [
        "dA-heat",
        "dA-sheets",
@@ -418,7 +418,7 @@
       ]
      },
      {
-      "text": "Where the heatmap concentrates in each design.",
+      "text": "For illustration only: where the heatmap concentrates in each design.",
       "ref": [
        "dA-heat",
        "dB-heat"
@@ -536,10 +536,30 @@
       ]
      },
      {
-      "text": "VAI by age for every element and window, with small groups marked †.",
+      "text": "VAI by age for every element and window, with small groups marked. Tagline in design A, first 10 s, as an example of how group size changes what can be read.",
       "ref": [
        "dA-age",
        "dB-age"
+      ],
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Tagline",
+        "window": 10,
+        "audience": "18–24"
+       },
+       {
+        "design": "A",
+        "aoi": "Tagline",
+        "window": 10,
+        "audience": "25–34"
+       },
+       {
+        "design": "A",
+        "aoi": "Tagline",
+        "window": 10,
+        "audience": "35+"
+       }
       ]
      }
     ],
@@ -709,7 +729,7 @@
      ]
     },
     {
-     "text": "The heatmaps show the bottom band cold.",
+     "text": "For illustration only: the heatmaps show the bottom band cold. The numbers above carry the conclusion.",
      "ref": [
       "dA-heat",
       "dB-heat"
@@ -3089,7 +3109,7 @@
    ],
    "findings": [
     "Viewing order in the first 10 s: Tagline → Pack → Face → Logo → Brand banner by VAI Speed (80.3, 74.6, 63.7, 23.6, 7.9). Pack VAI (61.8) edges the tagline (61.7) at 10 s through higher Hold, but the tagline is still noticed first.",
-    "The face is stronger than in A: VAI 58.4 (Reach 94.7%, Hold 17.0). The heatmap concentrates on the eyes and face and the tagline-to-pack band is weaker.",
+    "The face is stronger than in A: VAI 58.4 (Reach 94.7%, Hold 17.0).",
     "The brand banner is the weakest element: VAI 1.2 → 3.6 → 8.3, Reach 16.3% in the first 10 s. The logo reaches 45.8%.",
     "Women lead on the tagline in every window (VAI +12.1, +10.8, +10.4 versus men)."
    ],

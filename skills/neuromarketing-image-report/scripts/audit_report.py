@@ -103,6 +103,9 @@ def main():
     au = plain(h[h.find('id="audience"'):h.find('id="hypotheses"')])
     check("audience section repeats the 100-viewer rule and marks groups with the sample-size markers", "at least 100 viewers" in au and ("‡" in au))
     check("appendix states the group-size rule", "at least 100 viewers per group for a certain result" in plain(h))
+    # heatmaps are illustrations
+    check("every heatmap block says it is for illustration only and that the analysis rests on the numbers", h.count("Heatmaps are for illustration only") >= 2 * len(set(re.findall(r'id="design-([A-Z])"', h))) and "not on how a heatmap looks" in h)
+    check("every finding and hypothesis has evidence with data points (not heatmaps alone)", all('class="dchip"' in b for _, b in fs + hs))
     # study facts
     for lab in ("Study created", "Data collected", "RealEye version", "Who took part"):
         check(f"study facts: {lab}", lab in h)

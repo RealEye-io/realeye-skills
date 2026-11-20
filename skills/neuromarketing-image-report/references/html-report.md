@@ -73,6 +73,10 @@ If the study item has no AOIs, define them (rule 35, `references/aoi-design.md`)
 
 The report has a floating contents menu with scroll tracking and copy-link buttons, link buttons on headings, RealEye tooltips (the word links to www.RealEye.io), definitions linked to RealEye support pages, and a Mark up tool (highlight text, mark an area, erase). All are produced by the script; nothing to put in the JSON.
 
+## Heatmaps
+
+Heatmaps are illustrations. The report adds an *Illustration only* note to every heatmap block, and a finding or hypothesis must have at least one evidence item with `data` points. An evidence item whose only references are heatmap anchors is tagged *Illustration only*. Write heatmap captions and text as illustrations of the numbers, not as proof.
+
 ## Study blueprint
 
 `blueprint` (study set-up), `study_info`, each variant's `aois[]` (name, colour, shape in % of the image, optional `type`, `time_range_s`) and `image_px` ([width, height] of the original stimulus, default read from the image) are rendered in the *Study blueprint* section with pixel coordinates, downloadable stimulus images, `study-blueprint.json` and the full `report.json`, plus steps to run the study again.
@@ -155,7 +159,7 @@ Use the user's signed-in browser (read-only). Never print participant names; nev
                          "device": {"Desktop": 201, "Tablet": 28},
                          "tracker_text": "…", "participant_type_text": "…", "screen_text": "1512 × 900 px", "age_text": "…"}},
   "participants_note": "optional: note under the participant charts",
-  "skill_version": "1.16.0",
+  "skill_version": "1.17.0",
   "blueprint": {"study_name": "…", "target_participants": "10,000", "demographics_asked": "gender and age", "random_order": "off",
                 "stimuli": {"A": {"file_name": "shampoo product.png", "display_seconds": 10, "finish_on": "keypress", "instructions": "off"}},
                 "recreate_steps": ["optional extra steps specific to this study"]},

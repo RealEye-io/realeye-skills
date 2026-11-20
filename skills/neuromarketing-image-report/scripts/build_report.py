@@ -677,7 +677,8 @@ def vai_guide(spec):
             f'<div class="cards4">{cards}</div>'
             + note("How to use it:", "compare like with like, and look at the three measures rather than just the total. VAI is for comparing elements, designs, time windows and audiences. "
                    "Higher is better at attracting visual attention: a higher VAI, Reach, Speed or Hold means the element does that job better. Judge each element against its role, because a logo can do its job at a moderate score. "
-                   "VAI shows attention, not outcome: it does not say whether viewers understood, liked or will buy, so confirm with a recall or choice test.")
+                   "VAI shows attention, not outcome: it does not say whether viewers understood, liked or will buy, so confirm with a recall or choice test. "
+                   "Heatmaps are only a picture of the same data: analyse the VAI numbers, not how a heatmap looks.")
             + '<h4>Component patterns and what to do</h4><div class="tablewrap"><table class="re"><thead><tr><th>Reach</th><th>Speed</th><th>Hold</th><th>Reading</th><th>Typical action</th></tr></thead>'
             f'<tbody>{prow}</tbody></table></div>{example}')
     return section("vai", "What the scores mean (VAI)", body)
@@ -784,7 +785,7 @@ def design_sections(spec, v, vi):
               + '<p class="box">Each element is an Area of Interest (AOI) measured separately; elements may overlap.</p></div></div>')
     image_card = section(f'd{v["id"]}-aois', "Image with AOIs", toggle)
     heat_card = section(f'd{v["id"]}-heat', "Measured heatmap", note("How to read it:", "warm colours (yellow, orange, red) mark where viewers looked most; cool colours (blue) mark where they looked least. "
-                        "The heatmap is built from the webcam eye-tracking fixations of this study's viewers (first 10 seconds, all viewers).")
+                        "The heatmap is built from the webcam eye-tracking fixations of this study's viewers (first 10 seconds, all viewers).") + note("Illustration only:", HEATMAP_NOTE)
                         + f'<div class="heat">{figure(base, v.get("heatmap"), "Measured heatmap", "All viewers, first 10 seconds.")}</div>')
     best = lambda k: max(range(len(n)), key=lambda i: val(seg, "10", i, k))
     worst = lambda k: min(range(len(n)), key=lambda i: val(seg, "10", i, k))
@@ -817,7 +818,7 @@ def design_sections(spec, v, vi):
         ls = " · ".join(alink(dash_url(spec, v, "heatmap", sg["label"], int(w)), sg["label"], "ext s") for sg in v["segments"] if dash_url(spec, v, "heatmap", sg["label"], int(w)))
         return (f'<h5>Heatmaps, {WIN_LABEL[w]}</h5><div class="sheet">{figure(base, v["heatmap_sheets"][w], f"Heatmaps by audience, {WIN_LABEL[w]}")}</div>'
                 + (f'<p class="links small">Open in the RealEye heatmap: {ls}</p>' if ls else ""))
-    sheets = section(f'd{v["id"]}-sheets', "Heatmaps by audience and time window", f'<p class="hint">{rich(v.get("heatmap_note", ""))}</p>' + "".join(sheet(w) for w in WIN if w in v.get("heatmap_sheets", {})))
+    sheets = section(f'd{v["id"]}-sheets', "Heatmaps by audience and time window", note("Illustration only:", HEATMAP_NOTE) + f'<p class="hint">{rich(v.get("heatmap_note", ""))}</p>' + "".join(sheet(w) for w in WIN if w in v.get("heatmap_sheets", {})))
     return head + image_card + heat_card + glance_card + insights + overview + summary + build_up + aud + sheets
 
 
@@ -1058,6 +1059,7 @@ def agent_prompt(spec):
     add("- Speed: how soon the element is noticed after it becomes visible. Ranking elements by Speed gives the viewing order (a relative hierarchy across viewers, not one person's scan path).")
     add("- Hold: how long attention stays on the element relative to the window. It can fall as the window grows even when viewers keep looking.")
     add("- Windows are cumulative and start at 0.5 s: 'first 3 s' = 0.5-3 s, 'first 5 s' = 0.5-5 s, 'first 10 s' = 0.5-10 s.")
+    add("- Heatmaps are illustrations only. Base every statement on the VAI numbers (VAI, Reach, Speed, Hold) in the data pack, never on how a heatmap looks.")
     add(f"- A result is certain only when every group it compares has at least {CERTAIN_N} viewers. Groups of {MIN_N} to {CERTAIN_N - 1} viewers are indicative (marked with a double dagger) and groups under {MIN_N} are anecdotal (marked with a dagger): say so whenever you use them and never call such a result certain. Viewers with other or unspecified gender, or no recorded age, are in 'All' but not in the gender or age cuts.")
     add("- VAI shows attention, not understanding, liking, recall or purchase. Never claim an effectiveness winner without outcome data.")
     add("")
@@ -1295,6 +1297,7 @@ def evidence_html(spec, evs, where):
             ERRORS.append(f"{where}: evidence item {i + 1} has no text")
         if not refs:
             ERRORS.append(f"{where}: evidence item {i + 1} links to no data in the report (add ref and/or data)")
+        illus = bool(refs) and not x.get("data") and all(re.match(r"^d[A-Z]-(heat|sheets)$", r_) for r_ in refs)
         rl = " · ".join(ref_link(spec, r) for r in dict.fromkeys(refs))
         seen, dl = set(), []
         for d in dashes:
@@ -1303,7 +1306,7 @@ def evidence_html(spec, evs, where):
                 seen.add(key)
                 dl.append(dash_link(spec, d))
         dl = " · ".join(x_ for x_ in dl if x_)
-        out += (f'<li class="ev"><div class="evt">{rich(x.get("text", ""))}</div>' + (f'<div class="evd">{chips}</div>' if chips else "")
+        out += (f'<li class="ev"><div class="evt">' + ('<span class="illus">Illustration only</span> ' if illus else "") + f'{rich(x.get("text", ""))}</div>' + (f'<div class="evd">{chips}</div>' if chips else "")
                 + f'<div class="evl"><span>In this report:</span> {rl}' + (f' <span class="sepdot">|</span> <span>In RealEye:</span> {dl}' if dl else "") + '</div></li>')
     return out
 
@@ -1341,6 +1344,7 @@ def finding_card(spec, f, n):
     if not concl:
         ERRORS.append(f"{where}: missing 'conclusion'")
     confidence_vs_sample(spec, f, where)
+    needs_numbers(f, where)
     tag = f.get("tag", "")
     col = TAG_COLORS.get(tag, "#fc7753")
     conf = f.get("confidence", "")
@@ -1389,7 +1393,7 @@ def findings_section(spec):
         acts += (f'<article class="finding mini" id="a{i + 1}"><h4>{rich(a.get("title", ""))}</h4><p>{rich(a.get("text", ""))}'
                  + (f' <b>Preserve:</b> {rich(a["preserve"])}' if a.get("preserve") else "") + '</p>' + based_on(spec, a, f"action {i + 1}", len(fs)) + '</article>')
     return section("overall", "Overall findings and conclusions",
-                   f'<div class="callout big"><span class="lab">{rich(o.get("verdict_label", "Conclusion"))}</span><p>{rich(o.get("verdict_text", ""))}</p></div><p class="lead">{rich(o.get("summary", ""))}</p>{certainty_note(spec)}<div class="readnote"><b>How to read the scores.</b> The higher the VAI score (and its Reach, Speed and Hold), the better that element is at attracting visual attention. Compare like with like, and judge each element against its role.</div>'
+                   f'<div class="callout big"><span class="lab">{rich(o.get("verdict_label", "Conclusion"))}</span><p>{rich(o.get("verdict_text", ""))}</p></div><p class="lead">{rich(o.get("summary", ""))}</p>{certainty_note(spec)}<div class="readnote"><b>How to read the scores.</b> The higher the VAI score (and its Reach, Speed and Hold), the better that element is at attracting visual attention. Compare like with like, and judge each element against its role. <b>Heatmaps</b> are illustrations only: the findings rest on these numbers, not on how a heatmap looks.</div>'
                    f'<div class="tiles">{kp}</div><h3>The findings at a glance</h3><ol class="glance">{glance}</ol>'
                    f'<h3>The findings, and the evidence behind each</h3><p class="hint">Every finding states what we conclude, why, and the numbers that prove it, each linked to its table, chart or heatmap in this report and in the RealEye dashboard.</p>{cards}'
                    + (f"<h3>Conclusions</h3>{concl}" if concl else "") + f"<h3>What to do next</h3>{acts}"
@@ -1589,6 +1593,17 @@ def lint_differences(spec):
         print("WARNING: numbers for two designs without their difference (use {{cmp:metric:AOI:window:A,B}}): " + s_, file=sys.stderr)
 
 
+# ------------------------------------------------------------------ heatmaps are illustrations, the analysis is the data
+HEATMAP_NOTE = ("Heatmaps are for illustration only. They draw where the viewers' gaze data landed, each scaled on its own, so how a heatmap looks depends on its colour scale and smoothing, "
+                "and the strength of two maps cannot be compared. The analysis and every conclusion rest on the numbers (VAI and its Reach, Speed and Hold), not on how a heatmap looks.")
+
+
+def needs_numbers(item, where):
+    # a conclusion must rest on VAI numbers: at least one evidence item has data points
+    if not any(isinstance(x, dict) and x.get("data") for x in item.get("evidence", [])):
+        ERRORS.append(f"{where}: no evidence item with data points. Conclusions must rest on the VAI numbers (and Reach, Speed, Hold), not on how a heatmap looks: add `data`")
+
+
 # ------------------------------------------------------------------ how certain: group sizes
 def certainty_note(spec, compact=False):
     variants = spec["variants"]
@@ -1625,7 +1640,7 @@ def min_group_n(spec, evs):
 
 def confidence_vs_sample(spec, item, where):
     n = min_group_n(spec, item.get("evidence", []))
-    if item.get("confidence") == "high" and n is not None and n < CERTAIN_N:
+    if item.get("confidence") == "high" and item.get("tag") != "weak-evidence" and n is not None and n < CERTAIN_N:  # a weak-evidence finding is about small groups: high confidence in the limit is fine
         ERRORS.append(f"{where}: confidence 'high' but its evidence uses a group of {n} viewers (under {CERTAIN_N}). Lower the confidence to medium or low, or base the finding on larger groups")
 
 
@@ -1671,6 +1686,7 @@ def hypotheses_section(spec):
             ERRORS.append(f"{where}: verdict must be one of {', '.join(VERDICTS)}")
         col = VERDICTS.get(vd, "#5c5c5c")
         confidence_vs_sample(spec, h, where)
+        needs_numbers(h, where)
         ev = evidence_html(spec, h.get("evidence", []), where)
         rows += f'<li><a href="#h{i}"><span class="ftag" style="background:{col}">{e(vd)}</span> <b>{rich(h.get("hypothesis", ""))}</b></a></li>'
         cards += (f'<article class="finding" id="h{i}" style="--c:{col}"><div class="fhead"><span class="fnum">H{i}</span><div><span class="ftag" style="background:{col}">{e(vd)}</span>'
@@ -1924,6 +1940,7 @@ ul.evs{list-style:none;padding:0;margin:6px 0}li.ev{background:var(--bg);padding
 .dchip{display:inline-block;background:#fff;border:1px solid var(--line);padding:2px 8px;font-size:12.5px;margin:2px 6px 2px 0;color:var(--muted)}.dchip b{color:var(--strong)}
 .evl{font-size:13px;color:var(--muted);margin:6px 0 0}.evl span{font-weight:600}.evl .sepdot{color:#c9c5bf;margin:0 4px}a.ref{color:#d9532f;text-decoration:none;font-weight:600}a.ref:hover{text-decoration:underline}
 .readnote{background:var(--bg);border-left:4px solid var(--accent);padding:12px 16px;margin:0 0 14px;color:var(--ink)}
+.illus{display:inline-block;background:#e9e6e1;color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 7px;margin-right:6px}
 footer{color:var(--soft);font-size:13px;text-align:center;padding:10px 0 30px}
 @media(max-width:700px){.sec{padding:20px 16px}.aoicard{grid-template-columns:1fr}.xgrid{grid-template-columns:1fr}dl.kv{grid-template-columns:1fr}.hd{flex-direction:column}.comp-chart .crow{grid-template-columns:1fr}.bar nav{display:none}}
 @media print{.finding{break-inside:avoid}.wtabs .tabs{display:none}.wtabs .wpane{display:block!important}#dpop,#gpop,.btnrow,details.datapack{display:none!important}#agent-prompt{height:auto}.bar{position:static}.bar nav,.btn{display:none}body{background:#fff}.sec{break-inside:avoid;border-color:#ddd}details{display:block}}
@@ -1960,7 +1977,7 @@ def build(spec, base):
         "AOI": "Area of Interest: a saved region of the image (tagline, pack, face, logo, brand name).", "Windows": "First 3, 5 and 10 s are cumulative and start at 0.5 s.",
         "Webcam eye tracking": "Gaze estimated from participants' own webcams in the RealEye platform. It shows where attention concentrates, with less precision than lab trackers.",
         "Quality filter": m.get("quality_filter", "Only viewers with data quality Average or better."),
-        "Heatmap": "A picture of where viewers looked: warm colours (yellow, orange, red) mark where attention concentrated, cool colours where it did not.",
+        "Heatmap": "A picture of where viewers looked: warm colours (yellow, orange, red) mark where attention concentrated, cool colours where it did not. It is an illustration only: the analysis rests on VAI and its components, not on how a heatmap looks.",
         "Gender and age": "Viewers' own answers to the gender and age questions of the study. Audience groups under 30 viewers are indicative only.",
         "RealEye": "The online research platform with webcam eye tracking that ran this study and produced every number here."}.items())
     appendix = section("technical", "Technical appendix",
