@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render a neuromarketing report JSON file into one self-contained HTML report.
+"""Render a Visual Attention Report JSON file into one self-contained HTML report.
 
 Usage:  python build_report.py report.json [-o report.html]
 
@@ -1154,7 +1154,7 @@ def agent_section(spec):
             '<p class="hint">Every number the report was built from, as tidy CSV tables: study, designs, elements (AOIs) with their position, audiences and sizes, the main VAI / Reach / Speed / Hold table '
             '(design × audience × window × element, with the viewing-order rank), the unfiltered dashboard AOI VAI report and the dashboard links. Give this to an AI assistant, or load the CSV into a spreadsheet or code, instead of parsing the report.</p>'
             '<div class="btnrow"><button class="btn" type="button" data-act="copy" data-target="data-pack">Copy data pack</button>'
-            '<button class="btn" type="button" data-act="download" data-target="data-pack" data-file="neuromarketing-report-data-pack.md">Download data pack (.md)</button>'
+            '<button class="btn" type="button" data-act="download" data-target="data-pack" data-file="visual-attention-report-data-pack.md">Download data pack (.md)</button>'
             '<button class="btn" type="button" data-act="download" data-target="data-csv" data-file="vai_by_audience.csv">Download main table (.csv)</button></div>'
             f'<textarea id="data-pack" class="dp" aria-label="Data pack: every number behind the report as markdown with CSV tables" readonly rows="14" spellcheck="false">{e(data_pack(spec))}</textarea>'
             f'<textarea id="data-csv" hidden>{e(_csv(data_tables(spec)["vai_by_audience"]))}</textarea></details>')
@@ -1164,7 +1164,7 @@ def agent_section(spec):
 POP2 = ('<script>(function(){document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest("[data-act]");if(!b)return;var t=document.getElementById(b.dataset.target||"agent-prompt");if(!t)return;'
         'if(b.dataset.act==="copy"){var done=function(){var o=b.textContent;b.textContent="Copied to clipboard";setTimeout(function(){b.textContent=o},1800)};'
         'if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t.value).then(done,function(){t.select();document.execCommand("copy");done()})}else{t.select();document.execCommand("copy");done()}}'
-        'else if(b.dataset.act==="download"){var f=b.dataset.file||"neuromarketing-report-ai-prompt.txt";var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t.value],{type:f.slice(-4)===".csv"?"text/csv":"text/plain"}));a.download=f;document.body.appendChild(a);a.click();a.remove()}})})();</script>')
+        'else if(b.dataset.act==="download"){var f=b.dataset.file||"visual-attention-report-ai-prompt.txt";var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t.value],{type:f.slice(-4)===".csv"?"text/csv":"text/plain"}));a.download=f;document.body.appendChild(a);a.click();a.remove()}})})();</script>')
 
 
 def method_block(spec):
@@ -2004,7 +2004,7 @@ def build(spec, base):
     study = spec.get("app_title") or m.get("study") or spec.get("title", "")
     printer = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8"><path d="M6 9V3h12v6M6 18H4v-7h16v7h-2M7 14h10v7H7z"/></svg>'
     info = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5c5c5c" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>'
-    page = (f'<div class="kicker"><span class="re-tag">Report</span><span class="t">Neuromarketing report</span><span class="ver">made with {SKILL_NAME} v{SKILL_VERSION} · {e(spec["_generated"])}</span></div>'
+    page = (f'<div class="kicker"><span class="re-tag">Report</span><span class="t">Visual Attention Report</span><span class="ver">made with {SKILL_NAME} v{SKILL_VERSION} · {e(spec["_generated"])}</span></div>'
             f'<div class="hd"><div><h1>{e(spec.get("title", ""))}</h1><p>{e(spec.get("subtitle", ""))} {e(spec.get("date", ""))}{" · " + e(spec["prepared_for"]) if spec.get("prepared_for") else ""}</p></div>'
             f'<button class="btn" onclick="window.print()">{printer} Print / Save as PDF</button></div>'
             f'{designs_band(spec)}<div class="strip">{info}<div><b>How this was measured</b><span>{e(m.get("banner", "RealEye platform, webcam eye tracking."))}</span></div></div>'
@@ -2021,7 +2021,7 @@ def build(spec, base):
     nav, page = tips(nav), tips(page)
     css_imgs = "".join(f".{c}{{background-image:url('{u}')}}" for u, c in IMAGES.items())
     return (f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="{SKILL_NAME} {SKILL_VERSION}">'
-            f'<title>{e(spec.get("title", "Neuromarketing report"))}</title>'
+            f'<title>{e(spec.get("title", "Visual Attention Report"))}</title>'
             '<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">'
             f'<style>{CSS}{NEW_CSS}</style></head><body><div class="bar"><span class="logo"><b>Re</b>alEye</span><span class="sep"></span><span class="study">{e(study)}</span></div>'
             f'<main class="page">{page}</main>' + toc_html(spec, ids) + HLBAR + f'<style>{css_imgs}</style>' + POP + POP2 + POP3 + POP4 + '</body></html>')

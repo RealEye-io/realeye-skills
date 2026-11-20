@@ -4,7 +4,7 @@ description: Interpret measured RealEye ET Platform webcam eye tracking for ads,
 license: MIT
 metadata:
   author: RealEye
-  version: "1.18.0"
+  version: "1.18.1"
 ---
 
 # Neuromarketing image report
@@ -112,6 +112,7 @@ Write in plain language. **The deliverable is a self-contained, professional HTM
 
 37. **Heatmaps illustrate; the data decides.** Heatmaps are only a picture of the gaze data: how one looks depends on its colour scale, smoothing and each map's own scaling, and the strength of two maps cannot be compared. The report says so at every heatmap and in the findings and the VAI explainer. The analysis and every conclusion must rest on the numbers (VAI and its Reach, Speed, Hold), never on how a heatmap looks: do not write findings such as "the heatmap is hotter here", every finding and hypothesis needs evidence items with `data` points (the build fails otherwise), and a heatmap-only evidence item is tagged *Illustration only*. Use a heatmap to illustrate a number or to spot a missed element (rule 35), then confirm it with VAI.
 38. **The report must be accessible: Lighthouse accessibility 100.** Text meets WCAG AA contrast (4.5:1), including small grey text, links, chips and white text on coloured badges; headings never skip a level; interactive elements have names and are not nested inside links; images, charts and text areas have labels; tables have header cells. The script's design tokens already comply: do not add colours that do not. Before delivery run Google Lighthouse (accessibility category) on the built report and on the example as described in `references/accessibility.md`; the score must be 100 on desktop and mobile, and `scripts/audit_report.py` checks the colour contrast of the tokens.
+39. **The report is called the "Visual Attention Report".** Use that name for the deliverable everywhere the reader sees it (header label, default title, download file names, the AI prompt, your messages). The skill itself keeps its name, and the RealEye *Neuromarketing Report Methodology* reference keeps its title.
 
 ### Build the report
 

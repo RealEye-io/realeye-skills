@@ -140,6 +140,7 @@ def main():
     weak = sorted(c_ for c_ in chips if contrast("#ffffff", c_) < 4.5)
     check("every coloured chip or badge with white text has contrast of at least 4.5:1", not weak, f"too light: {weak}")
     check("heading levels never skip for assistive technology", True)
+    check("the report is called Visual Attention Report", "Visual Attention Report" in h and "Neuromarketing report" not in plain(h))
     # study facts
     for lab in ("Study created", "Data collected", "RealEye version", "Who took part"):
         check(f"study facts: {lab}", lab in h)
