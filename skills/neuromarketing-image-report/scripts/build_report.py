@@ -376,8 +376,8 @@ def lines(series, xlabels, title, w=380, h=200):
     return "".join(out)
 
 
-def hbars(cats, series, title, labelw=170):
-    bh, gap, gg, width = 14, 3, 14, 760
+def hbars(cats, series, title, labelw=170, bh=14, gap=3):
+    gg, width = 14, 760
     gh = len(series) * (bh + gap)
     h = len(cats) * (gh + gg) + 8
     plot = width - labelw - 60
@@ -398,6 +398,173 @@ def hbars(cats, series, title, labelw=170):
 
 def legend(items):
     return '<div class="legend">' + "".join(f"<span>{swatch(c)}{e(l)}</span>" for l, c in items) + "</div>"
+
+
+# ------------------------------------------------------------------ charts for audiences and gaps
+_WCOUNT = [0]
+
+
+def aud_color(label, idx=0):
+    if label.startswith("Men "):
+        return ["#1d4ed8", "#3b82e0", "#93c5fd"][idx % 3]
+    if label.startswith("Women "):
+        return ["#c2410c", "#fc7753", "#fdba9c"][idx % 3]
+    if label == "Men":
+        return "#3b82e0"
+    if label == "Women":
+        return "#fc7753"
+    return ["#0f766e", "#14b8a6", "#7dd3c8", "#5eead4"][idx % 4]
+
+
+def window_tabs(panes, default="10"):
+    """CSS-only tabs (first 3 s / 5 s / 10 s): panes = {window: html}."""
+    _WCOUNT[0] += 1
+    gid = f"wt{_WCOUNT[0]}"
+    radios = "".join(f'<input type="radio" name="{gid}" id="{gid}-{w}" value="{w}"{" checked" if w == default else ""}>' for w in WIN)
+    labels = "".join(f'<label for="{gid}-{w}" data-w="{w}">{WIN_LABEL[w]}</label>' for w in WIN)
+    body = "".join(f'<div class="wpane" data-w="{w}">{panes[w]}</div>' for w in WIN)
+    return f'<div class="wtabs">{radios}<div class="tabs">{labels}</div>{body}</div>'
+
+
+def segment_chart(spec, v, kind, title):
+    segs = [sg for sg in v["segments"] if sg["kind"] == kind]
+    if not segs:
+        return ""
+    n = names(spec)
+    panes = {}
+    for w in WIN:
+        series = []
+        for i, sg in enumerate(segs):
+            idx = i % 3 if kind == "gender_age" else i
+            series.append((f'{sg["label"]} (N={sg["n"]}{", †" if small(sg) else ""})', aud_color(sg["label"], idx), [val(sg, w, k, "vai") for k in range(len(n))]))
+        leg = '<div class="legend">' + "".join(f"<span>{swatch(c)}{e(l)}</span>" for l, c, _ in series) + "</div>"
+        panes[w] = leg + hbars(n, series, f"VAI by audience, {WIN_LABEL[w]}", bh=9 if len(series) > 3 else 12, gap=2)
+    return f'<h5>{e(title)}: chart (VAI per element)</h5>' + window_tabs(panes)
+
+
+def gap_chart(spec, v, vi, a_label, b_label, title):
+    sa, sb = seg_of(v, a_label), seg_of(v, b_label)
+    if not sa or not sb:
+        return ""
+    n = names(spec)
+    data = {w: [val(sb, w, i, "vai") - val(sa, w, i, "vai") for i in range(len(n))] for w in WIN}
+    mx = max(10, max(abs(x) for w in WIN for x in data[w]))
+    mx = math.ceil(mx / 5) * 5
+    width, labelw, bh, gap, gg = 760, 170, 11, 2, 14
+    plot = width - labelw - 40
+    zero = labelw + plot / 2
+    h = len(n) * (3 * (bh + gap) + gg) + 26
+    shades = {"3": "#fdba9c", "5": "#fc7753", "10": "#c2410c"} if vi == 0 else {"3": "#93c5fd", "5": "#3b82e0", "10": "#1d4ed8"}
+    out = [f'<svg class="chart wide" viewBox="0 0 {width} {h}" role="img" aria-label="{e(title)}">']
+    for t in range(-2, 3):
+        x = zero + plot / 2 * t / 2
+        out.append(f'<line x1="{x:.1f}" x2="{x:.1f}" y1="0" y2="{h - 18}" class="grid"/><text x="{x:.1f}" y="{h - 4}" text-anchor="middle" class="axis">{(f"{mx * t / 2:+g}" if t else "0")}</text>')
+    out.append(f'<line x1="{zero:.1f}" x2="{zero:.1f}" y1="0" y2="{h - 18}" stroke="#8b8b8b" stroke-width="1.5"/>')
+    for gi, nm in enumerate(n):
+        y0 = gi * (3 * (bh + gap) + gg) + 4
+        out.append(f'<text x="{labelw - 10}" y="{y0 + 20}" text-anchor="end" class="axis">{e(nm)}</text>')
+        for wi, w in enumerate(WIN):
+            d = data[w][gi]
+            y = y0 + wi * (bh + gap)
+            wd = plot / 2 * abs(d) / mx
+            x = zero if d >= 0 else zero - wd
+            out.append(f'<rect x="{x:.1f}" y="{y}" width="{max(wd, 1):.1f}" height="{bh}" fill="{shades[w]}"/>'
+                       f'<text x="{(zero + wd + 5) if d >= 0 else (zero - wd - 5):.1f}" y="{y + 9}" text-anchor="{"start" if d >= 0 else "end"}" class="val s">{d:+.1f}</text>')
+    out.append("</svg>")
+    leg = '<div class="legend">' + "".join(f'<span>{swatch(shades[w])}{WIN_LABEL[w]}</span>' for w in WIN) + "</div>"
+    return f'<h5>{chip(v["id"], e(v["id"]), "vtag", "background:" + vcolor(vi))} {e(title)}</h5>{leg}{"".join(out)}'
+
+
+# ------------------------------------------------------------------ study facts and participants
+def _fmt_date(iso):
+    import datetime
+    try:
+        return datetime.date.fromisoformat(iso).strftime("%d %b %Y").lstrip("0")
+    except Exception:
+        return iso
+
+
+def collection_range(spec):
+    ps = spec.get("participants") or {}
+    firsts = [x["collected_from"] for x in ps.values() if x.get("collected_from")]
+    lasts = [x["collected_to"] for x in ps.values() if x.get("collected_to")]
+    if not firsts:
+        return ""
+    return f"{_fmt_date(min(firsts))} – {_fmt_date(max(lasts))}"
+
+
+def pbars(title, items, total, color):
+    """Horizontal share bars (count and percentage) for one participant breakdown."""
+    rows = "".join(
+        f'<div class="prow"><span class="pl">{e(k)}</span><div class="track"><i style="width:{(c / total * 100 if total else 0):.1f}%;background:{color}"></i></div><b>{c}</b><span class="pp">{(c / total * 100 if total else 0):.0f}%</span></div>'
+        for k, c in items if c is not None)
+    return f'<div class="pbars"><h5>{e(title)}</h5>{rows}</div>'
+
+
+def participants_section(spec):
+    ps = spec.get("participants")
+    if not ps:
+        return ""
+    cols = ""
+    for vi, v in enumerate(spec["variants"]):
+        x = ps.get(v["id"])
+        if not x:
+            continue
+        tot = x["analysed"]
+        age = x.get("age", {})
+        bands = list(age.get("bands", {}).items())
+        no_age = tot - age.get("with_age", 0)
+        if no_age > 0:
+            bands.append(("No age given", no_age))
+        facts = [f'{tot} viewers analysed' + (f' (of {x["collected"]} collected)' if x.get("collected") else "")]
+        if age.get("median") is not None:
+            facts.append(f'median age {age["median"]:g} (self-reported, {age.get("with_age", 0)} viewers)')
+        if x.get("collected_from"):
+            facts.append(f'collected {_fmt_date(x["collected_from"])} – {_fmt_date(x["collected_to"])}')
+        cols += (f'<div class="pcol"><h4>{chip(v["id"], e(v["id"]), "vtag", "background:" + vcolor(vi))} {e(v["name"])}</h4><p class="muted small">{e(" · ".join(facts))}</p>'
+                 + pbars("Gender", list(x.get("gender", {}).items()), tot, vcolor(vi)) + pbars("Age", bands, tot, vcolor(vi)) + pbars("Device", list(x.get("device", {}).items()), tot, vcolor(vi)) + "</div>")
+    note = spec.get("participants_note", "Gender and age are self-reported by the viewers; some viewers did not give them. Percentages are of the viewers analysed.")
+    return section("who", "Who took part", f'<p class="hint">{rich(note)}</p><div class="two">{cols}</div>')
+
+
+def study_tiles(spec):
+    si = spec.get("study_info") or {}
+    out = []
+    if si.get("created"):
+        out.append(tile("Study created", si["created"], si.get("status", "")))
+    rng = collection_range(spec)
+    if rng:
+        out.append(tile("Data collected", rng, "when the viewers took part"))
+    if si.get("realeye_version"):
+        out.append(tile("RealEye version", si["realeye_version"], si.get("version_note", "dashboard version at analysis")))
+    return out
+
+
+def participants_appendix(spec):
+    ps = spec.get("participants")
+    if not ps and not spec.get("study_info"):
+        return ""
+    si = spec.get("study_info") or {}
+    rows = "".join(f'<div><dt>{e(lab)}</dt><dd>{rich(si[k])}</dd></div>' for k, lab in (
+        ("created", "Study created"), ("status", "Study status"), ("type", "Study type"), ("realeye_version", "RealEye version (dashboard at analysis)"), ("tracker", "Eye tracker"),
+        ("analysed_on", "Data analysed on"), ("settings", "Stimulus settings"), ("panel", "Participants")) if si.get(k))
+    out = f'<h3>Study and platform</h3><dl class="ctx">{rows}</dl>' if rows else ""
+    for vi, v in enumerate(spec["variants"]):
+        x = (ps or {}).get(v["id"])
+        if not x:
+            continue
+        tot = x["analysed"]
+        quality = list(x.get("quality", {}).items())
+        qrows = "".join(f'<tr><td>{e(k)}</td><td>{c}</td><td>{(c / x["collected"] * 100 if x.get("collected") else 0):.0f}%</td><td>{"analysed" if k not in ("Very low", "Low") else "removed"}</td></tr>' for k, c in quality)
+        extra = "".join(f'<tr><td>{e(k)}</td><td colspan="3">{rich(str(val_))}</td></tr>' for k, val_ in (
+            ("Eye tracker", x.get("tracker_text")), ("Participant type", x.get("participant_type_text")), ("Browser window (median)", x.get("screen_text")),
+            ("Age (self-reported)", x.get("age_text")), ("Collected from / to", f'{_fmt_date(x["collected_from"])} – {_fmt_date(x["collected_to"])}' if x.get("collected_from") else None)) if val_)
+        out += (f'<h4>{chip(v["id"], e(v["id"]), "vtag", "background:" + vcolor(vi))} {e(v["name"])}: data quality and set-up</h4>'
+                + pbars("Data quality of the collected viewers (Average or better are analysed)", quality, x.get("collected", tot), vcolor(vi))
+                + f'<div class="tablewrap"><table class="re"><thead><tr><th>Data quality</th><th>Viewers</th><th>Share</th><th>Used</th></tr></thead><tbody>{qrows}</tbody></table></div>'
+                + (f'<div class="tablewrap"><table class="re"><tbody>{extra}</tbody></table></div>' if extra else ""))
+    return out
+
 
 
 # ------------------------------------------------------------------ tables
@@ -439,7 +606,7 @@ def segment_table(spec, v, kind, title):
         for wi, w in enumerate(WIN):
             first = f'<th scope="row" rowspan="3">{swatch(acolor(v, nm, ai))}{e(nm)}</th>' if wi == 0 else ""
             rows += f'<tr class="{"grp" if wi == 0 else ""}">{first}<th class="w">{WIN_LABEL[w]}</th>' + "".join(cell(s, w, ai) for s in segs) + "</tr>"
-    return f'<h5>{e(title)}</h5><div class="tablewrap"><table class="re seg"><thead><tr><th>Element</th><th>Window</th>{head}</tr></thead><tbody>{rows}</tbody></table></div>'
+    return f'<h5>{e(title)}: table (VAI, with Reach · Speed · Hold)</h5><div class="tablewrap"><table class="re seg"><thead><tr><th>Element</th><th>Window</th>{head}</tr></thead><tbody>{rows}</tbody></table></div>'
 
 
 def gap_table(spec, variants, a_label, b_label, title):
@@ -622,7 +789,9 @@ def design_sections(spec, v, vi):
     build_up = section(None, "How attention builds up over time", legend([(nm, acolor(v, nm, i)) for i, nm in enumerate(n)]) + f'<div class="grid2">{mini}</div>')
     aud = section(None, "By gender, age and gender × age",
                   '<p class="hint">Each cell is the VAI for that audience, element and window, with Reach · Speed · Hold underneath. † marks a small audience (fewer than %d viewers): read it as indicative.</p>' % MIN_N
-                  + segment_table(spec, v, "gender", "By gender") + segment_table(spec, v, "age", "By age") + segment_table(spec, v, "gender_age", "By gender × age"))
+                  + segment_chart(spec, v, "gender", "By gender") + segment_table(spec, v, "gender", "By gender")
+                  + segment_chart(spec, v, "age", "By age") + segment_table(spec, v, "age", "By age")
+                  + segment_chart(spec, v, "gender_age", "By gender × age") + segment_table(spec, v, "gender_age", "By gender × age"))
 
     def sheet(w):
         ls = " · ".join(alink(dash_url(spec, v, "heatmap", sg["label"], int(w)), sg["label"], "ext s") for sg in v["segments"] if dash_url(spec, v, "heatmap", sg["label"], int(w)))
@@ -668,7 +837,9 @@ def audience_section(spec):
     ages = [s["label"] for s in variants[0]["segments"] if s["kind"] == "age"]
     ga = gap_table(spec, variants, "18–24", "25–34", "Viewers 25–34 minus viewers 18–24 (the 25–34 group is small: anecdotal)") if "18–24" in ages and "25–34" in ages else ""
     lk = ' · '.join('Design ' + e(x["id"]) + ': ' + open_links(spec, x, "Women", None, ("aoi", "heatmap")) + ' (women)' for x in variants) if open_links(spec, variants[0]) else ""
-    body = (text + gap_table(spec, variants, "Men", "Women", "Women minus men (VAI points)") + gap_table(spec, variants, "Men 18–24", "Women 18–24", "Women 18–24 minus men 18–24 (the largest groups)") + ga
+    gc = "".join(gap_chart(spec, v, vi, "Men", "Women", "Women minus men (VAI points)") for vi, v in enumerate(variants))
+    gc2 = "".join(gap_chart(spec, v, vi, "Men 18–24", "Women 18–24", "Women 18–24 minus men 18–24 (VAI points)") for vi, v in enumerate(variants))
+    body = (text + gc + gap_table(spec, variants, "Men", "Women", "Women minus men (VAI points)") + gc2 + gap_table(spec, variants, "Men 18–24", "Women 18–24", "Women 18–24 minus men 18–24 (the largest groups)") + ga
             + f'<p class="hint">† Small audiences (fewer than {MIN_N} viewers) are indicative only. Full tables and heatmaps are in each design\'s section.</p>' + (f'<p class="links small">Open in RealEye: {lk}</p>' if lk else ""))
     return section("audience", "Gender and age insights", body)
 
@@ -745,6 +916,27 @@ def data_tables(spec):
         ("study", spec["method"].get("study", "")), ("participants_analysed", spec["method"].get("participants", "")), ("quality_filter", spec["method"].get("quality_filter", "")),
         ("windows", spec["method"].get("windows", "")), ("audiences", spec["method"].get("segments", "")), ("task", spec["method"].get("task", "")),
         ("small_audience_threshold", f"fewer than {MIN_N} viewers")) if v]
+    si = spec.get("study_info") or {}
+    for k, vv in si.items():
+        t["study"].append(["study_" + k, re.sub(r"\{([A-Z])\}", r"\1", str(vv))])
+    rng = collection_range(spec)
+    if rng:
+        t["study"].append(["data_collected", rng])
+    ps = spec.get("participants") or {}
+    if ps:
+        pr = [["design", "group", "category", "viewers", "share_of_analysed_pct"]]
+        for did, x in ps.items():
+            tot = x["analysed"]
+            pr.append([did, "overall", "collected", x.get("collected", ""), ""])
+            pr.append([did, "overall", "analysed", tot, 100])
+            for grp, d in (("gender", x.get("gender", {})), ("age_band", x.get("age", {}).get("bands", {})), ("device", x.get("device", {}))):
+                for k, c in d.items():
+                    pr.append([did, grp, k, c, round(c / tot * 100, 1)])
+            if x.get("age", {}).get("with_age") is not None:
+                pr.append([did, "age_band", "No age given", tot - x["age"]["with_age"], round((tot - x["age"]["with_age"]) / tot * 100, 1)])
+            for k, c in x.get("quality", {}).items():
+                pr.append([did, "data_quality_of_collected", k, c, ""])
+        t["participants"] = pr
     t["designs"] = [["design", "name", "description", "viewers_all", "item_id"]] + [[v["id"], v["name"], v.get("description", ""), seg_of(v, "All")["n"], v.get("item_id", "")] for v in variants]
     el = [["design", "element", "covers", "color", "bbox_x0_pct", "bbox_y0_pct", "bbox_x1_pct", "bbox_y1_pct"]]
     for v in variants:
@@ -789,7 +981,7 @@ def data_pack(spec):
     """Markdown 'data pack': a short guide plus every table as CSV, so an AI assistant can use the data without parsing the report."""
     t = data_tables(spec)
     guide = {
-        "study": "Study context.", "designs": "The tested designs.", "elements": "AOIs (elements) per design: what each covers and its bounding box in % of the image (0,0 = top-left).",
+        "study": "Study context, including when the study was created, when the data was collected and the RealEye version.", "participants": "Viewer profile per design: gender, age bands (self-reported), device, and data quality of all collected viewers. share_of_analysed_pct is of the analysed viewers.", "designs": "The tested designs.", "elements": "AOIs (elements) per design: what each covers and its bounding box in % of the image (0,0 = top-left).",
         "audiences": "Audiences and their sizes. kind: overall | gender | age | gender_age. small_audience = fewer than 30 viewers (anecdotal).",
         "vai_by_audience": ("MAIN TABLE, one row per design x audience x window x element. vai, reach, speed, hold are 0-100 (vai = mean of reach, speed, hold). "
                             "window_s = 3, 5 or 10: cumulative windows 0.5-3, 0.5-5, 0.5-10 s. speed_rank = viewing order position (1 = noticed first). vai_rank = rank by VAI."),
@@ -821,6 +1013,11 @@ def agent_prompt(spec):
                    ("windows", "Time windows"), ("segments", "Audiences"), ("task", "Task and exposure"), ("source", "Source"), ("precision", "Tracker precision"), ("note", "Note")):
         if m.get(k):
             add(f"{lab}: {c(m[k])}")
+    for k, lab in (("created", "Study created"), ("status", "Study status"), ("type", "Study type"), ("realeye_version", "RealEye version (dashboard at analysis)"), ("tracker", "Eye tracker"), ("settings", "Stimulus settings"), ("panel", "Participants")):
+        if (spec.get("study_info") or {}).get(k):
+            add(f"{lab}: {c(spec['study_info'][k])}")
+    if collection_range(spec):
+        add(f"Data collected: {collection_range(spec)}")
     if spec.get("agent_context"):
         add(f"Extra context: {c(spec['agent_context'])}")
     add("")
@@ -958,7 +1155,7 @@ h1{font-size:34px;line-height:1.15;font-weight:700;color:var(--strong);margin:0 
 .hd{display:flex;gap:20px;align-items:flex-start;justify-content:space-between}.hd p{margin:0;color:var(--muted);font-size:15.5px;max-width:700px}
 .btn{background:#fff;border:1px solid var(--line);padding:12px 18px;font:600 15px Barlow,sans-serif;color:var(--strong);cursor:pointer;display:inline-flex;gap:8px;align-items:center;white-space:nowrap}.btn:hover{border-color:var(--accent)}
 .strip{display:flex;gap:14px;align-items:center;background:#fff;border:1px solid var(--line);padding:16px 20px;margin:18px 0 14px}.strip svg{flex:none}.strip b{color:var(--strong);display:block}.strip span{color:var(--muted)}
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:20px}
 .tile{background:#fff;border:1px solid var(--line);padding:18px 18px 16px}.tile .lab,.lab{display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.72px;color:var(--muted)}
 .tile b{display:block;font-size:24px;line-height:1.2;color:var(--strong);margin:8px 0 4px;font-weight:700}.tile .sub{color:var(--muted);font-size:14px}
 .sec{background:#fff;border:1px solid var(--line);padding:28px 32px;margin:0 0 20px}.sec>h2{font-size:22.5px;font-weight:700;color:var(--strong);margin:0 0 16px}
@@ -997,6 +1194,10 @@ tr.grp th,tr.grp td{border-top:2px solid var(--line)}td.vc b{font-size:16px;colo
 .ochip{display:inline-flex;align-items:center;font-weight:600;color:var(--strong);font-size:14px;line-height:1.2}
 table.ord td.oc{text-align:left;padding:9px 10px;min-width:118px}table.ord td.oc.diff{box-shadow:inset 0 0 0 2px var(--accent);background:var(--insight)}table.ord td.oc small{margin-top:2px}table.ord td.st{font-size:13px;color:var(--muted);white-space:nowrap}table.ord td.st .ok{color:var(--best-fg);font-weight:600}table.ord th[scope=row]{white-space:nowrap}
 .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}details.datapack{border:1px solid var(--line);padding:14px 18px;margin:16px 0 0}details.datapack summary{cursor:pointer;font-weight:600;color:var(--strong)}textarea.dp{width:100%;height:300px;font:12.5px/1.5 ui-monospace,Consolas,Menlo,monospace;color:var(--ink);background:var(--thbg);border:1px solid var(--line);padding:14px;resize:vertical}#agent-prompt{width:100%;height:360px;font:12.5px/1.5 ui-monospace,Consolas,Menlo,monospace;color:var(--ink);background:var(--thbg);border:1px solid var(--line);padding:14px;resize:vertical}
+.pbars{margin:8px 0 14px}.prow{display:grid;grid-template-columns:120px 1fr 44px 44px;gap:10px;align-items:center;margin:5px 0;font-size:14px}.prow .pl{color:var(--strong)}.prow b{text-align:right;color:var(--strong)}.prow .pp{color:var(--muted);text-align:right}
+.wtabs>input{position:absolute;opacity:0;pointer-events:none}.wtabs .tabs{display:flex;gap:6px;margin:6px 0 10px}.wtabs .tabs label{border:1px solid var(--line);padding:6px 14px;cursor:pointer;font-weight:600;color:var(--muted);background:#fff}
+.wtabs .wpane{display:none}.wtabs:has(input[value="3"]:checked) .wpane[data-w="3"],.wtabs:has(input[value="5"]:checked) .wpane[data-w="5"],.wtabs:has(input[value="10"]:checked) .wpane[data-w="10"]{display:block}
+.wtabs:has(input[value="3"]:checked) label[data-w="3"],.wtabs:has(input[value="5"]:checked) label[data-w="5"],.wtabs:has(input[value="10"]:checked) label[data-w="10"]{background:var(--insight);border-color:var(--accent);color:var(--strong)}
 .thead{display:flex;gap:12px;align-items:center;margin-bottom:12px}.thead h4{margin:0}.thead p{margin:2px 0 0}.tcol .switch{margin-top:12px}.alist{margin-top:10px}.alist .li{display:flex;gap:8px;margin:7px 0;align-items:flex-start}.alist .li .sw{margin-top:4px;flex:none}.alist .li span{display:block;color:var(--muted);font-size:13.5px}
 .legend{display:flex;gap:16px;flex-wrap:wrap;margin:8px 0;font-size:13.5px;color:var(--muted)}.legend.small{font-size:13px}.legend span{display:inline-flex;align-items:center}
 .chart{width:100%;height:auto;display:block;max-width:440px}.chart.wide{max-width:none}.chart .grid{stroke:var(--line);stroke-width:1}.chart text{fill:var(--ink);font-size:12px}.chart .axis{fill:var(--soft)}.chart .val{font-weight:600}
@@ -1009,7 +1210,7 @@ dl.kv{display:grid;grid-template-columns:220px 1fr;gap:10px 18px;margin:0}dl.kv 
 details.dash{border:1px solid var(--line);padding:14px 18px;margin:12px 0}details summary{cursor:pointer;font-weight:600;color:var(--strong)}
 footer{color:var(--soft);font-size:13px;text-align:center;padding:10px 0 30px}
 @media(max-width:700px){.sec{padding:20px 16px}.aoicard{grid-template-columns:1fr}.xgrid{grid-template-columns:1fr}dl.kv{grid-template-columns:1fr}.hd{flex-direction:column}.comp-chart .crow{grid-template-columns:1fr}.bar nav{display:none}}
-@media print{#dpop,#gpop,.btnrow,details.datapack{display:none!important}#agent-prompt{height:auto}.bar{position:static}.bar nav,.btn{display:none}body{background:#fff}.sec{break-inside:avoid;border-color:#ddd}details{display:block}}
+@media print{.wtabs .tabs{display:none}.wtabs .wpane{display:block!important}#dpop,#gpop,.btnrow,details.datapack{display:none!important}#agent-prompt{height:auto}.bar{position:static}.bar nav,.btn{display:none}body{background:#fff}.sec{break-inside:avoid;border-color:#ddd}details{display:block}}
 """
 
 
@@ -1022,8 +1223,7 @@ def build(spec, base):
     tiles = "".join([
         tile("Designs compared", str(len(variants)), " · ".join("{" + v["id"] + "}: " + v["name"].split("(")[0].strip() for v in variants)),
         tile("Viewers analysed", " · ".join("{" + v["id"] + "} " + str(seg_of(v, "All")["n"]) for v in variants), "all viewers, by design"),
-        tile("Time windows", "3", "first 3, 5 and 10 seconds"),
-        tile("Primary metric", "VAI", "Composite of Reach, Speed, Hold")])
+        *(study_tiles(spec) or [tile("Time windows", "3", "first 3, 5 and 10 seconds"), tile("Primary metric", "VAI", "Composite of Reach, Speed, Hold")])])
     kp = "".join(tile(k["label"], k["value"], k.get("note", "")) for k in o.get("kpis", []))
     finds = "".join(f'<div class="xtile"><span class="lab">{e(f.get("tag", "").replace("-", " "))}</span><p><b>{rich(f["title"])}</b></p><p class="muted">{rich(f["text"])}</p></div>' for f in o.get("findings", []))
     actions = "".join(insight(a["text"] + (f' Preserve: {a["preserve"]}' if a.get("preserve") else ""), a["title"] + ".") for a in spec.get("actions", []))
@@ -1045,11 +1245,11 @@ def build(spec, base):
         "Webcam eye tracking": "Gaze estimated from participants' own webcams in the RealEye platform. It shows where attention concentrates, with less precision than lab trackers.",
         "Quality filter": m.get("quality_filter", "Only viewers with data quality Average or better.")}.items())
     appendix = section("technical", "Technical appendix",
-                       '<p class="muted">For analysts and researchers: how the study was run, the data used, and the limits of the evidence.</p>' + method_block(spec) + vai_tech_notes()
+                       '<p class="muted">For analysts and researchers: how the study was run, the data used, and the limits of the evidence.</p>' + method_block(spec) + participants_appendix(spec) + vai_tech_notes()
                        + f'<h3>Evidence and limits</h3><ul class="plain">{limits}</ul>' + (f'<h4>What would change the recommendation</h4><ul class="plain">{changes}</ul>' if changes else "")
                        + f'<h3>Definitions</h3><dl class="kv">{defs}</dl><h3>Sources</h3><ul class="plain">{sources}</ul><h3>Dashboard AOI VAI report (unfiltered copy)</h3>'
                        + "".join(dashboard_vai(spec, v, i) for i, v in enumerate(variants)))
-    nav = "".join(f'<a href="#{i}">{t}</a>' for i, t in (("tested", "Designs tested"), ("overall", "Findings"), ("vai", "VAI"), ("order", "Viewing order"), ("design-A", "Analysis"), ("compare", "Comparison"),
+    nav = "".join(f'<a href="#{i}">{t}</a>' for i, t in (("tested", "Designs tested"), ("who", "Participants"), ("overall", "Findings"), ("vai", "VAI"), ("order", "Viewing order"), ("design-A", "Analysis"), ("compare", "Comparison"),
                                                           ("audience", "Gender and age"), ("actions", "Next steps"), ("technical", "Appendix"), ("agent", "Ask an AI")))
     body = "".join(('<a id="design-A"></a>' if i == 0 else "") + design_sections(spec, v, i) for i, v in enumerate(variants))
     study = spec.get("app_title") or m.get("study") or spec.get("title", "")
@@ -1059,7 +1259,7 @@ def build(spec, base):
             f'<div class="hd"><div><h1>{e(spec.get("title", ""))}</h1><p>{e(spec.get("subtitle", ""))} {e(spec.get("date", ""))}{" · " + e(spec["prepared_for"]) if spec.get("prepared_for") else ""}</p></div>'
             f'<button class="btn" onclick="window.print()">{printer} Print / Save as PDF</button></div>'
             f'<div class="strip">{info}<div><b>How this was measured</b><span>{e(m.get("banner", "RealEye platform, webcam eye tracking."))}</span></div></div>'
-            f'{intro_section(spec)}<div class="tiles">{tiles}</div>{overall}{vai_guide(spec)}{order_section(spec)}{body}{compare_section(spec)}{audience_section(spec)}{retest}{appendix}{agent_section(spec)}'
+            f'{intro_section(spec)}<div class="tiles">{tiles}</div>{participants_section(spec)}{overall}{vai_guide(spec)}{order_section(spec)}{body}{compare_section(spec)}{audience_section(spec)}{retest}{appendix}{agent_section(spec)}'
             '<footer>Generated with the RealEye neuromarketing-image-report skill. Eye tracking shows where people looked, not what they understood, liked or will buy.</footer>')
     tips = make_tips(spec)
     nav, page = tips(nav), tips(page)

@@ -22,6 +22,102 @@
   "min_quality": 3
  },
  "app_title": "#demo Images and Video demo (2023-10-25)",
+ "study_info": {
+  "created": "25 Oct 2023",
+  "status": "Running, 8,711 of 10,000 participants so far",
+  "type": "Images and Videos",
+  "realeye_version": "v26.11.20.1",
+  "version_note": "dashboard version at analysis, 20 Nov 2026",
+  "tracker": "RealEye webcam eye tracking (RealEye webcam tracker v3), used for every analysed viewer",
+  "analysed_on": "20 Nov 2026",
+  "settings": "Both designs: shown for 10 s, finished on keypress, instructions off, random order off",
+  "panel": "Own participants (not the RealEye panel), asked for their gender and age"
+ },
+ "participants": {
+  "A": {
+   "collected": 241,
+   "analysed": 229,
+   "collected_from": "2026-03-24",
+   "collected_to": "2026-11-12",
+   "quality": {
+    "Very low": 3,
+    "Low": 9,
+    "Average": 16,
+    "Good": 50,
+    "Very good": 25,
+    "Perfect": 138
+   },
+   "gender": {
+    "Men": 59,
+    "Women": 88,
+    "Other": 8,
+    "Not specified": 74
+   },
+   "age": {
+    "bands": {
+     "Under 18": 11,
+     "18–24": 82,
+     "25–34": 28,
+     "35–44": 2,
+     "45–54": 3,
+     "55+": 2
+    },
+    "with_age": 128,
+    "median": 23,
+    "mean": 24.6
+   },
+   "device": {
+    "Desktop": 201,
+    "Tablet": 28
+   },
+   "tracker_text": "RealEye webcam tracker v3 (229 of 229 viewers)",
+   "participant_type_text": "Own participants (229 of 229 viewers)",
+   "screen_text": "1512 × 900 px",
+   "age_text": "median 23, mean 24.6, reported range 11–100 (self-reported, so some values are implausible)"
+  },
+  "B": {
+   "collected": 232,
+   "analysed": 227,
+   "collected_from": "2026-03-27",
+   "collected_to": "2026-11-12",
+   "quality": {
+    "Very low": 0,
+    "Low": 5,
+    "Average": 13,
+    "Good": 50,
+    "Very good": 17,
+    "Perfect": 147
+   },
+   "gender": {
+    "Men": 67,
+    "Women": 81,
+    "Other": 9,
+    "Not specified": 70
+   },
+   "age": {
+    "bands": {
+     "Under 18": 9,
+     "18–24": 83,
+     "25–34": 31,
+     "35–44": 9,
+     "45–54": 4,
+     "55+": 1
+    },
+    "with_age": 137,
+    "median": 23,
+    "mean": 24.9
+   },
+   "device": {
+    "Desktop": 187,
+    "Tablet": 39,
+    "Smartphone": 1
+   },
+   "tracker_text": "RealEye webcam tracker v3 (227 of 227 viewers)",
+   "participant_type_text": "Own participants (227 of 227 viewers)",
+   "screen_text": "1470 × 900 px",
+   "age_text": "median 23, mean 24.9, reported range 1–88 (self-reported, so some values are implausible)"
+  }
+ },
  "aoi_order": [
   "Tagline",
   "Pack (product)",

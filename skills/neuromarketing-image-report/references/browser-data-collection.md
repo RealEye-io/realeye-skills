@@ -7,7 +7,7 @@ The report needs data that only the signed-in RealEye dashboard has. This is the
 - **Sign-in:** the dashboard needs the user's own session. Open `https://app.realeye.io/dashboard/`. If you see a login page, ask the user to sign in in that browser (Google sign-in works) and carry on when they say it is done. Never ask for or type passwords, and never use a token from chat.
 - **Never** edit AOIs, change participant status, create share links, download exports, or print participant names (a viewer's display name appears in the fixation data: read only gender and age from it).
 - **Tools you need:** navigate, page JavaScript (to read data), screenshot/zoom with *save to disk*, network requests (to find the stimulus image URL), tabs. Use the batch tool to chain steps; one tab per task keeps state clean.
-- **What you will collect:** (a) ids, (b) VAI, Reach, Speed and Hold per audience × window, (c) AOI shapes and colours, (d) the clean stimulus image, (e) the main heatmap and the heatmap sheets, (f) the dashboard's AOI VAI report. Then (g) check the render.
+- **What you will collect:** (a) ids, (b) VAI, Reach, Speed and Hold per audience × window, (c) AOI shapes and colours, (d) the clean stimulus image, (e) the main heatmap and the heatmap sheets, (f) the dashboard's AOI VAI report, (g) the study facts and participant profile (section 2b). Then (h) check the render.
 
 ## 1. Find the ids
 
@@ -25,6 +25,16 @@ The AOI report loads each AOI's statistics from an internal endpoint that takes 
 4. Read the result in **chunks of about 1.5k characters** (the tool truncates long output): one audience per call, as `label|n|v1,v2,…`. Write the numbers into the report JSON (`segments[].values`, 60 numbers each).
 5. **Check every row:** VAI must equal the mean of Reach, Speed and Hold (within 0.2). A mismatch means a transcription error.
 6. Check the audience sizes against the dashboard: open the AOI report for one audience (see §9 for the URL) and compare the "N tests" count.
+
+## 2b. Study facts and participant profile
+
+Collect these for the intro tiles, the *Who took part* card and the appendix. Never copy participant names or study author names into the report.
+
+1. **Study created:** open `https://app.realeye.io/dashboard/?status=all&studySearch=<STUDY_ID>` (or search the study id on the studies page and press Enter). The study row shows the creation date under the study name (read the date only, not the author).
+2. **Status, type, settings:** open `/dashboard/study/<STUDY_ID>/` and read the page text (page JavaScript `document.querySelector('main').innerText`): study status (Running or Finished), the participant counter ("8711 / 10000"), and the *Study contents* list with each stimulus' display time, finish mode and instruction setting. Click *Study details* for the study type, random order and panelist demographics (what viewers were asked).
+3. **RealEye version:** the dashboard sidebar footer shows it ("RealEye v26.11.20.1"; read it with page JavaScript or a zoom on the bottom-left corner). The version at data-collection time is not stored, so report it as the dashboard version at analysis.
+4. **Participants:** run `scripts/dashboard_participants.js` (edit `CONFIG`; it fills `window.__PARTICIPANTS`; poll `window.__partDone`). It gives collected and analysed counts, the data-quality distribution, gender, age bands (from the self-reported age; check for implausible values such as age 1), device, tracker set-up, participant type, median browser window, and the first and last collection dates. Dates are as the dashboard stores them; report them as shown.
+5. Put the results in `study_info` and `participants` (see the guide) and add the readable `tracker_text`, `participant_type_text`, `screen_text` and `age_text` lines for the appendix.
 
 ## 3. AOI shapes and colours
 

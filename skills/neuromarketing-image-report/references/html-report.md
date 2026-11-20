@@ -32,6 +32,14 @@ Brand-manager main sections, technical detail in the appendix · VAI only · Rea
 - `assets/example/`: a finished two-design report (`report.json`, its images, and the built `example-report.html`). Open the HTML to see the target look. The ids in it are placeholders (`STUDY_ID`, `ITEM_ID_A`), so its links are illustrative.
 - Reports must look like the example: same sections in the same order, same plain tone, same tables, charts and heatmap sheets. Do not restyle; the script owns the look.
 
+## Study facts and participants
+
+`study_info` and `participants` (per design id) drive three things: the tiles *Study created*, *Data collected* (the earliest and latest `collected_from` / `collected_to`) and *RealEye version*; the *Who took part* card (charts of gender, age bands plus "No age given", and device, with counts and percentages); and the appendix block *Study and platform* with the data-quality distribution of all collected viewers (Very low and Low are shown as removed) and the set-up details. The same facts go into the data pack (tables `study` and `participants`) and the AI prompt. Collect them with the browser playbook (section 2b) and `scripts/dashboard_participants.js`. Never include participant or author names.
+
+## Tables and charts
+
+Every comparison has a chart and a table. Charts: VAI component bars, build-up lines, head-to-head bars, the viewing-order ladder, audience bar charts with window tabs (gender, age, gender × age), diverging gap charts (women minus men), participant profile bars and the data-quality bars. Tables: scores, audience tables with Reach · Speed · Hold, the viewing-order table per audience, gap tables, participant quality, the AOI VAI report copy. Printing shows all window tabs.
+
 ## AI-agent prompt (last section)
 
 The report ends with a prompt the reader can paste into an AI assistant so it ingests the whole report and can answer any follow-up question, run more comparisons and suggest further insights. The script generates it from the JSON: study and method, VAI definitions and reading rules, designs and AOIs (what each covers and where), the full numbers table (VAI/Reach/Speed/Hold per element, design, audience and window), the dashboard AOI VAI report, findings, actions, limits, the dashboard links, answering rules and ideas to explore. The prompt includes the **data pack**, which is also offered on its own in a collapsed block with copy and download buttons: markdown with tidy CSV tables (`study`, `designs`, `elements` with bounding boxes in % of the image, `audiences` with sizes, `vai_by_audience` as the main table with `speed_rank` = viewing-order position, `dashboard_vai_report_unfiltered`, `dashboard_links`). Optional `agent_context` (string) adds the campaign goal, the decision to make or other context. Everything the prompt needs must therefore be in the report JSON.
@@ -87,6 +95,17 @@ Use the user's signed-in browser (read-only). Never print participant names; nev
   "dashboard": {"base": "https://app.realeye.io", "study_id": "<STUDY_ID>", "min_quality": 3},
   "agent_context": "<optional: campaign goal, decision to make, anything the AI assistant should know>",
   "glossary": {"optional term": "optional definition shown as a tooltip"},
+  "study_info": {"created": "25 Oct 2023", "status": "Running, 8,711 of 10,000 participants so far", "type": "Images and Videos",
+                 "realeye_version": "v26.11.20.1", "version_note": "dashboard version at analysis, 20 Nov 2026",
+                 "tracker": "RealEye webcam eye tracking (RealEye webcam tracker v3)", "analysed_on": "20 Nov 2026",
+                 "settings": "Both designs: shown for 10 s, finished on keypress, instructions off", "panel": "Own participants, asked for gender and age"},
+  "participants": {"A": {"collected": 241, "analysed": 229, "collected_from": "2026-03-24", "collected_to": "2026-11-12",
+                         "quality": {"Very low": 3, "Low": 9, "Average": 16, "Good": 50, "Very good": 25, "Perfect": 138},
+                         "gender": {"Men": 59, "Women": 88, "Other": 8, "Not specified": 74},
+                         "age": {"bands": {"Under 18": 11, "18–24": 82, "25–34": 28, "35–44": 2, "45–54": 3, "55+": 2}, "with_age": 128, "median": 23, "mean": 24.6},
+                         "device": {"Desktop": 201, "Tablet": 28},
+                         "tracker_text": "…", "participant_type_text": "…", "screen_text": "1512 × 900 px", "age_text": "…"}},
+  "participants_note": "optional: note under the participant charts",
   "aoi_order": ["Tagline", "Pack (product)", "Face", "Logo", "Brand name (banner)"],
   "overall": {
     "verdict_label": "…", "verdict_text": "…", "summary": "…",

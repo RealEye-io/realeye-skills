@@ -22,6 +22,102 @@
   "min_quality": 3
  },
  "app_title": "<app_title>",
+ "study_info": {
+  "created": "<created>",
+  "status": "<status>",
+  "type": "<type>",
+  "realeye_version": "<realeye_version>",
+  "version_note": "<version_note>",
+  "tracker": "<tracker>",
+  "analysed_on": "<analysed_on>",
+  "settings": "<settings>",
+  "panel": "<panel>"
+ },
+ "participants": {
+  "A": {
+   "collected": 0,
+   "analysed": 0,
+   "collected_from": "<YYYY-MM-DD>",
+   "collected_to": "<YYYY-MM-DD>",
+   "quality": {
+    "Very low": 0,
+    "Low": 0,
+    "Average": 0,
+    "Good": 0,
+    "Very good": 0,
+    "Perfect": 0
+   },
+   "gender": {
+    "Men": 0,
+    "Women": 0,
+    "Other": 0,
+    "Not specified": 0
+   },
+   "age": {
+    "bands": {
+     "Under 18": 0,
+     "18–24": 0,
+     "25–34": 0,
+     "35–44": 0,
+     "45–54": 0,
+     "55+": 0
+    },
+    "with_age": 0,
+    "median": 0,
+    "mean": 0
+   },
+   "device": {
+    "Desktop": 0,
+    "Tablet": 0
+   },
+   "tracker_text": "<tracker_text>",
+   "participant_type_text": "<participant_type_text>",
+   "screen_text": "<screen_text>",
+   "age_text": "<age_text>"
+  },
+  "B": {
+   "collected": 0,
+   "analysed": 0,
+   "collected_from": "<YYYY-MM-DD>",
+   "collected_to": "<YYYY-MM-DD>",
+   "quality": {
+    "Very low": 0,
+    "Low": 0,
+    "Average": 0,
+    "Good": 0,
+    "Very good": 0,
+    "Perfect": 0
+   },
+   "gender": {
+    "Men": 0,
+    "Women": 0,
+    "Other": 0,
+    "Not specified": 0
+   },
+   "age": {
+    "bands": {
+     "Under 18": 0,
+     "18–24": 0,
+     "25–34": 0,
+     "35–44": 0,
+     "45–54": 0,
+     "55+": 0
+    },
+    "with_age": 0,
+    "median": 0,
+    "mean": 0
+   },
+   "device": {
+    "Desktop": 0,
+    "Tablet": 0,
+    "Smartphone": 0
+   },
+   "tracker_text": "<tracker_text>",
+   "participant_type_text": "<participant_type_text>",
+   "screen_text": "<screen_text>",
+   "age_text": "<age_text>"
+  }
+ },
  "aoi_order": [
   "Tagline",
   "Pack (product)",
