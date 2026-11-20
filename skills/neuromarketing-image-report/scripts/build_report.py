@@ -22,7 +22,7 @@ import struct
 import sys
 from pathlib import Path
 
-VARIANT_COLORS = ["#fc7753", "#3b82e0", "#27a85a", "#ae3ec9"]
+VARIANT_COLORS = ["#c2410c", "#2563c4", "#1b7d42", "#ae3ec9"]   # dark enough for white text (contrast 4.5:1 or more)
 COMP_COLORS = {"vai": "#fc7753", "reach": "#3b82e0", "speed": "#e3ac1c", "hold": "#27a85a"}
 AOI_COLORS = ["#d77732", "#6ec850", "#3296d7", "#d73296", "#96d732", "#7048e8", "#f08c00"]
 MIN_N = 30        # under this many viewers a group is anecdotal (†)
@@ -317,7 +317,7 @@ def aoi_crop(base, v, a, target=1.7):
     ny0 = min(max(cy - bh2 / 2, 0), 100 - bh2)
     px = nx0 / (100 - bw2) * 100 if bw2 < 100 else 0
     py = ny0 / (100 - bh2) * 100 if bh2 < 100 else 0
-    return (f'<div class="crop pic {reg_image(uri)}" style="aspect-ratio:{target};background-size:{100 / bw2 * 100:.2f}% {100 / bh2 * 100:.2f}%;'
+    return (f'<div class="crop pic {reg_image(uri)}" role="img" aria-label="{e(a["name"])} in design {e(v["id"])}" style="aspect-ratio:{target};background-size:{100 / bw2 * 100:.2f}% {100 / bh2 * 100:.2f}%;'
             f'background-position:{px:.2f}% {py:.2f}%"></div>')
 
 
@@ -576,7 +576,7 @@ def participants_appendix(spec):
         tot = x["analysed"]
         quality = list(x.get("quality", {}).items())
         qrows = "".join(f'<tr><td>{e(k)}</td><td>{c}</td><td>{(c / x["collected"] * 100 if x.get("collected") else 0):.0f}%</td><td>{"analysed" if k not in ("Very low", "Low") else "removed"}</td></tr>' for k, c in quality)
-        extra = "".join(f'<tr><td>{e(k)}</td><td colspan="3">{rich(str(val_))}</td></tr>' for k, val_ in (
+        extra = "".join(f'<tr><th scope="row">{e(k)}</th><td colspan="3">{rich(str(val_))}</td></tr>' for k, val_ in (
             ("Eye tracker", x.get("tracker_text")), ("Participant type", x.get("participant_type_text")), ("Browser window (median)", x.get("screen_text")),
             ("Age (self-reported)", x.get("age_text")), ("Collected from / to", f'{_fmt_date(x["collected_from"])} – {_fmt_date(x["collected_to"])}' if x.get("collected_from") else None)) if val_)
         out += (f'<h4>{chip(v["id"], e(v["id"]), "vtag", "background:" + vcolor(vi))} {e(v["name"])}: data quality and set-up</h4>'
@@ -798,8 +798,8 @@ def design_sections(spec, v, vi):
     glance_card = section(f'd{v["id"]}-glance', "At a glance", f'<div class="xgrid">{glance}</div><p class="hint">All viewers, first 10 seconds.</p>')
     insights = section(f'd{v["id"]}-findings', "What the data says", "".join(insight_card(spec, t, f'd{v["id"]}-finding-{k + 1}', [f'd{v["id"]}-summary', f'd{v["id"]}-build']) for k, t in enumerate(v.get("findings", []))))
     cards = "".join(
-        f'<div class="aoicard2">{aoi_crop(base, v, a)}<div class="meta"><b>{e(a["name"])}</b><p>VAI <b>{val(seg, "10", i, "vai"):.1f}</b><span>·</span>Reach <b>{val(seg, "10", i, "reach"):.1f}</b>'
-        f'<span>·</span>Speed <b>{val(seg, "10", i, "speed"):.1f}</b><span>·</span>Hold <b>{val(seg, "10", i, "hold"):.1f}</b></p></div><i class="cbar" style="background:{a.get("color", "#999")}"></i></div>'
+        f'<div class="aoicard2">{aoi_crop(base, v, a)}<div class="meta"><b>{e(a["name"])}</b><p><span class="kv">VAI <b>{val(seg, "10", i, "vai"):.1f}</b></span><span>·</span><span class="kv">Reach <b>{val(seg, "10", i, "reach"):.1f}</b></span>'
+        f'<span>·</span><span class="kv">Speed <b>{val(seg, "10", i, "speed"):.1f}</b></span><span>·</span><span class="kv">Hold <b>{val(seg, "10", i, "hold"):.1f}</b></span></p></div><i class="cbar" style="background:{a.get("color", "#999")}"></i></div>'
         for i, a in enumerate(v["aois"]))
     overview = section(f'd{v["id"]}-overview', "AOIs overview", f'<div class="cards3">{cards}</div><p class="hint">All viewers, first 10 seconds. VAI and its components, 0–100.</p>')
     summary = section(f'd{v["id"]}-summary', "VAI summary", '<p class="hint">Measured VAI and its Reach / Speed / Hold per element, all viewers, first 10 seconds. Higher is better at attracting visual attention. Values are indices (0–100), not shares; elements overlap and do not need to total 100%.</p>'
@@ -1148,7 +1148,7 @@ def agent_section(spec):
             'the designs and elements, every VAI, Reach, Speed and Hold number for every audience and time window, the findings, actions and limits. The assistant can then answer follow-up questions, '
             'run extra comparisons and suggest insights you did not think to ask for.</p>'
             '<div class="btnrow"><button class="btn" type="button" data-act="copy">Copy prompt</button><button class="btn" type="button" data-act="download">Download as .txt</button></div>'
-            f'<textarea id="agent-prompt" readonly rows="18" spellcheck="false">{e(prompt)}</textarea>'
+            f'<textarea id="agent-prompt" aria-label="Prompt for an AI assistant, with the whole report" readonly rows="18" spellcheck="false">{e(prompt)}</textarea>'
             f'<p class="hint">{len(prompt):,} characters. It contains your results, so share it only with tools you trust. The dashboard links in it work only for people signed in to RealEye.</p>'
             '<details class="datapack"><summary>Underlying data: markdown with CSV tables (the prompt above already includes it)</summary>'
             '<p class="hint">Every number the report was built from, as tidy CSV tables: study, designs, elements (AOIs) with their position, audiences and sizes, the main VAI / Reach / Speed / Hold table '
@@ -1156,7 +1156,7 @@ def agent_section(spec):
             '<div class="btnrow"><button class="btn" type="button" data-act="copy" data-target="data-pack">Copy data pack</button>'
             '<button class="btn" type="button" data-act="download" data-target="data-pack" data-file="neuromarketing-report-data-pack.md">Download data pack (.md)</button>'
             '<button class="btn" type="button" data-act="download" data-target="data-csv" data-file="vai_by_audience.csv">Download main table (.csv)</button></div>'
-            f'<textarea id="data-pack" class="dp" readonly rows="14" spellcheck="false">{e(data_pack(spec))}</textarea>'
+            f'<textarea id="data-pack" class="dp" aria-label="Data pack: every number behind the report as markdown with CSV tables" readonly rows="14" spellcheck="false">{e(data_pack(spec))}</textarea>'
             f'<textarea id="data-csv" hidden>{e(_csv(data_tables(spec)["vai_by_audience"]))}</textarea></details>')
     return section("agent", "Continue the analysis with an AI agent", body)
 
@@ -1346,7 +1346,7 @@ def finding_card(spec, f, n):
     confidence_vs_sample(spec, f, where)
     needs_numbers(f, where)
     tag = f.get("tag", "")
-    col = TAG_COLORS.get(tag, "#fc7753")
+    col = TAG_COLORS.get(tag, "#b53d1b")
     conf = f.get("confidence", "")
     cchip = f'<span class="fconf">{e(conf)} confidence</span>' if conf else ""
     ev = evidence_html(spec, f.get("evidence", []), where)
@@ -1379,7 +1379,7 @@ def findings_section(spec):
     fs = o.get("findings", [])
     cards = "".join(finding_card(spec, f, i + 1) for i, f in enumerate(fs))
     glance = "".join(
-        f'<li><a href="#f{i + 1}"><span class="ftag" style="background:{TAG_COLORS.get(f.get("tag", ""), "#fc7753")}">{e(f.get("tag", "").replace("-", " ") or "finding")}</span> '
+        f'<li><a href="#f{i + 1}"><span class="ftag" style="background:{TAG_COLORS.get(f.get("tag", ""), "#b53d1b")}">{e(f.get("tag", "").replace("-", " ") or "finding")}</span> '
         f'<b>{rich(f.get("title", ""))}</b></a><span class="muted"> {rich(f.get("conclusion") or f.get("text") or "")}</span></li>' for i, f in enumerate(fs))
     kp = "".join(tile(k["label"], k["value"], k.get("note", "")) for k in o.get("kpis", []))
     concl = ""
@@ -1835,7 +1835,7 @@ NEW_CSS = """
 #toc li>ul{display:none;margin-left:10px}#toc li.open>ul{display:block}#toc li li>a{font-size:12.5px;padding:3px 26px 3px 10px}
 #toc .cp{position:absolute;right:4px;top:3px;border:0;background:none;color:var(--soft);cursor:pointer;font-size:14px;opacity:0;padding:2px 5px}#toc li:hover>.cp,#toc .cp:focus,#toc .cp.done{opacity:1}#toc .cp.done{color:var(--best-fg)}
 #toc .tochint{font-size:11.5px;color:var(--soft);margin:8px 10px 2px}
-#tocbtn{display:none;position:fixed;z-index:61;left:14px;bottom:14px;background:var(--accent);color:#fff;border:0;padding:11px 16px;font:600 14px Barlow,sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+#tocbtn{display:none;position:fixed;z-index:61;left:14px;bottom:14px;background:#212529;color:#fff;border:0;padding:11px 16px;font:600 14px Barlow,sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
 @media(max-width:1499px){#toc{transform:translateX(-110%);transition:transform .2s;top:0;left:0;max-height:100vh;height:100vh;width:280px}body.tocopen #toc{transform:none}#toc #tocx{display:block}#tocbtn{display:block}}
 [id]{scroll-margin-top:70px}
 button.lnk{border:0;background:none;color:var(--soft);cursor:pointer;font:inherit;font-weight:400;margin-left:8px;opacity:0;padding:0 4px}h2:hover>.lnk,h3:hover>.lnk,h4:hover>.lnk,.lnk:focus,.lnk.done{opacity:1}.lnk.done{color:var(--best-fg)}
@@ -1855,12 +1855,12 @@ main.page{position:relative}#hlareas{position:absolute;inset:0;pointer-events:no
 POP = '<script>(function(){var p=document.createElement("div");p.id="dpop";document.body.appendChild(p);function show(el){while(p.firstChild)p.removeChild(p.firstChild);var t=document.createElement("div");t.className="th pic "+el.dataset.cls;var b=document.createElement("b");b.textContent="Design "+el.dataset.id;var s=document.createElement("small");s.textContent=el.dataset.name;p.appendChild(t);p.appendChild(b);p.appendChild(s);p.style.display="block";var r=el.getBoundingClientRect(),w=p.offsetWidth,h=p.offsetHeight,x=Math.min(Math.max(8,r.left),window.innerWidth-w-8),y=r.bottom+6;if(y+h>window.innerHeight-8)y=Math.max(8,r.top-h-6);p.style.left=x+"px";p.style.top=y+"px"}function hide(){p.style.display="none"}function ref(ev){return ev.target.closest&&ev.target.closest(".dref")}document.addEventListener("mouseover",function(ev){var el=ref(ev);if(el)show(el)});document.addEventListener("mouseout",function(ev){if(ref(ev))hide()});document.addEventListener("focusin",function(ev){var el=ref(ev);if(el)show(el)});document.addEventListener("focusout",function(ev){if(ref(ev))hide()});document.addEventListener("click",function(ev){var el=ref(ev);if(el)show(el);else hide()});document.addEventListener("keydown",function(ev){if(ev.key==="Escape"){hide();hg()}});})();(function(){var g=document.createElement("div");g.id="gpop";document.body.appendChild(g);function gl(ev){return ev.target.closest&&ev.target.closest(".gl")}function sg(el){g.textContent=el.dataset.tip;g.style.display="block";var r=el.getBoundingClientRect(),w=g.offsetWidth,h=g.offsetHeight,x=Math.min(Math.max(8,r.left),window.innerWidth-w-8),y=r.bottom+6;if(y+h>window.innerHeight-8)y=Math.max(8,r.top-h-6);g.style.left=x+"px";g.style.top=y+"px"}window.hg=function(){g.style.display="none"};document.addEventListener("mouseover",function(ev){var el=gl(ev);if(el)sg(el)});document.addEventListener("mouseout",function(ev){if(gl(ev))hg()});document.addEventListener("click",function(ev){var el=gl(ev);if(el)sg(el);else hg()});})();</script>'
 
 CSS = """
-:root{--bg:#f6f5f3;--card:#fff;--ink:#333;--strong:#1a1a1a;--muted:#5c5c5c;--soft:#8b8b8b;--line:#e7e4e0;--line2:#f0edea;--thbg:#fbfaf9;--accent:#fc7753;
+:root{--bg:#f6f5f3;--card:#fff;--ink:#333;--strong:#1a1a1a;--muted:#5c5c5c;--soft:#6b6b6b;--line:#e7e4e0;--line2:#f0edea;--thbg:#fbfaf9;--accent:#fc7753;--accent-d:#b53d1b;
 --tag-bg:#ede3f7;--tag-fg:#6b3fa0;--best-bg:#e4f3e8;--best-fg:#17652f;--worst-bg:#fbe9e7;--worst-fg:#a12a1b;--insight:#fff1ec}
 *{box-sizing:border-box}html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Barlow,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 .bar{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:0 24px;height:58px}
-.logo{display:inline-flex;align-items:center;font-weight:700;font-size:19px;color:var(--strong);letter-spacing:-.2px}.logo b{background:var(--accent);color:#fff;border-radius:50%;width:27px;height:27px;display:grid;place-items:center;font-size:15px;margin-right:1px}
+.logo{display:inline-flex;align-items:center;font-weight:700;font-size:19px;color:var(--strong);letter-spacing:-.2px}.logo b{background:var(--accent);color:#1a1a1a;border-radius:50%;width:27px;height:27px;display:grid;place-items:center;font-size:15px;margin-right:1px}
 .bar .sep{width:1px;height:26px;background:var(--line)}.bar .study{font-weight:700;color:var(--strong);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
 .bar nav{margin-left:auto;display:flex;gap:4px;overflow-x:auto;height:100%}.bar nav a{display:flex;align-items:center;padding:0 12px;color:var(--muted);text-decoration:none;font-weight:600;font-size:14px;white-space:nowrap;border-bottom:3px solid transparent}
 .bar nav a:hover{color:var(--strong);border-bottom-color:var(--accent)}
@@ -1877,12 +1877,12 @@ h1{font-size:34px;line-height:1.15;font-weight:700;color:var(--strong);margin:0 
 .sec{background:#fff;border:1px solid var(--line);padding:28px 32px;margin:0 0 20px}.sec>h2{font-size:22.5px;font-weight:700;color:var(--strong);margin:0 0 16px}
 h3{font-size:18px;margin:28px 0 10px;color:var(--strong);padding-top:18px;border-top:1px solid var(--line)}h4{font-size:16px;margin:22px 0 8px;color:var(--strong)}h5{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.72px;color:var(--muted);margin:20px 0 8px}
 .lead{font-size:16.5px;margin:0 0 14px;color:var(--ink)}.muted{color:var(--muted)}.hint{color:var(--muted);font-size:13.5px;margin:8px 0}.small{font-size:13px}
-.callout{background:var(--insight);border-left:4px solid var(--accent);padding:16px 20px;margin:0 0 16px}.callout .lab{color:var(--accent)}.callout p{margin:6px 0 0;font-size:17px;color:var(--strong)}
+.callout{background:var(--insight);border-left:4px solid var(--accent);padding:16px 20px;margin:0 0 16px}.callout .lab{color:var(--accent-d)}.callout p{margin:6px 0 0;font-size:17px;color:var(--strong)}
 .note{background:var(--bg);padding:14px 16px;margin:14px 0;color:var(--muted)}.note b{color:var(--strong)}.box{background:var(--bg);padding:12px 14px;color:var(--muted);font-size:13.5px;margin:12px 0}
 .insight{display:flex;gap:12px;background:var(--insight);padding:14px 16px;margin:0 0 8px;align-items:flex-start}.insight .chk{flex:none;margin-top:3px}.insight b{color:var(--strong)}
 .xgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.xgrid.one{grid-template-columns:1fr}.xtile{border:1px solid var(--line);padding:14px 16px}.xtile p{margin:6px 0 0}
 .cards4{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:14px 0}.cc{border:1px solid var(--line);border-top:3px solid var(--accent);padding:14px 16px 16px}.cc h4{margin:8px 0 6px;font-size:20px}.cc p{margin:0;color:var(--muted)}
-.cards3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}.aoicard2{border:1px solid var(--line);position:relative;background:#fff}.aoicard2 .meta{padding:12px 14px 14px}.aoicard2 .meta p{margin:6px 0 0;color:var(--muted);font-size:14px}.aoicard2 .meta p b{color:var(--strong)}.aoicard2 .meta span{margin:0 6px;color:#c9c5bf}.aoicard2 .cbar{display:block;height:3px}
+.cards3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}.aoicard2{border:1px solid var(--line);position:relative;background:#fff}.aoicard2 .meta{padding:12px 14px 14px}.aoicard2 .meta p{margin:6px 0 0;color:var(--muted);font-size:14px}.aoicard2 .meta p b{color:var(--strong)}.aoicard2 .meta span:not(.gl):not(.kv){margin:0 6px;color:var(--soft)}.aoicard2 .meta .kv{white-space:nowrap;margin:0;color:inherit}.aoicard2 .cbar{display:block;height:3px}
 .crop{width:100%;background-repeat:no-repeat;background-color:#eee}
 .pic{background-repeat:no-repeat;background-size:100% 100%;width:100%}.stage{position:relative;max-width:520px}.aoi-svg{position:absolute;inset:0;width:100%;height:100%}.stagebox{max-width:520px}
 .aoicard{display:grid;grid-template-columns:minmax(220px,520px) 1fr;gap:24px;align-items:start}.legend2 .li{display:flex;align-items:center;gap:8px;margin:6px 0}.aoicard:has(.sw-in:not(:checked)) .aoi-svg,.aoitog:has(.sw-in:not(:checked)) .aoi-svg{display:none}
@@ -1897,7 +1897,7 @@ h3{font-size:18px;margin:28px 0 10px;color:var(--strong);padding-top:18px;border
 table.re th,table.re td{padding:11px 12px;border-bottom:1px solid var(--line2);text-align:left;vertical-align:middle}table.re thead th{background:var(--thbg);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.72px;color:var(--muted);border-bottom:1px solid var(--line)}
 table.re tbody th{font-weight:600;color:var(--strong)}table.re .num{width:48px;color:var(--muted)}table.re small{display:block;color:var(--soft);font-weight:400;font-size:12px}table.re thead small{text-transform:none;letter-spacing:0}
 table.seg td,table.seg thead th{text-align:center}table.seg td:first-child,table.seg thead th:first-child,table.seg tbody th{text-align:left}table.seg th.w{font-weight:400;color:var(--muted);font-size:13px;white-space:nowrap}
-tr.grp th,tr.grp td{border-top:2px solid var(--line)}td.vc b{font-size:16px;color:var(--strong)}td.low{opacity:.55}td.big{background:var(--insight)}.rk{font-size:17px}small.ok{color:var(--best-fg)!important;font-weight:600}
+tr.grp th,tr.grp td{border-top:2px solid var(--line)}td.vc b{font-size:16px;color:var(--strong)}td.low{opacity:.8}td.big{background:var(--insight)}.rk{font-size:17px}small.ok{color:var(--best-fg)!important;font-weight:600}
 .sw{display:inline-block;width:12px;height:12px;margin-right:8px;vertical-align:-1px}.sw.best{background:var(--best-bg);border:1px solid var(--best-fg)}.sw.worst{background:var(--worst-bg);border:1px solid var(--worst-fg)}
 .vp{display:inline-block;padding:3px 9px;font-weight:600}.vp.best{background:var(--best-bg);color:var(--best-fg)}.vp.worst{background:var(--worst-bg);color:var(--worst-fg)}
 .comp-chart .crow{display:grid;grid-template-columns:200px 1fr;gap:14px;padding:12px 0;border-bottom:1px solid var(--line2);align-items:center}.cname{font-weight:600;color:var(--strong)}
@@ -1920,7 +1920,7 @@ table.ord td.oc{text-align:left;padding:9px 10px;min-width:118px}table.ord td.oc
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px}.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:28px}
 .seq{font-size:16px;font-weight:700;color:var(--strong);margin:12px 0 2px}ul.plain{padding-left:20px;margin:10px 0}ul.plain li{margin:5px 0}
 .example{background:var(--bg);padding:6px 18px 16px;margin-top:18px;max-width:600px}.exrow{display:grid;grid-template-columns:170px 1fr 48px;gap:12px;align-items:center;margin:8px 0}.exrow.total{border-top:1px solid var(--line);padding-top:10px;font-weight:700}.exrow b{text-align:right}
-.links{margin:6px 0 0;color:var(--muted);font-size:14px}a.ext{color:#d9532f;text-decoration:none;white-space:nowrap;font-weight:600}a.ext:hover{text-decoration:underline}a.ext.s{font-size:13px}table.re thead a.ext{font-size:12px;text-transform:none;letter-spacing:0}
+.links{margin:6px 0 0;color:var(--muted);font-size:14px}a.ext{color:var(--accent-d);text-decoration:none;white-space:nowrap;font-weight:600}a.ext:hover{text-decoration:underline}a.ext.s{font-size:13px}table.re thead a.ext{font-size:12px;text-transform:none;letter-spacing:0}
 dl.ctx{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px 24px;margin:0}dl.ctx dt{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.72px;color:var(--muted)}dl.ctx dd{margin:3px 0 0}
 dl.kv{display:grid;grid-template-columns:220px 1fr;gap:10px 18px;margin:0}dl.kv dt{font-weight:600;color:var(--strong)}dl.kv dd{margin:0;color:var(--muted)}
 details.dash{border:1px solid var(--line);padding:14px 18px;margin:12px 0}details summary{cursor:pointer;font-weight:600;color:var(--strong)}
@@ -1933,18 +1933,31 @@ ol.glance a{color:var(--strong);text-decoration:none}ol.glance a:hover b{text-de
 .ftag{display:inline-block;color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;margin-right:8px}.fconf{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
 .finding{border:1px solid var(--line);border-left:5px solid var(--c,var(--accent));padding:22px 26px;margin:18px 0;background:#fff;scroll-margin-top:72px}
 .finding h3{border-top:0;padding-top:0;margin:6px 0 0;font-size:21px}.finding h5{margin:18px 0 6px}.finding p{margin:6px 0}
-.fhead{display:flex;gap:14px;align-items:flex-start}.fnum{flex:none;width:34px;height:34px;background:var(--c,var(--accent));color:#fff;font-weight:700;font-size:18px;display:grid;place-items:center}
+.fhead{display:flex;gap:14px;align-items:flex-start}.fnum{flex:none;width:34px;height:34px;background:var(--c,var(--accent-d));color:#fff;font-weight:700;font-size:18px;display:grid;place-items:center}
 p.concl{font-size:17.5px;font-weight:600;color:var(--strong);margin:12px 0 4px}
 .finding.mini{border-left-width:3px;padding:14px 18px;margin:10px 0}.finding.mini h4{margin:0 0 4px;font-size:16.5px}
 ul.evs{list-style:none;padding:0;margin:6px 0}li.ev{background:var(--bg);padding:10px 14px;margin:6px 0}li.ev .evt{color:var(--ink)}.evd{margin:6px 0 2px}
 .dchip{display:inline-block;background:#fff;border:1px solid var(--line);padding:2px 8px;font-size:12.5px;margin:2px 6px 2px 0;color:var(--muted)}.dchip b{color:var(--strong)}
-.evl{font-size:13px;color:var(--muted);margin:6px 0 0}.evl span{font-weight:500;color:var(--soft)}.evl .sepdot{color:#c9c5bf;margin:0 4px}a.ref,.evl a.ext,.links a.ext{color:var(--muted);text-decoration:underline;text-decoration-color:#cfcac4;text-underline-offset:3px;font-weight:500}a.ref:hover,.evl a.ext:hover,.links a.ext:hover{color:var(--strong);text-decoration-color:var(--accent)}
+.evl{font-size:13px;color:var(--muted);margin:6px 0 0}.evl span{font-weight:500;color:var(--soft)}.evl .sepdot{color:var(--soft);margin:0 4px}a.ref,.evl a.ext,.links a.ext{color:var(--muted);text-decoration:underline;text-decoration-color:#cfcac4;text-underline-offset:3px;font-weight:500}a.ref:hover,.evl a.ext:hover,.links a.ext:hover{color:var(--strong);text-decoration-color:var(--accent)}
 .readnote{background:var(--bg);border-left:4px solid var(--accent);padding:12px 16px;margin:0 0 14px;color:var(--ink)}
 .illus{display:inline-block;background:#e9e6e1;color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 7px;margin-right:6px}
 footer{color:var(--soft);font-size:13px;text-align:center;padding:10px 0 30px}
 @media(max-width:700px){.sec{padding:20px 16px}.aoicard{grid-template-columns:1fr}.xgrid{grid-template-columns:1fr}dl.kv{grid-template-columns:1fr}.hd{flex-direction:column}.comp-chart .crow{grid-template-columns:1fr}.bar nav{display:none}}
 @media print{.finding{break-inside:avoid}.wtabs .tabs{display:none}.wtabs .wpane{display:block!important}#dpop,#gpop,.btnrow,details.datapack{display:none!important}#agent-prompt{height:auto}.bar{position:static}.bar nav,.btn{display:none}body{background:#fff}.sec{break-inside:avoid;border-color:#ddd}details{display:block}}
 """
+
+
+def a11y_post(h):
+    # Heading levels never skip a level for assistive technology (aria-level keeps the visual style), and chips inside links are not separate buttons
+    prev = [1]
+
+    def hd(m):
+        lvl = int(m.group(1))
+        eff = min(lvl, prev[0] + 1)
+        prev[0] = eff
+        return m.group(0) if eff == lvl else f'<h{lvl} aria-level="{eff}"{m.group(2)}>'
+    h = re.sub(r"<h([1-6])((?:\s[^>]*)?)>", hd, h)
+    return re.sub(r"<a\s[^>]*>.*?</a>", lambda m: m.group(0).replace(' tabindex="0" role="button"', ""), h, flags=re.S)
 
 
 def build(spec, base):
@@ -2003,6 +2016,7 @@ def build(spec, base):
             ERRORS.append(f"a link points to #{r}, which does not exist in the report")
     if ERRORS:
         raise ReportError("\n".join("- " + x_ for x_ in dict.fromkeys(ERRORS)))
+    page = a11y_post(page)
     tips = make_tips(spec)
     nav, page = tips(nav), tips(page)
     css_imgs = "".join(f".{c}{{background-image:url('{u}')}}" for u, c in IMAGES.items())

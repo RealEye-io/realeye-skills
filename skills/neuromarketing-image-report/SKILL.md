@@ -4,7 +4,7 @@ description: Interpret measured RealEye ET Platform webcam eye tracking for ads,
 license: MIT
 metadata:
   author: RealEye
-  version: "1.17.2"
+  version: "1.18.0"
 ---
 
 # Neuromarketing image report
@@ -111,6 +111,7 @@ Write in plain language. **The deliverable is a self-contained, professional HTM
 36. **Be clear that certainty needs at least 100 viewers per group.** To be certain about a result, every group the client wants to analyse (each design, each gender, each age band, each gender × age cell) needs at least **100 viewers** with Average or better data quality. Groups of 30 to 99 are *indicative* (marked ‡) and groups under 30 *anecdotal* (marked †). The report states this rule near the top, lists which groups reach 100 and which do not (per design), repeats it above the audience tables and in the appendix, and marks every group's N with the marker. A finding or hypothesis whose evidence uses a group under 100 can not have 'high' confidence (the build fails; a `weak-evidence` finding that is about the small group itself is exempt), and its confidence note must name the group sizes. Never call a result certain when a group is under 100; say what sample would make it certain. Always ask in the brief which groups the client wants to analyse, and recommend how many more viewers each needs (`study_improvements`, retest plan).
 
 37. **Heatmaps illustrate; the data decides.** Heatmaps are only a picture of the gaze data: how one looks depends on its colour scale, smoothing and each map's own scaling, and the strength of two maps cannot be compared. The report says so at every heatmap and in the findings and the VAI explainer. The analysis and every conclusion must rest on the numbers (VAI and its Reach, Speed, Hold), never on how a heatmap looks: do not write findings such as "the heatmap is hotter here", every finding and hypothesis needs evidence items with `data` points (the build fails otherwise), and a heatmap-only evidence item is tagged *Illustration only*. Use a heatmap to illustrate a number or to spot a missed element (rule 35), then confirm it with VAI.
+38. **The report must be accessible: Lighthouse accessibility 100.** Text meets WCAG AA contrast (4.5:1), including small grey text, links, chips and white text on coloured badges; headings never skip a level; interactive elements have names and are not nested inside links; images, charts and text areas have labels; tables have header cells. The script's design tokens already comply: do not add colours that do not. Before delivery run Google Lighthouse (accessibility category) on the built report and on the example as described in `references/accessibility.md`; the score must be 100 on desktop and mobile, and `scripts/audit_report.py` checks the colour contrast of the tokens.
 
 ### Build the report
 

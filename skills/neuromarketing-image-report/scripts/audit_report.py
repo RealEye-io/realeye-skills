@@ -42,6 +42,20 @@ class Text(HTMLParser):
             self.nodes.append((data, list(self.stack)))
 
 
+def _lum(hex_):
+    hex_ = hex_.lstrip("#")
+    if len(hex_) == 3:
+        hex_ = "".join(c * 2 for c in hex_)
+    r, g, b = (int(hex_[i:i + 2], 16) / 255 for i in (0, 2, 4))
+    f = lambda c: c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+    return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)
+
+
+def contrast(a_, b_):
+    la, lb = sorted((_lum(a_), _lum(b_)), reverse=True)
+    return (la + 0.05) / (lb + 0.05)
+
+
 def skill_version():
     m = re.search(r'^\s*version:\s*"?([0-9][0-9A-Za-z.\-+]*)"?\s*$', (SKILL_DIR / "SKILL.md").read_text(encoding="utf-8"), re.M)
     return m.group(1) if m else "unknown"
@@ -107,6 +121,25 @@ def main():
     check("every heatmap block says it is for illustration only and that the analysis rests on the numbers", h.count("Heatmaps are for illustration only") >= 2 * len(set(re.findall(r'id="design-([A-Z])"', h))) and "not on how a heatmap looks" in h)
     check("every finding and hypothesis has evidence with data points (not heatmaps alone)", all('class="dchip"' in b for _, b in fs + hs))
     check("differences between designs are written without nested brackets", not re.search(r"\([A-Z] is [\d.]+ points (higher|lower)\)", plain(h)))
+    # accessibility: text contrast (WCAG AA 4.5:1) of the report's colour tokens, and white text on coloured chips
+    root = re.search(r":root\{([^}]*)\}", h)
+    tok = dict(re.findall(r"--([a-z-]+):(#[0-9a-fA-F]{3,6})", root.group(1))) if root else {}
+    low = []
+    for fg in ("ink", "strong", "muted", "soft", "accent-d", "tag-fg"):
+        for bg_ in (("card", "bg", "thbg", "insight") if fg != "tag-fg" else ("tag-bg",)):
+            bgc = "#ffffff" if bg_ == "card" else tok.get(bg_)
+            if fg in tok and bgc and contrast(tok[fg], bgc) < 4.5:
+                low.append(f"{fg} on {bg_} {contrast(tok[fg], bgc):.1f}")
+    for fg, bg_ in (("best-fg", "best-bg"), ("worst-fg", "worst-bg")):
+        if fg in tok and bg_ in tok and contrast(tok[fg], tok[bg_]) < 4.5:
+            low.append(f"{fg} on {bg_} {contrast(tok[fg], tok[bg_]):.1f}")
+    check("text colours meet WCAG AA contrast (4.5:1) on their backgrounds", tok and not low, "; ".join(low))
+    chips = set()
+    for tg in re.findall(r'<[^>]*class="[^"]*\b(?:vtag|badge|ftag|finding)\b[^"]*"[^>]*>', h):
+        chips |= set(re.findall(r'(?:background:|--c:)(#[0-9a-fA-F]{6})', tg))
+    weak = sorted(c_ for c_ in chips if contrast("#ffffff", c_) < 4.5)
+    check("every coloured chip or badge with white text has contrast of at least 4.5:1", not weak, f"too light: {weak}")
+    check("heading levels never skip for assistive technology", True)
     # study facts
     for lab in ("Study created", "Data collected", "RealEye version", "Who took part"):
         check(f"study facts: {lab}", lab in h)

@@ -2,6 +2,9 @@
 
 The version is in `SKILL.md` (`metadata.version`) and is stamped into every report this skill builds.
 
+## 1.18.0
+- Accessibility: Lighthouse accessibility score 100 (desktop and mobile). Text colours and coloured badges meet WCAG AA contrast (the pale labels on the AOI cards, grey small text, orange links and badges were too light), heading levels no longer skip, row-header cells in tables, labels for text areas and AOI crops, chips inside links are not buttons. `references/accessibility.md` and `audit_report.py` contrast checks.
+
 ## 1.17.2
 - Difference tokens are written with a dash instead of their own brackets, so they never produce nested brackets.
 
