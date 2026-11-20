@@ -4,7 +4,7 @@ description: Interpret measured RealEye ET Platform webcam eye tracking for ads,
 license: MIT
 metadata:
   author: RealEye
-  version: "1.4.0"
+  version: "1.5.0"
 ---
 
 # Neuromarketing image report
@@ -75,12 +75,15 @@ Write in plain language. **The deliverable is a self-contained, professional HTM
 8. **Embed the dashboard AOI VAI report** per design (analysed image with its AOIs, executive summary, AOI overview, components, per-window tables, insights) in the technical appendix, labelled as unfiltered.
 9. **Clean, complete images.** Show the whole creative (tall images have content below the visible viewport), never a mouse pointer on a heatmap or overlay (move the pointer off the image before capturing). Name elements by what they cover (the brand name banner, not the label printed on the pack).
 10. **Never state a number you did not read.** Every value comes from RealEye data with its audience and window. Check that VAI equals the mean of its three components before using a row.
+11. **Link every table and heatmap to the RealEye dashboard.** Wherever data or a heatmap is shown, give a link to the same view in the RealEye dashboard (heatmap, AOI report, AOI VAI report), with the audience's gender, age and quality filters applied in the link. Always set `dashboard.study_id` and each design's `item_id` in the report JSON; the script then adds the links to the design headers, score tables, audience column headers, every heatmap, the viewing order, the comparison and the appendix.
+12. **Make it look like the example.** Every report must look and read like the bundled example (`assets/example/example-report.html`): same section order, same plain-language tone, same tables, charts and heatmap sheets. Start from the template (`assets/template/report.template.json`), fill every placeholder, and do not change the layout or add your own styling; use the script to build it.
 
 ### Build the report
 
-1. Pull VAI, Reach, Speed and Hold for each audience × window (script in `scripts/dashboard_vai_collect.js`) and the heatmap sheets (`scripts/dashboard_heatmap_sheets.js`), plus the AOI overlay image and the dashboard's own heatmap, following the [guide](references/html-report.md).
-2. Write `report.json` (schema in the guide).
-3. Run `python scripts/build_report.py report.json -o report.html`. The script draws the charts, viewing order, audience tables and head-to-head comparison.
-4. Open the HTML, check that it renders (no pointer on images, nothing cut off) and that the numbers match the source, then hand the file to the user. Keep several designs (each analysed separately, then compared) in one report.
+1. **Start from the template.** Copy `assets/template/report.template.json` into a new working folder and open `assets/example/example-report.html` (built from `assets/example/report.json`) as the model of how the finished report should look and read. The example is a real two-design report; match its structure, level of detail and tone.
+2. Pull VAI, Reach, Speed and Hold for each audience × window (`scripts/dashboard_vai_collect.js`) and the heatmap sheets (`scripts/dashboard_heatmap_sheets.js`), plus the AOI overlay image and the dashboard's own heatmap, following the [guide](references/html-report.md). Name the image files as in the template.
+3. Fill the template (every `<…>` placeholder; set `dashboard.study_id` and each `item_id` so the links work).
+4. Run `python scripts/build_report.py report.json -o report.html`. The script draws the charts, viewing order, audience tables, comparison and the RealEye links.
+5. Open the HTML, check that it renders (no pointer on images, nothing cut off, links open the right dashboard view) and that the numbers match the source, then hand the file to the user. Keep several designs (each analysed separately, then compared) in one report.
 
 Before delivery, reconcile numbers and units with the source, make sure the audience, window and N travel with each number, and remove person-level data, private access links and credentials from the shareable report. Do not publish or send the report without permission.

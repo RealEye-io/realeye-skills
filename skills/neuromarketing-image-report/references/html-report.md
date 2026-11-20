@@ -26,6 +26,16 @@ Main sections, written for brand managers (plain language, no technical detail):
 
 Brand-manager main sections, technical detail in the appendix · VAI only · RealEye webcam line · conclusions first, then depth · plain VAI explainer · clear viewing order · quality Average or better (appendix) · every audience × window with heatmaps · dashboard AOI VAI report embedded and labelled unfiltered · clean complete images with no pointer.
 
+## Start from the template and the example
+
+- `assets/template/report.template.json`: the skeleton to fill. Every `<…>` is a placeholder with guidance; the `_help` list at the top repeats the rules. It builds as-is with the example images (the numbers are zeros), so you can check the structure.
+- `assets/example/`: a finished two-design report (`report.json`, its images, and the built `example-report.html`). Open the HTML to see the target look. The ids in it are placeholders (`STUDY_ID`, `ITEM_ID_A`), so its links are illustrative.
+- Reports must look like the example: same sections in the same order, same plain tone, same tables, charts and heatmap sheets. Do not restyle; the script owns the look.
+
+## Links to the RealEye dashboard
+
+Set `dashboard.study_id` and every variant's `item_id` and the script links everything to the dashboard: the design headers (heatmap, AOI report, AOI VAI report), the scores table, each audience column header (AOI report with that audience's gender, age and quality filters applied), every heatmap sheet (one link per audience and window to the dashboard heatmap), the viewing order, the comparison, the gender and age section and the appendix copy of the AOI VAI report. Links open the signed-in dashboard in a new tab. The AOI VAI report cannot be filtered, so its link is unfiltered. If ids are missing the report still builds, without links, but a report for a real study should always have them.
+
 ## Getting the data from the RealEye dashboard
 
 Use the user's signed-in browser (read-only). Never print participant names; never edit AOIs or share anything.
@@ -56,6 +66,7 @@ Use the user's signed-in browser (read-only). Never print participant names; nev
     "windows": "First 3 s (0.5–3 s), first 5 s, first 10 s, cumulative.",
     "segments": "All viewers; men and women; ages …; gender × age. Audiences under 30 viewers are marked †.",
     "task": "…", "source": "…", "note": "…"},
+  "dashboard": {"base": "https://app.realeye.io", "study_id": "<STUDY_ID>", "min_quality": 3},
   "aoi_order": ["Tagline", "Pack (product)", "Face", "Logo", "Brand name (banner)"],
   "overall": {
     "verdict_label": "…", "verdict_text": "…", "summary": "…",
@@ -63,7 +74,7 @@ Use the user's signed-in browser (read-only). Never print participant names; nev
     "findings": [{"tag": "strength|risk|weak-evidence", "title": "…", "text": "…"}],
     "conclusions": ["…"]},
   "variants": [{
-    "id": "A", "name": "…", "description": "…",
+    "id": "A", "item_id": "<ITEM_ID_A>", "name": "…", "description": "…",
     "aoi_overlay": {"src": "aoi-A.jpg", "crop": [x0, y0, x1, y1], "caption": "…"},
     "heatmap":     {"src": "heatmap-A.png", "crop": [x0, y0, x1, y1], "caption": "…"},
     "heatmap_sheets": {"3": "heat-sheet-A-3.png", "5": "heat-sheet-A-5.png", "10": "heat-sheet-A-10.png"},

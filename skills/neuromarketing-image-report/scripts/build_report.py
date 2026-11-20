@@ -100,6 +100,68 @@ def figure(base, spec, alt, markers=None, cls="", wide=False):
     return f'<figure class="{cls}{" wide" if wide else ""}">{inner}<figcaption>{e(spec.get("caption", ""))}</figcaption></figure>'
 
 
+# ------------------------------------------------------------------ RealEye dashboard links
+def _flags(label):
+    """Gender flags and age range from an audience label such as 'Women 25–34'."""
+    lab = label.strip()
+    g = {"m": "true", "f": "true", "o": "true", "n": "true"}
+    if lab.startswith("Men"):
+        g = {"m": "true", "f": "false", "o": "false", "n": "false"}
+        lab = lab[3:].strip()
+    elif lab.startswith("Women"):
+        g = {"m": "false", "f": "true", "o": "false", "n": "false"}
+        lab = lab[5:].strip()
+    lo, hi = 0, 99
+    if lab and lab != "All":
+        if lab.endswith("+"):
+            lo, hi = int(lab[:-1]), 99
+        elif "–" in lab:
+            a, b = lab.split("–")
+            lo, hi = int(a), int(b)
+    return g, lo, hi
+
+
+def dash_url(spec, v, kind, label="All", w=None):
+    """Deep link into the RealEye dashboard with the audience filters applied.
+    kind: heatmap | aoi | vai | study. Returns None when the report has no dashboard config."""
+    d = spec.get("dashboard")
+    if not d or (kind != "study" and not v.get("item_id")):
+        return None
+    base = d.get("base", "https://app.realeye.io").rstrip("/")
+    study, item = d.get("study_id"), v.get("item_id")
+    if kind == "study":
+        return f"{base}/dashboard/study/{study}/"
+    if kind == "vai":
+        return f"{base}/dashboard/study/{study}/item/{item}/aoi-vai-report"
+    g, lo, hi = _flags(label)
+    q = d.get("min_quality", 3)
+    h = (f"itemId={item}&genderMale={g['m']}&genderFemale={g['f']}&genderOther={g['o']}&genderNotSpecified={g['n']}&ageMin={lo}&ageMax={hi}"
+         "&participantTypeRealEye=true&participantTypeOwn=true&deviceDesktop=true&deviceSmartphone=true&deviceSmartphoneVertical=true"
+         "&deviceSmartphoneHorizontal=true&deviceTablet=true&setupLocal=true&setupMouse=true&setupOpengaze=true&setupReWebcamV3=true"
+         f"&participantQualityGradeItemMin={q}&participantQualityGradeItemMax=6")
+    if kind == "heatmap":
+        to = (w or 10) * 1000
+        h += ("&participantId=all&viewType=fixations&heatmapType=heatmap&fineTuneAutoAdjustment=1"
+              f"&itemTimeFrom=500&itemTimeTo={to}&movingMedianRangeMs=200&minFixationDurationMs=80&maxFixationDurationMs=400"
+              "&gazeVelocityThreshold=30&maxSaccadeDurationMs=150")
+    h += "&filterAnswers=%5B%5D&includeAll=0"
+    page = "aoi" if kind == "aoi" else ""
+    return f"{base}/dashboard/item/{item}/{page}#{h}"
+
+
+def alink(url, text, cls="ext"):
+    if not url:
+        return e(text)
+    return f'<a class="{cls}" href="{e(url)}" target="_blank" rel="noopener">{e(text)} ↗</a>'
+
+
+def open_links(spec, v, label="All", w=None, parts=("heatmap", "aoi", "vai")):
+    names = {"heatmap": "Heatmap", "aoi": "AOI report", "vai": "AOI VAI report"}
+    out = [alink(dash_url(spec, v, k, label, w), names[k]) for k in parts if dash_url(spec, v, k, label, w)]
+    return " · ".join(out)
+
+
+
 # ------------------------------------------------------------------ data access
 def seg_of(v, label):
     return next((s for s in v["segments"] if s["label"] == label), None)
@@ -127,6 +189,8 @@ def small(seg):
 
 def lst(words):
     words = list(words)
+    if not words:
+        return ""
     return words[0] if len(words) == 1 else ", ".join(words[:-1]) + " and " + words[-1]
 
 
@@ -210,6 +274,7 @@ def cell(seg, w, ai, heat=None):
 
 
 def window_table(spec, v, vi):
+    lk = alink(dash_url(spec, v, 'aoi'), 'See this data in the RealEye AOI report')
     seg = seg_of(v, "All")
     head = "".join(f'<th colspan="1">{WIN_LABEL[w]}</th>' for w in ["3", "5", "10"])
     rows = ""
@@ -218,14 +283,14 @@ def window_table(spec, v, vi):
         rows += (f'<tr><th scope="row"><i class="dot" style="background:{a.get("color", "#999")}"></i>{e(nm)}<small>{e(a.get("role", ""))}</small></th>'
                  + "".join(cell(seg, w, ai, color(vi)) for w in ["3", "5", "10"]) + "</tr>")
     return (f'<div class="tablewrap"><table class="seg"><thead><tr><th>Element</th>{head}</tr></thead><tbody>{rows}</tbody></table></div>'
-            '<p class="muted small">Each cell: <b>VAI</b> (large) and Reach · Speed · Hold (small), 0–100.</p>')
+            f'<p class="muted small">Each cell: <b>VAI</b> (large) and Reach · Speed · Hold (small), 0–100. {lk}</p>')
 
 
 def segment_table(spec, v, vi, kind, title):
     segs = [s for s in v["segments"] if s["kind"] == kind]
     if not segs:
         return ""
-    head = "".join(f'<th>{e(s["label"])}<small>N = {s["n"]}{" †" if small(s) else ""}</small></th>' for s in segs)
+    head = "".join(f'<th>{alink(dash_url(spec, v, "aoi", s["label"]), s["label"])}<small>N = {s["n"]}{" †" if small(s) else ""}</small></th>' for s in segs)
     rows = ""
     for ai, nm in enumerate(names(spec)):
         for wi, w in enumerate(["3", "5", "10"]):
@@ -347,13 +412,14 @@ def order_section(spec):
             f"<b>{' → '.join(rank_names(spec, seg_of(variants[0], 'All'), '10'))}</b>"
             + (", and the order does not change between the first 3, 5 and 10 seconds." if stable_all and same else ".")
             if same else "The viewing order differs between the designs (see below).")
+    olinks = " · ".join(f'Design {e(v["id"])}: ' + open_links(spec, v, parts=("aoi", "vai")) for v in variants if open_links(spec, v, parts=("aoi", "vai")))
     overlays = "".join(figure(spec["_base"], v.get("aoi_overlay"), "Image with viewing order", markers=order_markers(spec, v), cls="ov") for v in variants)
     return f"""
 <section class="card" id="order"><h2>Viewing order</h2>
 <p class="lead">{lead}</p>
 <p class="muted small">The order in which viewers notice the elements, across all viewers (not one person's scan path). #1 is noticed soonest; it is ranked by VAI Speed. The numbered circles show the first-10-seconds order.</p>
 <div class="figs">{overlays}</div>
-<div class="two">{blocks}</div></section>"""
+<div class="two">{blocks}</div>{('<p class="links small">See the data in RealEye. ' + olinks + '</p>') if olinks else ''}</section>"""
 
 
 def order_markers(spec, v):
@@ -375,12 +441,16 @@ def variant_section(spec, v, vi):
     xl = ["first 3 s", "first 5 s", "first 10 s"]
     mini = "".join(f'<div><h5>{lab} by window</h5>{lines(series(k), xl, lab)}</div>' for k, lab in COMP)
     leg = legend([(nm, cols[nm]) for nm in n])
-    sheets = "".join(figure(base, v["heatmap_sheets"][w], f"Heatmaps by segment, {WIN_LABEL[w]}", wide=True) for w in ["3", "5", "10"] if w in v.get("heatmap_sheets", {}))
+    def sheet(w):
+        fig = figure(base, v["heatmap_sheets"][w], f"Heatmaps by audience, {WIN_LABEL[w]}", wide=True)
+        ls = " · ".join(alink(dash_url(spec, v, "heatmap", sg["label"], int(w)), sg["label"], "ext s") for sg in v["segments"] if dash_url(spec, v, "heatmap", sg["label"], int(w)))
+        return f'<h5>Heatmaps, {WIN_LABEL[w]}</h5>{fig}' + (f'<p class="links small">Open in the RealEye heatmap: {ls}</p>' if ls else "")
+    sheets = "".join(sheet(w) for w in ["3", "5", "10"] if w in v.get("heatmap_sheets", {}))
     flist = "".join(f"<li>{e(f)}</li>" for f in v.get("findings", []))
     return f"""
 <section class="card variant" id="variant-{e(v['id'])}">
   <div class="variant-head"><span class="badge" style="background:{color(vi)}">{e(v['id'])}</span>
-    <div><h3>Design {e(v['id'])}: {e(v['name'])}</h3><p class="muted">{e(v.get('description', ''))}</p></div>
+    <div><h3>Design {e(v['id'])}: {e(v['name'])}</h3><p class="muted">{e(v.get('description', ''))}</p>{('<p class="links small">Open in RealEye: ' + open_links(spec, v) + '</p>') if open_links(spec, v) else ''}</div>
     <div class="nbox"><b>{seg['n']}</b><span>viewers</span></div></div>
   <div class="figs">{figure(base, v.get('aoi_overlay'), 'Analysed image with AOIs', cls='ov')}{figure(base, v.get('heatmap'), 'Measured heatmap', cls='hm')}</div>
   {leg}
@@ -418,8 +488,9 @@ def compare_section(spec):
             d = {k: val(sb, w, ai, k) - val(sa, w, ai, k) for k, _ in COMP}
             ra, rb = val(sa, w, ai, "reach"), val(sb, w, ai, "reach")
             ca, cb = round(ra / 100 * sa["n"]), round(rb / 100 * sb["n"])
-            p1, p2 = ca / sa["n"], cb / sb["n"]
-            se = math.sqrt(p1 * (1 - p1) / sa["n"] + p2 * (1 - p2) / sb["n"])
+            na, nb = max(sa["n"], 1), max(sb["n"], 1)
+            p1, p2 = ca / na, cb / nb
+            se = math.sqrt(p1 * (1 - p1) / na + p2 * (1 - p2) / nb)
             lo, hi = (p2 - p1) * 100 - 196 * se, (p2 - p1) * 100 + 196 * se
             tag = ("indicative" if lo > 0 or hi < 0 else "within noise") if se else "within noise"
             tds += (f'<td class="vc"><b>{d["vai"]:+.1f}</b><small>R {d["reach"]:+.1f} · S {d["speed"]:+.1f} · H {d["hold"]:+.1f}</small>'
@@ -429,7 +500,8 @@ def compare_section(spec):
 <section class="card" id="compare"><h2>Head-to-head: design {e(B['id'])} versus design {e(A['id'])}</h2>
 <p class="muted small">Differences are {e(B['id'])} minus {e(A['id'])}, in VAI points. R, S and H are the Reach, Speed and Hold differences. "Indicative" means the Reach gap is larger than chance would explain; the viewer groups may overlap, so treat it as a signal, not proof.</p>
 <div class="tablewrap"><table class="seg"><thead><tr><th>Element</th>{''.join(f'<th>{WIN_LABEL[w]}</th>' for w in ['3', '5', '10'])}</tr></thead><tbody>{rows}</tbody></table></div>
-{legend([(f'{A["id"]} · {A["name"]}', color(0)), (f'{B["id"]} · {B["name"]}', color(1))])}{charts}</section>"""
+{legend([(f'{A["id"]} · {A["name"]}', color(0)), (f'{B["id"]} · {B["name"]}', color(1))])}{charts}
+{('<p class="links small">Open in RealEye: ' + ' · '.join('Design ' + e(x["id"]) + ': ' + open_links(spec, x, parts=("aoi", "heatmap")) for x in (A, B)) + '</p>') if open_links(spec, A) else ''}</section>"""
 
 
 def audience_section(spec):
@@ -444,7 +516,11 @@ def audience_section(spec):
     return f"""
 <section class="card" id="audience"><h2>Gender and age insights</h2>
 <ul class="findings">{text}</ul>{gaps}{gga}{ga}
+{('<p class="links small">Open in RealEye: ' + ' · '.join('Design ' + e(x["id"]) + ': ' + open_links(spec, x, "Women", None, ("aoi", "heatmap")) + ' (women)' for x in variants) + '</p>') if open_links(spec, variants[0]) else ''}
 <p class="muted small">† Small audiences (fewer than {MIN_N} viewers) are indicative only. Full tables and heatmaps are in each design's section.</p></section>"""
+
+
+spec_ref = [None]
 
 
 def dashboard_vai(v, vi, base):
@@ -466,7 +542,7 @@ def dashboard_vai(v, vi, base):
     ins = "".join(f"<li>{e(x)}</li>" for x in d.get("insights", []))
     return f"""
 <details class="card dash"><summary><span class="badge sm" style="background:{color(vi)}">{e(v['id'])}</span> Dashboard AOI VAI report, design {e(v['id'])} <small class="muted">· {e(d.get('scope', ''))}</small></summary>
-<p class="notice">{e(d.get('note', ''))}</p>
+<p class="notice">{e(d.get('note', ''))} {alink(dash_url(spec_ref[0], v, 'vai'), 'Open the AOI VAI report in RealEye')}</p>
 <div class="figs">{figure(base, d.get('aoi_image'), 'Analysed image with AOIs')}<div><h5>Executive summary</h5><div class="kpis one">{ex}</div></div></div>
 <h5>AOIs overview: VAI and components (average of the cumulative windows)</h5>
 <div class="tablewrap"><table><thead><tr><th>AOI</th><th>VAI</th><th>Reach</th><th>Speed</th><th>Hold</th><th>Participants</th></tr></thead><tbody>{rows}</tbody></table></div>{tabs}
@@ -476,6 +552,7 @@ def dashboard_vai(v, vi, base):
 # ------------------------------------------------------------------ page
 def build(spec, base):
     spec["_base"] = base
+    spec_ref[0] = spec
     o = spec["overall"]
     m = spec["method"]
     variants = spec["variants"]
@@ -553,6 +630,7 @@ tr.grp th,tr.grp td{{border-top:2px solid var(--line)}}td.vc b{{font-size:1.05re
 .findings li{{margin:.4em 0}}.muted{{color:var(--muted)}}.small{{font-size:.82rem}}
 .chart{{width:100%;height:auto;display:block}}.chart.small{{max-width:420px}}.chart .grid{{stroke:var(--line);stroke-width:1}}
 .chart text{{fill:var(--ink);font-size:12px}}.chart .axis{{fill:var(--muted)}}.chart .val{{font-weight:600}}.chart .val.s{{font-size:10px;font-weight:500}}
+.links{{margin:.5em 0 0;color:var(--muted)}}a.ext{{color:var(--accent);text-decoration:none;white-space:nowrap}}a.ext:hover{{text-decoration:underline}}a.ext.s{{font-size:.82rem}}th a.ext{{font-weight:600;font-size:.74rem;text-transform:none;letter-spacing:0}}
 .legend{{display:flex;gap:16px;flex-wrap:wrap;margin:8px 0 4px;font-size:.85rem}}.legend i{{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}}
 .two{{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:24px}}.grid2{{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}}
 .comp3{{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:14px 0}}.comp3>div{{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:4px 16px 12px}}.comp3 h4{{margin:.8em 0 .3em}}.comp3 p{{margin:0;color:var(--muted);font-size:.93rem}}
