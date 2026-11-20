@@ -141,6 +141,7 @@ def main():
     check("every coloured chip or badge with white text has contrast of at least 4.5:1", not weak, f"too light: {weak}")
     check("heading levels never skip for assistive technology", True)
     check("the report is called Visual Attention Report", "Visual Attention Report" in h and "Neuromarketing report" not in plain(h))
+    check("print: A4 page, backgrounds and images forced to print, collapsed dashboard copies opened, no clipped tables", "@page{size:A4" in h and "print-color-adjust:exact" in h and 'addEventListener("beforeprint"' in h and ".tablewrap{overflow:visible!important}" in h)
     # study facts
     for lab in ("Study created", "Data collected", "RealEye version", "Who took part"):
         check(f"study facts: {lab}", lab in h)

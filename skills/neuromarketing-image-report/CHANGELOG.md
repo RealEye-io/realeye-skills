@@ -2,6 +2,9 @@
 
 The version is in `SKILL.md` (`metadata.version`) and is stamped into every report this skill builds.
 
+## 1.19.0
+- Print and PDF: A4 layout, images, backgrounds and colours forced to print, tables fit the page, collapsed dashboard report copies opened for printing, all audience tabs shown, large sections can break across pages, interactive parts hidden with a note. The example went from 100 to about 65 pages. `references/printing.md` and an audit check.
+
 ## 1.18.1
 - The report is called the Visual Attention Report (header label, default title, download file names).
 

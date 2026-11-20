@@ -1783,6 +1783,8 @@ document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.targe
  var b=document.createElement("button");b.type="button";b.className="lnk";b.dataset.copy=el.id;b.title="Copy link to this part";b.setAttribute("aria-label","Copy link to this part");b.textContent="#";h.appendChild(b)});
 })();</script>"""
 
+POP5 = r"""<script>window.addEventListener("beforeprint",function(){[].forEach.call(document.querySelectorAll("details.dash"),function(d){if(!d.open){d.setAttribute("data-po","1");d.open=true}})});window.addEventListener("afterprint",function(){[].forEach.call(document.querySelectorAll("details[data-po]"),function(d){d.open=false;d.removeAttribute("data-po")})});</script>"""
+
 POP4 = r"""<script>(function(){
 var root=document.querySelector("main.page");if(!root)return;
 var KEY="re-marks:"+document.title+":"+((document.querySelector("meta[name=generator]")||{}).content||""),store={t:[],a:[]},mode="",color="y";
@@ -1851,6 +1853,27 @@ main.page{position:relative}#hlareas{position:absolute;inset:0;pointer-events:no
 #hlcap{display:none;position:absolute;inset:0;z-index:40;cursor:crosshair;touch-action:none}body.hl-area #hlcap{display:block}body.hl-text main{cursor:text}
 @media print{#toc,#tocbtn,#hlbar,button.lnk{display:none!important}mark.hl,.areamark{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 @media(max-width:700px){.dcard{flex-direction:column}.dcard .stagebox{width:100%}}
+
+@page{size:A4;margin:12mm 10mm}
+@media print{
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+html,body{background:#fff!important;font-size:12px}
+.page{max-width:none;padding:0}
+.bar{position:static;height:auto;padding:6px 0;border-bottom:1px solid #ddd}
+.sec{break-inside:auto!important;padding:14px 16px;margin:0 0 10px;box-shadow:none!important}
+.sec.hero{padding:16px 18px}
+h2,h3,h4,h5{break-after:avoid}
+.finding:not(.mini),.insight,.tile,.cc,.aoicard2,.dcard,figure,li.ev,.xtile,.example,.callout,.readnote,.note,tr,.step,.exrow,.dchip{break-inside:avoid}
+.tablewrap{overflow:visible!important}
+table.re{font-size:10px}table.re th,table.re td{padding:3px 4px}table.re small{font-size:8.5px}
+.stagebox,.stage,.heat{max-width:250px}.dcard .stagebox,.dcard .stage{max-width:150px}
+.chart{max-width:100%}
+.dband{grid-template-columns:1fr 1fr}.tiles{grid-template-columns:repeat(4,1fr)}.xgrid,.grid2,.two{grid-template-columns:1fr 1fr}
+.sheet{max-width:100%}
+textarea,#agent .btnrow,#agent details{display:none!important}
+#agent:after{content:"The copy-paste AI prompt and the data pack are in the interactive HTML version of this report.";display:block;color:#555;margin-top:8px}
+a.ext,a.ref{color:#333!important;text-decoration:none!important}
+}
 """
 POP = '<script>(function(){var p=document.createElement("div");p.id="dpop";document.body.appendChild(p);function show(el){while(p.firstChild)p.removeChild(p.firstChild);var t=document.createElement("div");t.className="th pic "+el.dataset.cls;var b=document.createElement("b");b.textContent="Design "+el.dataset.id;var s=document.createElement("small");s.textContent=el.dataset.name;p.appendChild(t);p.appendChild(b);p.appendChild(s);p.style.display="block";var r=el.getBoundingClientRect(),w=p.offsetWidth,h=p.offsetHeight,x=Math.min(Math.max(8,r.left),window.innerWidth-w-8),y=r.bottom+6;if(y+h>window.innerHeight-8)y=Math.max(8,r.top-h-6);p.style.left=x+"px";p.style.top=y+"px"}function hide(){p.style.display="none"}function ref(ev){return ev.target.closest&&ev.target.closest(".dref")}document.addEventListener("mouseover",function(ev){var el=ref(ev);if(el)show(el)});document.addEventListener("mouseout",function(ev){if(ref(ev))hide()});document.addEventListener("focusin",function(ev){var el=ref(ev);if(el)show(el)});document.addEventListener("focusout",function(ev){if(ref(ev))hide()});document.addEventListener("click",function(ev){var el=ref(ev);if(el)show(el);else hide()});document.addEventListener("keydown",function(ev){if(ev.key==="Escape"){hide();hg()}});})();(function(){var g=document.createElement("div");g.id="gpop";document.body.appendChild(g);function gl(ev){return ev.target.closest&&ev.target.closest(".gl")}function sg(el){g.textContent=el.dataset.tip;g.style.display="block";var r=el.getBoundingClientRect(),w=g.offsetWidth,h=g.offsetHeight,x=Math.min(Math.max(8,r.left),window.innerWidth-w-8),y=r.bottom+6;if(y+h>window.innerHeight-8)y=Math.max(8,r.top-h-6);g.style.left=x+"px";g.style.top=y+"px"}window.hg=function(){g.style.display="none"};document.addEventListener("mouseover",function(ev){var el=gl(ev);if(el)sg(el)});document.addEventListener("mouseout",function(ev){if(gl(ev))hg()});document.addEventListener("click",function(ev){var el=gl(ev);if(el)sg(el);else hg()});})();</script>'
 
@@ -2024,7 +2047,7 @@ def build(spec, base):
             f'<title>{e(spec.get("title", "Visual Attention Report"))}</title>'
             '<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">'
             f'<style>{CSS}{NEW_CSS}</style></head><body><div class="bar"><span class="logo"><b>Re</b>alEye</span><span class="sep"></span><span class="study">{e(study)}</span></div>'
-            f'<main class="page">{page}</main>' + toc_html(spec, ids) + HLBAR + f'<style>{css_imgs}</style>' + POP + POP2 + POP3 + POP4 + '</body></html>')
+            f'<main class="page">{page}</main>' + toc_html(spec, ids) + HLBAR + f'<style>{css_imgs}</style>' + POP + POP2 + POP3 + POP4 + POP5 + '</body></html>')
 
 
 def main():

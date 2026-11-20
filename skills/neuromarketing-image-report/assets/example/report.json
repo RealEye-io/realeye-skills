@@ -2,7 +2,7 @@
  "title": "“Wake up the red in your hair”: two shampoo ad versions",
  "subtitle": "What viewers noticed, in what order, and for how long, using RealEye's VAI, by gender, age and time window.",
  "date": "20 Nov 2026",
- "skill_version": "1.18.1",
+ "skill_version": "1.19.0",
  "method": {
   "platform": "RealEye platform",
   "tracking": "Webcam eye tracking: participants viewed the images in their own browsers while RealEye estimated their gaze from their webcams.",

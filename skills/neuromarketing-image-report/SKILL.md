@@ -4,7 +4,7 @@ description: Interpret measured RealEye ET Platform webcam eye tracking for ads,
 license: MIT
 metadata:
   author: RealEye
-  version: "1.18.1"
+  version: "1.19.0"
 ---
 
 # Neuromarketing image report
@@ -113,6 +113,7 @@ Write in plain language. **The deliverable is a self-contained, professional HTM
 37. **Heatmaps illustrate; the data decides.** Heatmaps are only a picture of the gaze data: how one looks depends on its colour scale, smoothing and each map's own scaling, and the strength of two maps cannot be compared. The report says so at every heatmap and in the findings and the VAI explainer. The analysis and every conclusion must rest on the numbers (VAI and its Reach, Speed, Hold), never on how a heatmap looks: do not write findings such as "the heatmap is hotter here", every finding and hypothesis needs evidence items with `data` points (the build fails otherwise), and a heatmap-only evidence item is tagged *Illustration only*. Use a heatmap to illustrate a number or to spot a missed element (rule 35), then confirm it with VAI.
 38. **The report must be accessible: Lighthouse accessibility 100.** Text meets WCAG AA contrast (4.5:1), including small grey text, links, chips and white text on coloured badges; headings never skip a level; interactive elements have names and are not nested inside links; images, charts and text areas have labels; tables have header cells. The script's design tokens already comply: do not add colours that do not. Before delivery run Google Lighthouse (accessibility category) on the built report and on the example as described in `references/accessibility.md`; the score must be 100 on desktop and mobile, and `scripts/audit_report.py` checks the colour contrast of the tokens.
 39. **The report is called the "Visual Attention Report".** Use that name for the deliverable everywhere the reader sees it (header label, default title, download file names, the AI prompt, your messages). The skill itself keeps its name, and the RealEye *Neuromarketing Report Methodology* reference keeps its title.
+40. **The report must print and save as PDF properly.** Printed (Ctrl+P, or the *Print / Save as PDF* button) on A4 it shows every image, chart, heatmap and badge (colours and backgrounds are forced to print even with the browser's *Background graphics* option off), every table fits the page width, the content of the collapsed dashboard AOI VAI report copies is opened, all audience tabs are shown, long blocks are not split mid-way, and the interactive parts (menu, mark-up tool, buttons, the copy-paste prompt and data pack) are left out with a note. The script owns this print layout: do not add styling. Before delivery print the report to PDF and look at the pages as described in `references/printing.md`; `scripts/audit_report.py` checks the print rules are present.
 
 ### Build the report
 
