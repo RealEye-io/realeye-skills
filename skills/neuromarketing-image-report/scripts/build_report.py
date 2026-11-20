@@ -892,14 +892,18 @@ def intro_section(spec):
     for vi, v in enumerate(spec["variants"]):
         seg = seg_of(v, "All")
         links = open_links(spec, v)
-        items = "".join(f'<div class="li">{swatch(a.get("color", "#999"))}<div><b>{e(a["name"])}</b><span>{e(a.get("role", ""))}</span></div></div>' for a in v["aois"])
+        items = "".join(f'<div class="li">{swatch(a.get("color", "#999"))}<div><b>{e(a["name"])}</b><span>{e(a.get("role", ""))}</span>' + (f'<span>Why: {e(a["why"])}</span>' if a.get("why") else "") + '</div></div>' for a in v["aois"])
         cols += (f'<div class="aoitog tcol"><div class="thead">{chip(v["id"], e(v["id"]), "badge", "background:" + vcolor(vi))}'
                  f'<div><h4>Design {e(v["id"])}: {e(v["name"])}</h4><p class="muted">{e(v.get("description", ""))}</p></div></div>'
                  f'<div class="stagebox">{stage(base, v)}</div>'
                  '<label class="switch"><input type="checkbox" class="sw-in" checked><span class="trk"></span><span>Show AOIs</span></label>'
                  f'<div class="alist">{items}</div>'
                  f'<p class="links small">{seg["n"]} viewers' + (f" · Open in RealEye: {links}" if links else "") + "</p></div>")
-    body = ('<p class="hint">The images tested in this study and the elements analysed. Each outlined element is an Area of Interest (AOI) that is measured separately; '
+    prop = [v["id"] for v in spec["variants"] if v.get("aoi_source") == "proposed"]
+    pnote = (f'<p class="box"><b>These AOIs were defined for this report.</b> The study had no AOIs saved for {"design " + prop[0] if len(prop) == 1 else "designs " + " and ".join(prop)}, '
+             'so the elements were chosen from the image and the purpose of the design (why each one matters is listed under it). Their scores are measured from the same viewers and the same eye-tracking data, '
+             'but the AOIs are not saved in RealEye: the study blueprint at the end gives their exact coordinates.</p>') if prop else ""
+    body = (pnote + '<p class="hint">The images tested in this study and the elements analysed. Each outlined element is an Area of Interest (AOI) that is measured separately; '
             'the same elements are used throughout the report. Switch the outlines off to see the clean image.</p>' + f'<div class="two">{cols}</div>')
     return section("tested", "Tested designs and the elements analysed", body)
 
@@ -1159,7 +1163,7 @@ def method_block(spec):
     rows = "".join(f'<div><dt>{e(k)}</dt><dd>{rich(x)}</dd></div>' for k, x in (
         ("Platform", m.get("platform")), ("Eye tracking", m.get("tracking")), ("Study", m.get("study")), ("Participants analysed", m.get("participants")),
         ("Participant quality filter", m.get("quality_filter")), ("Time windows", m.get("windows")), ("Audiences", m.get("segments")),
-        ("Task and exposure", m.get("task")), ("Source", m.get("source")), ("Tracker precision", m.get("precision"))) if x)
+        ("Areas of interest", m.get("aois")), ("Task and exposure", m.get("task")), ("Source", m.get("source")), ("Tracker precision", m.get("precision"))) if x)
     return f'<h3>About this study</h3><dl class="ctx">{rows}</dl><p class="hint">{e(m.get("note", ""))}</p>'
 
 
@@ -1404,7 +1408,7 @@ def aoi_records(spec, v):
         out.append({"name": a["name"], "color": a.get("color"), "type": a.get("type") or ("rectangle" if rect else "polygon"), "image_px": [W, H],
                     "bbox_px": [round(x0 / 100 * W), round(y0 / 100 * H), round(x1 / 100 * W), round(y1 / 100 * H)], "bbox_pct": [round(x0, 1), round(y0, 1), round(x1, 1), round(y1, 1)],
                     "points_px": [[round(p[0] / 100 * W), round(p[1] / 100 * H)] for p in sh], "points_pct": [[round(p[0], 2), round(p[1], 2)] for p in sh],
-                    "time_range_s": a.get("time_range_s", [0.5, 10]), "role": a.get("role", "")})
+                    "time_range_s": a.get("time_range_s", [0.5, 10]), "role": a.get("role", ""), "why": a.get("why", "")})
     return out
 
 
@@ -1430,6 +1434,8 @@ def blueprint_section(spec):
     rows = []
     surl = dash_url(spec, {}, "study")
     rows.append(("Study", (alink(surl, bp.get("study_name") or spec.get("title", "")) if surl else e(bp.get("study_name") or spec.get("title", "")))))
+    if any(v.get("aoi_source") == "proposed" for v in variants):
+        rows.append(("Areas of interest", "Defined for this report from the image (none were saved in the study); not saved in RealEye"))
     for k, lab in (("created", "Created"), ("type", "Study type"), ("status", "Status when analysed"), ("tracker", "Eye tracker"), ("panel", "Participants")):
         if si.get(k):
             rows.append((lab, rich(si[k])))
@@ -1453,7 +1459,7 @@ def blueprint_section(spec):
         for a in aoi_records(spec, v):
             x0, y0, x1, y1 = a["bbox_px"]
             pts = "" if a["type"] == "rectangle" else "<small>Vertices (px): " + " ".join(f"({x},{y})" for x, y in a["points_px"]) + "</small>"
-            tr += (f'<tr><td>{swatch(a["color"] or "#999")}<b>{e(a["name"])}</b>{("<small>" + e(a["role"]) + "</small>") if a["role"] else ""}</td><td>{e(a["type"])}</td><td>{e(a["color"] or "")}</td>'
+            tr += (f'<tr><td>{swatch(a["color"] or "#999")}<b>{e(a["name"])}</b>{("<small>" + e(a["role"]) + "</small>") if a["role"] else ""}{("<small>Why: " + e(a["why"]) + "</small>") if a.get("why") else ""}</td><td>{e(a["type"])}</td><td>{e(a["color"] or "")}</td>'
                    f'<td>{x0}, {y0} → {x1}, {y1}{pts}</td><td>{a["bbox_pct"][0]}, {a["bbox_pct"][1]} → {a["bbox_pct"][2]}, {a["bbox_pct"][3]}</td><td>{a["time_range_s"][0]}–{a["time_range_s"][1]} s</td></tr>')
         designs += (f'<h4>{chip(v["id"], e(v["id"]), "vtag", "background:" + vcolor(vi))} {e(v["name"])}</h4>'
                     f'<div class="two"><div class="stagebox">{stage(spec["_base"], v)}</div><div><p class="hint">Image size {W} × {H} px. Coordinates are in image pixels, origin (0, 0) at the top-left, x to the right and y down. '
@@ -1470,7 +1476,8 @@ def blueprint_section(spec):
         f"Create a new study in RealEye ({e(si.get('type') or 'Images and Videos')}) at {e(wh)}.",
         "Upload the stimulus images (download them above), in this order: " + "; ".join(f"design {e(v['id'])}" + (f" ({e(bp['stimuli'][v['id']]['file_name'])})" if (bp.get('stimuli') or {}).get(v['id'], {}).get('file_name') else "") for v in variants) + ".",
         "Set each stimulus' options as listed under Study set-up (display time, how it finishes, instructions, order).",
-        "Open each stimulus' AOI editor and draw the elements from the tables above, using the pixel coordinates (image size as shown). Keep the same names and, if you want the new report to look the same, the same colours.",
+        ("These AOIs were proposed for this report and are not yet saved in the study. " if any(v.get("aoi_source") == "proposed" for v in variants) else "")
+        + "Open each stimulus' AOI editor and draw the elements from the tables above, using the pixel coordinates (image size as shown). Keep the same names and, if you want the new report to look the same, the same colours.",
         "Add the participant questions (at least gender and age) so audience cuts work: " + e(bp.get("demographics_asked") or "gender and age") + ".",
         "Invite participants: share the study link with your own participants or order RealEye panel participants. Plan for at least 100 viewers with Average or better data quality per design, and 30 or more in every audience you want to compare.",
         "When data has come in, give an AI agent that has the neuromarketing-image-report skill the new study and item ids together with this report's data (download below). It collects the numbers, rebuilds the report and can compare it with this one.",
@@ -1578,6 +1585,14 @@ def lint_differences(spec):
 def designs_band(spec):
     cards = ""
     for vi, v in enumerate(spec["variants"]):
+        src = v.get("aoi_source", "saved")
+        if src not in ("saved", "proposed"):
+            ERRORS.append(f"design {v['id']}: aoi_source must be 'saved' or 'proposed'")
+        if src == "proposed":
+            for a_ in v["aois"]:
+                for key in ("role", "why"):
+                    if not a_.get(key):
+                        ERRORS.append(f"design {v['id']}: proposed AOI '{a_.get('name', '?')}' needs '{key}' (what it is, and why it matters for this design)")
         for key in ("presents", "purpose"):
             if not v.get(key):
                 ERRORS.append(f"design {v['id']}: missing '{key}' (what the design presents, and the assumed purpose of showing it to people)")

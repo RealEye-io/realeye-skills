@@ -2,6 +2,9 @@
 
 The version is in `SKILL.md` (`metadata.version`) and is stamped into every report this skill builds.
 
+## 1.15.0
+- Designs without AOIs: the skill defines 3 to 8 useful AOIs (`references/aoi-design.md`), checks them with `scripts/check_aois.py` (bounds, size, overlap, preview image), measures them read-only through `customAois` in `dashboard_vai_collect.js`, and marks them as proposed in the report and the blueprint.
+
 ## 1.14.0
 - The whole designs open the report, each with what it presents and its assumed purpose.
 - Higher VAI is stated as better at attracting visual attention (findings, explainer, tooltips, tables).

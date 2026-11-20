@@ -7,7 +7,7 @@ The report needs data that only the signed-in RealEye dashboard has. This is the
 - **Sign-in:** the dashboard needs the user's own session. Open `https://app.realeye.io/dashboard/`. If you see a login page, ask the user to sign in in that browser (Google sign-in works) and carry on when they say it is done. Never ask for or type passwords, and never use a token from chat.
 - **Never** edit AOIs, change participant status, create share links, download exports, or print participant names (a viewer's display name appears in the fixation data: read only gender and age from it).
 - **Tools you need:** navigate, page JavaScript (to read data), screenshot/zoom with *save to disk*, network requests (to find the stimulus image URL), tabs. Use the batch tool to chain steps; one tab per task keeps state clean.
-- **What you will collect:** (a) ids, (b) VAI, Reach, Speed and Hold per audience × window, (c) AOI shapes and colours, (d) the clean stimulus image, (e) the main heatmap and the heatmap sheets, (f) the dashboard's AOI VAI report, (g) the study facts and participant profile (section 2b). Then (h) check the render.
+- **What you will collect:** (a) ids, (b) VAI, Reach, Speed and Hold per audience × window, (c) AOI shapes and colours (or, if the design has none, AOIs you define: section 3b), (d) the clean stimulus image, (e) the main heatmap and the heatmap sheets, (f) the dashboard's AOI VAI report, (g) the study facts and participant profile (section 2b). Then (h) check the render.
 
 ## 1. Find the ids
 
@@ -42,6 +42,10 @@ Collect these for the intro tiles, the *Who took part* card and the appendix. Ne
 The report must keep the exact AOI geometry so the study can be recreated. Keep the shapes as numbers, in percent of the image (the report converts them to pixels using the image size, 1024 × 1536 for the example; set `image_px` when it differs). Rectangles come from the dashboard in pixels, polygons as fractions.
 
 Run `scripts/dashboard_aoi_shapes.js` (on the AOI VAI report page to also get the legend colours). Convert the colours to hex. Put each AOI's polygon in `aois[].shape` and its colour in `aois[].color`. Name the AOIs by what they cover on the image (for example "Brand name (banner)", not the label printed on the pack).
+
+### 3b. When the design has no AOIs
+
+`/api/item/<ITEM_ID>/aoi/get/?tryToFix=1` returns an empty list. Do not stop and do not create AOIs in the dashboard. Follow `references/aoi-design.md`: get the clean stimulus image first (section 4), choose and check the AOIs, then measure them read-only by listing them in `CONFIG.customAois` of `scripts/dashboard_vai_collect.js` (points in percent of the image). The statistics endpoint accepts any shape, so the numbers match what the dashboard would show for the same saved AOI. Heatmaps and participant data do not depend on AOIs.
 
 ## 4. The clean stimulus image
 

@@ -21,6 +21,10 @@ const CONFIG = {
   windowsSeconds: [3, 5, 10],                               // cumulative windows starting at 0.5 s
   minQualityGrade: 3,                                       // 1 Very low, 2 Low, 3 Average ... 6 Perfect. 3 = Average or better
   ages: [[18, 24], [25, 34], [35, 99]],                     // age bands (viewers with no recorded age are excluded)
+  // OPTIONAL: AOIs that are NOT saved in the study (use when the design has no AOIs yet; see references/aoi-design.md).
+  // Per design: [{ name, shape: [[x%, y%], ...] }] with points in percent of the image, origin top-left. Measured read-only: nothing is saved in RealEye.
+  // A design listed here uses these AOIs instead of the saved ones. Leave {} when the AOIs are saved in the study.
+  customAois: {},   // e.g. { A: [{ name: 'Headline', shape: [[5, 4], [95, 4], [95, 20], [5, 20]] }, ...] }
 };
 
 window.__VAI = {}; window.__done = 0; window.__err = [];
@@ -40,13 +44,16 @@ const aoiQuery = (a, toMs) => {
   } else {
     q = '&aoi[itemParts][0][areaPoints][points]=' + JSON.stringify(p.areaPoints.points).replace(/"/g, '%22');
   }
-  return q + `&aoi[itemParts][0][type]=${a.type}&aoi[itemParts][0][timeRange][fromMs]=500&aoi[itemParts][0][timeRange][toMs]=${toMs}&itemAoiId=${a.id}`;
+  return q + `&aoi[itemParts][0][type]=${a.type}&aoi[itemParts][0][timeRange][fromMs]=500&aoi[itemParts][0][timeRange][toMs]=${toMs}${a.id ? '&itemAoiId=' + a.id : ''}`;
 };
 
 (async () => {
   const jobs = [];
   for (const [design, id] of Object.entries(CONFIG.items)) {
-    const aois = (await (await fetch(`/api/item/${id}/aoi/get/?tryToFix=1`, { credentials: 'include' })).json()).data;
+    const custom = CONFIG.customAois[design];
+    const aois = custom
+      ? custom.map(c => ({ name: c.name, type: 'polygon', itemParts: [{ areaPoints: { points: c.shape.map(([x, y]) => ({ x: x / 100, y: y / 100 })) } }] }))   // no id: not saved in the study
+      : (await (await fetch(`/api/item/${id}/aoi/get/?tryToFix=1`, { credentials: 'include' })).json()).data;
     const byName = Object.fromEntries(aois.map(a => [a.name.replace(/"/g, ''), a]));
     window.__VAI[design] = segs.map(([label, kind]) => ({ label, kind, n: 0, values: new Array(CONFIG.windowsSeconds.length * CONFIG.aoiOrder.length * 4).fill(0) }));
     segs.forEach(([label, kind, g, age], si) => CONFIG.windowsSeconds.forEach((w, wi) => CONFIG.aoiOrder.forEach((nm, ai) => jobs.push({ design, id, si, g, age, w, wi, ai, a: byName[nm] }))));

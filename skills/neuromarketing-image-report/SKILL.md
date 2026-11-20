@@ -4,7 +4,7 @@ description: Interpret measured RealEye ET Platform webcam eye tracking for ads,
 license: MIT
 metadata:
   author: RealEye
-  version: "1.14.0"
+  version: "1.15.0"
 ---
 
 # Neuromarketing image report
@@ -106,6 +106,8 @@ Write in plain language. **The deliverable is a self-contained, professional HTM
 32. **Every "RealEye" has a tooltip.** The word RealEye gets a tooltip that says what RealEye is and, outside other links, links to www.RealEye.io. The Definitions in the appendix each link to the matching RealEye support page (`SUPPORT` in `build_report.py`).
 33. **A floating menu shows where you are and lets you send links.** A fixed contents menu (a side panel on wide screens, a button on narrow ones) highlights the part being read, jumps to every main part and to each finding and hypothesis, and each entry and each section heading has a button that copies a link to that part (the `#anchor`).
 34. **The reader can mark up the report.** A *Mark up* tool lets the reader highlight text in four colours, mark an area (for example on a heatmap) and erase marks. Marks are saved in the reader's browser only and print with the report.
+
+35. **If the design has no AOIs, create useful ones.** First read the item's AOIs. When there are none, define 3 to 8 AOIs yourself, following `references/aoi-design.md`: start from the decision, the designer's purpose and the hypotheses; cover brand, product, claim, offer or call to action, and face or key visual; give each a name, a `role` and a `why`; keep them tight, not tiny (sides of at least about 6% of the image) and not overlapping by accident; use the same AOIs for every design in a comparison. Check them with `scripts/check_aois.py` and look at its preview, measure them read-only with `dashboard_vai_collect.js` (`customAois`), and compare them with the heatmap to catch missed hot spots. Mark them `aoi_source: "proposed"`: the report then says they were defined for it and are not saved in RealEye. Never save or edit AOIs in the user's study unless they ask; the blueprint gives the coordinates to draw them.
 
 ### Build the report
 
