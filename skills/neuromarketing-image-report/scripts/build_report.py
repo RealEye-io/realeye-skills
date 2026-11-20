@@ -96,6 +96,11 @@ GLOSSARY = {
     "AOIs": "AOI (Area of Interest): a region of the image, such as the tagline, pack, face or logo, that is measured separately.",
     "AOI": "AOI (Area of Interest): a region of the image, such as the tagline, pack, face or logo, that is measured separately.",
 }
+GLOSSARY["RealEye"] = ("RealEye: an online research platform for webcam eye tracking. Participants take a study in their own browser, RealEye estimates where they look, and its dashboard turns that into heatmaps, "
+                       "AOI statistics and the VAI. Click to open www.RealEye.io.")
+for _k in list(GLOSSARY):
+    if _k.startswith(("VAI", "Reach", "Speed", "Hold")):
+        GLOSSARY[_k] += " A higher score means the element is better at attracting visual attention."
 _SKIP_TAGS = ("svg", "script", "style", "title", "option", "textarea")
 
 
@@ -105,16 +110,24 @@ def make_tips(spec):
     terms.update(spec.get("glossary", {}))
     rx = re.compile(r"\b(" + "|".join(re.escape(t) for t in sorted(terms, key=len, reverse=True)) + r")\b")
 
+    state = {"a": 0}
+
     def wrap(m):
-        return f'<span class="gl" data-tip="{e(terms[m.group(1)])}">{m.group(1)}</span>'
+        t_ = m.group(1)
+        if t_ == "RealEye" and not state["a"]:
+            return f'<a class="gl" href="https://www.realeye.io" target="_blank" rel="noopener" data-tip="{e(terms[t_])}">RealEye</a>'
+        return f'<span class="gl" data-tip="{e(terms[t_])}">{t_}</span>'
 
     def tips(fragment):
         out, depth = [], 0
+        state["a"] = 0
         for tok in re.split(r"(<[^>]*>)", fragment):
             if tok.startswith("<"):
                 mt = re.match(r"<(/?)([a-zA-Z0-9]+)", tok)
                 if mt and mt.group(2).lower() in _SKIP_TAGS and not tok.endswith("/>"):
                     depth += -1 if mt.group(1) else 1
+                if mt and mt.group(2).lower() == "a" and not tok.endswith("/>"):
+                    state["a"] = max(0, state["a"] + (-1 if mt.group(1) else 1))
                 out.append(tok)
             else:
                 out.append(tok if depth > 0 else rx.sub(wrap, tok))
@@ -657,7 +670,7 @@ def vai_guide(spec):
             "computed from the webcam eye tracking. Values are indices over the time window; they are not predictions and not percentages of total attention across the image.</p>"
             f'<div class="cards4">{cards}</div>'
             + note("How to use it:", "compare like with like, and look at the three measures rather than just the total. VAI is for comparing elements, designs, time windows and audiences. "
-                   "A higher score is not always better: a logo can do its job at a moderate score, and what matters is that each element scores as the design intends. "
+                   "Higher is better at attracting visual attention: a higher VAI, Reach, Speed or Hold means the element does that job better. Judge each element against its role, because a logo can do its job at a moderate score. "
                    "VAI shows attention, not outcome: it does not say whether viewers understood, liked or will buy, so confirm with a recall or choice test.")
             + '<h4>Component patterns and what to do</h4><div class="tablewrap"><table class="re"><thead><tr><th>Reach</th><th>Speed</th><th>Hold</th><th>Reading</th><th>Typical action</th></tr></thead>'
             f'<tbody>{prow}</tbody></table></div>{example}')
@@ -782,7 +795,7 @@ def design_sections(spec, v, vi):
         f'<span>·</span>Speed <b>{val(seg, "10", i, "speed"):.1f}</b><span>·</span>Hold <b>{val(seg, "10", i, "hold"):.1f}</b></p></div><i class="cbar" style="background:{a.get("color", "#999")}"></i></div>'
         for i, a in enumerate(v["aois"]))
     overview = section(f'd{v["id"]}-overview', "AOIs overview", f'<div class="cards3">{cards}</div><p class="hint">All viewers, first 10 seconds. VAI and its components, 0–100.</p>')
-    summary = section(f'd{v["id"]}-summary', "VAI summary", '<p class="hint">Measured VAI and its Reach / Speed / Hold per element, all viewers, first 10 seconds. Values are indices (0–100), not shares; elements overlap and do not need to total 100%.</p>'
+    summary = section(f'd{v["id"]}-summary', "VAI summary", '<p class="hint">Measured VAI and its Reach / Speed / Hold per element, all viewers, first 10 seconds. Higher is better at attracting visual attention. Values are indices (0–100), not shares; elements overlap and do not need to total 100%.</p>'
                       + vai_summary(spec, v) + '<h4>VAI component averages per element</h4>' + comp_bars(spec, v, seg, "10") + '<h4>VAI by time window</h4>' + window_table(spec, v))
     series = lambda k: {nm: ([val(seg, w, i, k) for w in WIN], acolor(v, nm, i)) for i, nm in enumerate(n)}
     xl = ["first 3 s", "first 5 s", "first 10 s"]
@@ -1065,6 +1078,12 @@ def agent_prompt(spec):
             add(f"- Design {v['id']}: {c(_t(x))}")
     for x in spec.get("segment_findings", []):
         add(f"- Gender/age: {c(_t(x))}")
+    for v in variants:
+        add(f"- Design {v['id']} presents: {c(v.get('presents', ''))} Assumed purpose: {c(v.get('purpose', ''))}")
+    for i, h in enumerate(spec.get("hypotheses", []), 1):
+        add(f"- Hypothesis {i} [{h.get('verdict', '')}] {c(h.get('hypothesis', ''))}: {c(h.get('conclusion', ''))} Why: {c(h.get('why', ''))}")
+    for x in spec.get("study_improvements", []):
+        add(f"- Study improvement [{x.get('category', '')}] {c(x.get('title', ''))}: {c(x.get('text', ''))}" + ("".join(f" Q: {c(q.get('question', ''))}" for q in x.get("questions", []))))
     add("")
     add("=== RECOMMENDED ACTIONS AND RETEST PLAN ===")
     for a in spec.get("actions", []):
@@ -1174,7 +1193,7 @@ _DLAB = {"aois": "image with AOIs", "heat": "measured heatmap", "glance": "at a 
          "age": "VAI by age", "gender_age": "VAI by gender × age", "sheets": "heatmaps by audience and time window"}
 _FIXED = {"who": "Who took part", "tested": "Tested designs and AOIs", "vai": "What the scores mean (VAI)", "order": "Viewing order", "order-audience": "Viewing order by audience",
           "compare": "Head-to-head comparison", "audience": "Gender and age insights", "actions": "How to test it next", "technical": "Technical appendix",
-          "blueprint": "Study blueprint", "agent": "Ask an AI agent", "overall": "Overall findings"}
+          "blueprint": "Study blueprint", "agent": "Ask an AI agent", "overall": "Overall findings", "designs-top": "The designs", "hypotheses": "Hypotheses tested", "improve": "How to improve the study"}
 
 
 def anchor_label(ref):
@@ -1358,7 +1377,7 @@ def findings_section(spec):
         acts += (f'<article class="finding mini" id="a{i + 1}"><h4>{rich(a.get("title", ""))}</h4><p>{rich(a.get("text", ""))}'
                  + (f' <b>Preserve:</b> {rich(a["preserve"])}' if a.get("preserve") else "") + '</p>' + based_on(spec, a, f"action {i + 1}", len(fs)) + '</article>')
     return section("overall", "Overall findings and conclusions",
-                   f'<div class="callout big"><span class="lab">{rich(o.get("verdict_label", "Conclusion"))}</span><p>{rich(o.get("verdict_text", ""))}</p></div><p class="lead">{rich(o.get("summary", ""))}</p>'
+                   f'<div class="callout big"><span class="lab">{rich(o.get("verdict_label", "Conclusion"))}</span><p>{rich(o.get("verdict_text", ""))}</p></div><p class="lead">{rich(o.get("summary", ""))}</p><div class="readnote"><b>How to read the scores.</b> The higher the VAI score (and its Reach, Speed and Hold), the better that element is at attracting visual attention. Compare like with like, and judge each element against its role.</div>'
                    f'<div class="tiles">{kp}</div><h3>The findings at a glance</h3><ol class="glance">{glance}</ol>'
                    f'<h3>The findings, and the evidence behind each</h3><p class="hint">Every finding states what we conclude, why, and the numbers that prove it, each linked to its table, chart or heatmap in this report and in the RealEye dashboard.</p>{cards}'
                    + (f"<h3>Conclusions</h3>{concl}" if concl else "") + f"<h3>What to do next</h3>{acts}"
@@ -1463,7 +1482,7 @@ def blueprint_section(spec):
             f'<h3>Study set-up</h3>{setup}<h3>Stimuli and AOI coordinates</h3>{designs}<h3>How the data was analysed</h3>{analysis}'
             f'<h3>How to run this study again</h3><ol class="plain">{"".join(f"<li>{x}</li>" for x in steps)}</ol>{note}'
             f'<textarea id="blueprint-json" hidden>{e(json.dumps(blueprint_data(spec), ensure_ascii=False, indent=1))}</textarea>'
-            f'<textarea id="report-json" hidden>{e(json.dumps({k: x for k, x in spec.items() if not k.startswith("_")}, ensure_ascii=False, indent=1))}</textarea>'
+            f'<textarea id="report-json" hidden>{e(spec["_raw_json"])}</textarea>'
             f'<script type="application/json" id="study-blueprint-data">{_json_tag(blueprint_data(spec))}</script>')
     return section("blueprint", "Study blueprint: recreate and rerun this study", body)
 
@@ -1480,6 +1499,279 @@ def version_block(spec):
             + '<p class="hint">The skill version is in the skill\'s SKILL.md and its CHANGELOG.md lists what changed in each version. The same version is embedded in the data pack and the study blueprint.</p>')
 
 
+# ------------------------------------------------------------------ difference tokens: numbers that always show their difference
+_TOK = re.compile(r"\{\{(cmp|diff|gap):([^}]*)\}\}")
+CUR = {"spec": None}
+
+
+def _expand_tokens(text):
+    # {{diff:metric:AOI:window:A,B}} -> "B is 0.6 points higher"
+    # {{cmp:metric:AOI:window:A,B[:audience]}}  -> "VAI 61.2 in {A} and 61.8 in {B} (B is 0.6 points higher)"
+    # {{gap:metric:AOI:window:design:Women,Men}} -> "VAI 70.1 for Women and 54.5 for Men in {A} (Women 15.6 points higher)"
+    spec = CUR["spec"]
+
+    def one(m):
+        try:
+            kind, args = m.group(1), [a.strip() for a in m.group(2).split(":")]
+            metric, aoi, w = args[0], args[1], args[2]
+            if metric not in dict(COMP) or w not in WIN:
+                raise ValueError("metric or window")
+            ai = names(spec).index(aoi)
+            mn = "VAI" if metric == "vai" else "VAI " + dict(COMP)[metric]
+            V = lambda i: next(v for v in spec["variants"] if v["id"] == i)
+            if kind in ("cmp", "diff"):
+                a_id, b_id = [x.strip() for x in args[3].split(",")]
+                aud = args[4] if len(args) > 4 else "All"
+                xa, xb = val(seg_of(V(a_id), aud), w, ai, metric), val(seg_of(V(b_id), aud), w, ai, metric)
+                d = xb - xa
+                tail = "no difference" if abs(d) < 0.05 else f"{b_id} is {abs(d):.1f} points {'higher' if d > 0 else 'lower'}"
+                if kind == "diff":
+                    return tail[0].upper() + tail[1:]
+                return f"{mn} {xa:.1f} in {{{a_id}}} and {xb:.1f} in {{{b_id}}} ({tail})"
+            d_id, pair = args[3], [x.strip() for x in args[4].split(",")]
+            x1, x2 = val(seg_of(V(d_id), pair[0]), w, ai, metric), val(seg_of(V(d_id), pair[1]), w, ai, metric)
+            d = x1 - x2
+            tail = "no difference" if abs(d) < 0.05 else f"{pair[0]} {abs(d):.1f} points {'higher' if d > 0 else 'lower'}"
+            return f"{mn} {x1:.1f} for {pair[0]} and {x2:.1f} for {pair[1]} in {{{d_id}}} ({tail})"
+        except Exception as ex:
+            ERRORS.append(f"cannot expand {m.group(0)} ({type(ex).__name__}: {ex})")
+            return "?"
+    return _TOK.sub(one, text)
+
+
+def expand_all(o):
+    if isinstance(o, dict):
+        return {k: expand_all(v) for k, v in o.items()}
+    if isinstance(o, list):
+        return [expand_all(x) for x in o]
+    if isinstance(o, str) and "{{" in o:
+        return _expand_tokens(o)
+    return o
+
+
+_PAIR1 = re.compile(r"\d+(?:\.\d+)?\s+(?:in|for)\s+\{?[A-Z]\}?\b[^.;]{0,60}?\d+(?:\.\d+)?\s+(?:in|for)\s+\{?[A-Z]\}?\b")
+_PAIR2 = re.compile(r"\b\{?[A-Z]\}?\s+[+−-]?\d+(?:\.\d+)?\s*(?:·|,|and|vs\.?|versus)\s*\{?[A-Z]\}?\s+[+−-]?\d+(?:\.\d+)?")
+_DIFFWORD = re.compile(r"higher|lower|difference|points|more than|less than|gap|apart|ahead|behind|same|viewers")
+
+
+def lint_differences(spec):
+    # Warn about text that gives the same number for two designs without their difference; the fix is a {{cmp:...}} token.
+    seen = []
+
+    def walk(o, path):
+        if isinstance(o, dict):
+            for k, v in o.items():
+                if k in ("segments", "dashboard_vai", "participants", "_raw_json", "value"):
+                    continue
+                walk(v, path + "/" + k)
+        elif isinstance(o, list):
+            for i, v in enumerate(o):
+                walk(v, f"{path}[{i}]")
+        elif isinstance(o, str) and (_PAIR1.search(o) or _PAIR2.search(o)) and not _DIFFWORD.search(o):
+            seen.append(f"{path}: {o[:90]}")
+    walk(spec, "")
+    for s_ in seen:
+        print("WARNING: numbers for two designs without their difference (use {{cmp:metric:AOI:window:A,B}}): " + s_, file=sys.stderr)
+
+
+# ------------------------------------------------------------------ the designs at the very top
+def designs_band(spec):
+    cards = ""
+    for vi, v in enumerate(spec["variants"]):
+        for key in ("presents", "purpose"):
+            if not v.get(key):
+                ERRORS.append(f"design {v['id']}: missing '{key}' (what the design presents, and the assumed purpose of showing it to people)")
+        links = open_links(spec, v)
+        cards += (f'<div class="dcard"><div class="stagebox">{stage(spec["_base"], v, outlines=False)}</div><div class="dtext">'
+                  f'<h3>{chip(v["id"], e(v["id"]), "badge sm", "background:" + vcolor(vi))}Design {e(v["id"])}: {e(v["name"])}</h3>'
+                  f'<p><b>What it presents.</b> {rich(v.get("presents", ""))}</p><p><b>Assumed purpose.</b> {rich(v.get("purpose", ""))}</p>'
+                  + (f'<p class="links small">Open in RealEye: {links}</p>' if links else "") + '</div></div>')
+    return section("designs-top", "The designs in this report", f'<div class="dband">{cards}</div>', "bandsec")
+
+
+# ------------------------------------------------------------------ hypotheses
+VERDICTS = {"supported": "#17652f", "partly supported": "#8a6500", "not supported": "#a12a1b", "cannot tell": "#5c5c5c"}
+
+
+def hypotheses_section(spec):
+    hs = spec.get("hypotheses", [])
+    if len(hs) < 3:
+        ERRORS.append("hypotheses: give at least 3 hypotheses the designer or brand owner probably had when making the image(s), each answered with evidence")
+    cards, rows = "", ""
+    for i, h in enumerate(hs, 1):
+        where = f"hypothesis {i}"
+        for key in ("hypothesis", "verdict", "conclusion", "why", "evidence"):
+            if not h.get(key):
+                ERRORS.append(f"{where}: missing '{key}'")
+        vd = h.get("verdict", "")
+        if vd and vd not in VERDICTS:
+            ERRORS.append(f"{where}: verdict must be one of {', '.join(VERDICTS)}")
+        col = VERDICTS.get(vd, "#5c5c5c")
+        ev = evidence_html(spec, h.get("evidence", []), where)
+        rows += f'<li><a href="#h{i}"><span class="ftag" style="background:{col}">{e(vd)}</span> <b>{rich(h.get("hypothesis", ""))}</b></a></li>'
+        cards += (f'<article class="finding" id="h{i}" style="--c:{col}"><div class="fhead"><span class="fnum">H{i}</span><div><span class="ftag" style="background:{col}">{e(vd)}</span>'
+                  + (f'<span class="fconf">{e(h["confidence"])} confidence</span>' if h.get("confidence") else "")
+                  + f'<h3>{rich(h.get("hypothesis", ""))}</h3></div></div><p class="concl">{rich(h.get("conclusion", ""))}</p>'
+                  f'<h5>Why we conclude this</h5><p>{rich(h.get("why", ""))}</p><h5>Evidence, with links to the data</h5><ul class="evs">{ev}</ul>'
+                  + (f'<h5>What it means for the decision</h5><p>{rich(h["so_what"])}</p>' if h.get("so_what") else "") + '</article>')
+    return section("hypotheses", "Did the design do what it was meant to? Hypotheses tested",
+                   '<p class="lead">People who design an image usually build in a few assumptions about how viewers will look at it. These are the main ones, and what the measured attention says about each.</p>'
+                   f'<ol class="glance hyp">{rows}</ol>{cards}'
+                   '<p class="hint">Attention data can support or reject assumptions about where people look. It cannot show whether they understood, liked or remembered what they saw: where a hypothesis is about that, the verdict is "cannot tell".</p>')
+
+
+# ------------------------------------------------------------------ ideas to improve the study
+IMPROVE_CATS = [("aois", "Different or more AOIs"), ("respondents", "More or different respondents"), ("survey", "Add a survey: questions worth asking"),
+                ("benchmark", "Benchmark against the best performers"), ("other", "Other ideas")]
+
+
+def improve_section(spec):
+    items = spec.get("study_improvements", [])
+    have = {x.get("category") for x in items}
+    for c_, _ in IMPROVE_CATS[:4]:
+        if c_ not in have:
+            ERRORS.append(f"study_improvements: add at least one item with category '{c_}'")
+    out = ""
+    for cat, label in IMPROVE_CATS:
+        group = [x for x in items if x.get("category") == cat]
+        if not group:
+            continue
+        out += f"<h3>{label}</h3>"
+        for i, x in enumerate(group, 1):
+            qs = ""
+            if x.get("questions"):
+                qs = ('<div class="tablewrap"><table class="re"><thead><tr><th>Question</th><th>Why it helps</th><th>Answer type</th></tr></thead><tbody>'
+                      + "".join(f'<tr><td><b>{rich(q.get("question", ""))}</b></td><td>{rich(q.get("why", ""))}</td><td>{e(q.get("answer_type", ""))}</td></tr>' for q in x["questions"]) + "</tbody></table></div>")
+            steps = ("<ol class=\"plain\">" + "".join(f"<li>{rich(s_)}</li>" for s_ in x["steps"]) + "</ol>") if x.get("steps") else ""
+            out += (f'<article class="finding mini" id="imp-{cat}-{i}"><h4>{rich(x.get("title", ""))}</h4><p>{rich(x.get("text", ""))}</p>'
+                    + (f'<p class="hint"><b>Why:</b> {rich(x["why"])}</p>' if x.get("why") else "") + steps + qs + "</article>")
+    return section("improve", "How to improve the study", '<p class="lead">Ideas to get more, and more useful, insight from the next round of this study.</p>' + out)
+
+
+# ------------------------------------------------------------------ support links for the definitions
+SUPPORT_BASE = "https://www.realeye.io"
+SUPPORT = {"VAI": "/support/areas-of-interest-aois", "Reach": "/support/areas-of-interest-aois", "Speed": "/support/areas-of-interest-aois", "Hold": "/support/areas-of-interest-aois",
+           "Viewing order": "/support/areas-of-interest-aois", "Windows": "/support/areas-of-interest-aois", "AOI": "/support/what-is-aoi",
+           "Webcam eye tracking": "/support/how-to-get-accurate-results", "Quality filter": "/support/participant-quality-stats-explained",
+           "Gender and age": "/support/external-variables-age-and-gender", "Heatmap": "/features/online-analysis-dashboard", "RealEye": "/"}
+
+
+def support_link(term):
+    p = SUPPORT.get(term)
+    if not p:
+        return ""
+    return f' <a class="ext s" href="{SUPPORT_BASE}{p}" target="_blank" rel="noopener">Read more on RealEye ↗</a>'
+
+
+# ------------------------------------------------------------------ floating menu
+def toc_html(spec, ids):
+    o = spec.get("overall", {})
+    clean = lambda t: re.sub(r"\{([A-Z])\}", r"\1", str(t))[:64]
+    items = [("designs-top", "The designs", []), ("overall", "Overall findings", [(f"f{i + 1}", f.get("title", "")) for i, f in enumerate(o.get("findings", []))]),
+             ("audience", "Gender and age", []), ("hypotheses", "Hypotheses tested", [(f"h{i + 1}", h.get("hypothesis", "")) for i, h in enumerate(spec.get("hypotheses", []))]),
+             ("tested", "Designs and AOIs", []), ("who", "Who took part", []), ("vai", "What VAI means", []), ("order", "Viewing order", [])]
+    items += [(f"design-{v['id']}", f"Design {v['id']}: analysis", []) for v in spec["variants"]]
+    items += [("compare", "Head-to-head", []), ("actions", "How to test it next", []), ("improve", "Improve the study", []), ("technical", "Technical appendix", []),
+              ("blueprint", "Study blueprint", []), ("agent", "Ask an AI agent", [])]
+    cp = lambda i: f'<button class="cp" type="button" data-copy="{e(i)}" title="Copy link to this part" aria-label="Copy link to this part">⧉</button>'
+    li = ""
+    for id_, label, kids in items:
+        if id_ not in ids:
+            continue
+        sub = "".join(f'<li><a href="#{e(k)}" data-id="{e(k)}">{e(clean(t))}</a>{cp(k)}</li>' for k, t in kids if k in ids)
+        li += f'<li><a href="#{e(id_)}" data-id="{e(id_)}">{e(label)}</a>{cp(id_)}' + (f"<ul>{sub}</ul>" if sub else "") + "</li>"
+    return ('<aside id="toc" aria-label="Report navigation"><div class="tochead"><b>Contents</b><button type="button" id="tocx" aria-label="Close menu">×</button></div>'
+            f'<ul>{li}</ul><p class="tochint">⧉ copies a link to that part of the report.</p></aside><button type="button" id="tocbtn">☰ Menu</button>')
+
+
+POP3 = r"""<script>(function(){
+var toc=document.getElementById("toc"),btn=document.getElementById("tocbtn");if(!toc)return;
+var links=[].slice.call(toc.querySelectorAll("a[data-id]")),items=[];
+links.forEach(function(a){var el=document.getElementById(a.dataset.id);if(el)items.push({a:a,el:el})});
+function spy(){var y=window.scrollY+120,cur=null;items.forEach(function(x){if(x.el.getBoundingClientRect().top+window.scrollY<=y)cur=x});
+ links.forEach(function(a){a.classList.remove("on");a.parentNode.classList.remove("open")});
+ if(cur){cur.a.classList.add("on");var li=cur.a.parentNode;li.classList.add("open");var p=li.parentNode&&li.parentNode.closest?li.parentNode.closest("li"):null;if(p)p.classList.add("open");
+  var r=cur.a.getBoundingClientRect(),t=toc.getBoundingClientRect();if(r.top<t.top+40||r.bottom>t.bottom-30)toc.scrollTop+=r.top-t.top-80}}
+var tk=0;window.addEventListener("scroll",function(){if(tk)return;tk=1;requestAnimationFrame(function(){tk=0;spy()})},{passive:true});window.addEventListener("load",spy);spy();
+btn.addEventListener("click",function(){document.body.classList.toggle("tocopen")});document.getElementById("tocx").addEventListener("click",function(){document.body.classList.remove("tocopen")});
+toc.addEventListener("click",function(ev){if(ev.target.closest("a")&&window.innerWidth<1500)document.body.classList.remove("tocopen")});
+function copyText(t,done){function ok(){done&&done()}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,function(){fb()})}else fb();
+ function fb(){var a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy")}catch(e){}a.remove();ok()}}
+document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest("[data-copy]");if(!b)return;ev.preventDefault();var id=b.dataset.copy,u=location.href.split("#")[0]+"#"+id,o=b.textContent;
+ copyText(u,function(){b.textContent="✓";b.classList.add("done");setTimeout(function(){b.textContent=o;b.classList.remove("done")},1500)});try{history.replaceState(null,"","#"+id)}catch(e){}});
+[].slice.call(document.querySelectorAll("main [id]")).forEach(function(el){if(!/^(SECTION|ARTICLE)$/.test(el.tagName))return;var h=el.querySelector("h2,h3,h4");if(!h)return;
+ var b=document.createElement("button");b.type="button";b.className="lnk";b.dataset.copy=el.id;b.title="Copy link to this part";b.setAttribute("aria-label","Copy link to this part");b.textContent="#";h.appendChild(b)});
+})();</script>"""
+
+POP4 = r"""<script>(function(){
+var root=document.querySelector("main.page");if(!root)return;
+var KEY="re-marks:"+document.title+":"+((document.querySelector("meta[name=generator]")||{}).content||""),store={t:[],a:[]},mode="",color="y";
+function save(){try{localStorage.setItem(KEY,JSON.stringify(store))}catch(e){}}
+try{var s0=localStorage.getItem(KEY);if(s0)store=JSON.parse(s0)}catch(e){}
+function nodes(){var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:function(n){var p=n.parentNode;return(!n.nodeValue||(p.closest&&p.closest("script,style,textarea,#hlbar,#toc,#tocbtn")))?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT}}),a=[],n;while(n=w.nextNode())a.push(n);return a}
+function off(list,node,o){if(node.nodeType===3){var c=0;for(var i=0;i<list.length;i++){if(list[i]===node)return c+o;c+=list[i].nodeValue.length}return null}
+ var r=document.createRange();r.setStart(node,o);r.collapse(true);var c2=0;for(var j=0;j<list.length;j++){if(r.comparePoint(list[j],0)===1)return c2;c2+=list[j].nodeValue.length}return c2}
+function wrap(s,e,col,id){var list=nodes(),c=0;list.forEach(function(n){var L=n.nodeValue.length,a=Math.max(s,c),b=Math.min(e,c+L);c+=L;if(a>=b)return;
+ var t=n.nodeValue,pre=t.slice(0,a-(c-L)),mid=t.slice(a-(c-L),b-(c-L)),post=t.slice(b-(c-L)),m=document.createElement("mark");m.className="hl c-"+col;m.dataset.id=id;m.textContent=mid;
+ var p=n.parentNode;if(pre)p.insertBefore(document.createTextNode(pre),n);p.insertBefore(m,n);if(post)p.insertBefore(document.createTextNode(post),n);p.removeChild(n)})}
+var areas=document.createElement("div");areas.id="hlareas";root.appendChild(areas);
+function drawArea(a){var d=document.createElement("div");d.className="areamark c-"+a.c;d.dataset.id=a.id;d.style.cssText="left:"+a.x+"%;top:"+a.y+"px;width:"+a.w+"%;height:"+a.h+"px";areas.appendChild(d)}
+store.t.forEach(function(x){wrap(x.s,x.e,x.c,x.id)});store.a.forEach(drawArea);
+var bar=document.getElementById("hlbar");
+function setMode(m){mode=(mode===m)?"":m;document.body.classList.toggle("hl-text",mode==="text");document.body.classList.toggle("hl-area",mode==="area");document.body.classList.toggle("hl-erase",mode==="erase");
+ [].forEach.call(bar.querySelectorAll("[data-mode]"),function(b){b.classList.toggle("on",b.dataset.mode===mode)})}
+bar.addEventListener("click",function(ev){var b=ev.target.closest("button");if(!b)return;
+ if(b.id==="hlopen"){bar.classList.toggle("open");if(!bar.classList.contains("open")&&mode)setMode(mode);return}
+ if(b.dataset.mode)setMode(b.dataset.mode);else if(b.dataset.color){color=b.dataset.color;[].forEach.call(bar.querySelectorAll("[data-color]"),function(x){x.classList.toggle("on",x===b)})}
+ else if(b.id==="hlclear"){if(confirm("Remove all your marks from this report?")){[].slice.call(root.querySelectorAll("mark.hl")).forEach(function(m){var p=m.parentNode;while(m.firstChild)p.insertBefore(m.firstChild,m);p.removeChild(m);p.normalize()});areas.innerHTML="";store={t:[],a:[]};save()}}});
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function sel(){if(mode!=="text")return;var s=window.getSelection();if(!s||!s.rangeCount||s.isCollapsed)return;var r=s.getRangeAt(0);if(!root.contains(r.commonAncestorContainer))return;
+ var list=nodes(),a=off(list,r.startContainer,r.startOffset),b=off(list,r.endContainer,r.endOffset);if(a===null||b===null||a>=b)return;var id=uid();wrap(a,b,color,id);store.t.push({s:a,e:b,c:color,id:id});save();s.removeAllRanges()}
+document.addEventListener("mouseup",function(){setTimeout(sel,0)});document.addEventListener("touchend",function(){setTimeout(sel,50)});
+document.addEventListener("click",function(ev){if(mode!=="erase")return;var m=ev.target.closest&&ev.target.closest("mark.hl,.areamark");if(!m)return;var id=m.dataset.id;
+ [].slice.call(document.querySelectorAll('[data-id="'+id+'"]')).forEach(function(x){if(x.tagName==="MARK"){var p=x.parentNode;while(x.firstChild)p.insertBefore(x.firstChild,x);p.removeChild(x);p.normalize()}else x.remove()});
+ store.t=store.t.filter(function(x){return x.id!==id});store.a=store.a.filter(function(x){return x.id!==id});save()});
+var cap=document.createElement("div");cap.id="hlcap";root.appendChild(cap);var st=null,tmp=null;
+function pt(ev){var r=root.getBoundingClientRect();return{x:ev.clientX-r.left,y:ev.clientY-r.top,w:r.width}}
+cap.addEventListener("pointerdown",function(ev){if(mode!=="area")return;st=pt(ev);tmp=document.createElement("div");tmp.className="areamark c-"+color;areas.appendChild(tmp);cap.setPointerCapture(ev.pointerId);ev.preventDefault()});
+cap.addEventListener("pointermove",function(ev){if(!st)return;var p=pt(ev),x=Math.min(st.x,p.x),y=Math.min(st.y,p.y);tmp.style.cssText="left:"+x+"px;top:"+y+"px;width:"+Math.abs(p.x-st.x)+"px;height:"+Math.abs(p.y-st.y)+"px"});
+cap.addEventListener("pointerup",function(ev){if(!st)return;var p=pt(ev),x=Math.min(st.x,p.x),y=Math.min(st.y,p.y),w=Math.abs(p.x-st.x),h=Math.abs(p.y-st.y);areas.removeChild(tmp);tmp=null;st=null;
+ if(w>8&&h>8){var a={x:+(x/p.w*100).toFixed(2),y:Math.round(y),w:+(w/p.w*100).toFixed(2),h:Math.round(h),c:color,id:uid()};store.a.push(a);drawArea(a);save()}});
+})();</script>"""
+
+HLBAR = ('<div id="hlbar"><div class="hltools"><button type="button" data-mode="text" title="Select text to highlight it">✎ Highlight text</button><button type="button" data-mode="area" title="Drag to mark an area, for example on a heatmap">▭ Mark area</button>'
+         '<button type="button" data-mode="erase" title="Click a mark to remove it">⌫ Erase</button><span class="hlcols"><button type="button" class="hc c-y on" data-color="y" aria-label="Yellow"></button><button type="button" class="hc c-g" data-color="g" aria-label="Green"></button>'
+         '<button type="button" class="hc c-p" data-color="p" aria-label="Pink"></button><button type="button" class="hc c-b" data-color="b" aria-label="Blue"></button></span>'
+         '<button type="button" id="hlclear">Clear all</button><small>Marks are saved in this browser only.</small></div><button type="button" id="hlopen">✎ Mark up</button></div>')
+
+NEW_CSS = """
+.bandsec{padding:24px 32px}.bandsec>h2{font-size:20px}.dband{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:22px}
+.dcard{display:flex;gap:18px;align-items:flex-start}.dcard .stagebox{flex:none;width:190px}.dcard .stage{max-width:190px}.dcard h3{border-top:0;padding-top:0;margin:0 0 8px;font-size:18px}.dcard p{margin:6px 0}
+.hyp{margin-bottom:18px}a.gl{color:inherit;text-decoration:none}
+#toc{position:fixed;z-index:60;left:10px;top:70px;width:232px;max-height:calc(100vh - 90px);overflow:auto;background:#fff;border:1px solid var(--line);padding:12px 8px 8px;font-size:13.5px;box-shadow:0 6px 24px rgba(0,0,0,.08)}
+#toc .tochead{display:flex;justify-content:space-between;align-items:center;padding:0 8px 8px;color:var(--strong)}#toc #tocx{display:none;border:0;background:none;font-size:22px;cursor:pointer;line-height:1}
+#toc ul{list-style:none;margin:0;padding:0}#toc li{position:relative}#toc li>a{display:block;padding:5px 30px 5px 10px;color:var(--muted);text-decoration:none;border-left:3px solid transparent}
+#toc li>a:hover{color:var(--strong);background:var(--bg)}#toc li>a.on{color:var(--strong);font-weight:700;border-left-color:var(--accent);background:var(--insight)}
+#toc li>ul{display:none;margin-left:10px}#toc li.open>ul{display:block}#toc li li>a{font-size:12.5px;padding:3px 26px 3px 10px}
+#toc .cp{position:absolute;right:4px;top:3px;border:0;background:none;color:var(--soft);cursor:pointer;font-size:14px;opacity:0;padding:2px 5px}#toc li:hover>.cp,#toc .cp:focus,#toc .cp.done{opacity:1}#toc .cp.done{color:var(--best-fg)}
+#toc .tochint{font-size:11.5px;color:var(--soft);margin:8px 10px 2px}
+#tocbtn{display:none;position:fixed;z-index:61;left:14px;bottom:14px;background:var(--accent);color:#fff;border:0;padding:11px 16px;font:600 14px Barlow,sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+@media(max-width:1499px){#toc{transform:translateX(-110%);transition:transform .2s;top:0;left:0;max-height:100vh;height:100vh;width:280px}body.tocopen #toc{transform:none}#toc #tocx{display:block}#tocbtn{display:block}}
+[id]{scroll-margin-top:70px}
+button.lnk{border:0;background:none;color:var(--soft);cursor:pointer;font:inherit;font-weight:400;margin-left:8px;opacity:0;padding:0 4px}h2:hover>.lnk,h3:hover>.lnk,h4:hover>.lnk,.lnk:focus,.lnk.done{opacity:1}.lnk.done{color:var(--best-fg)}
+#hlbar{position:fixed;z-index:62;right:14px;bottom:14px;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+#hlbar .hltools{display:none;background:#fff;border:1px solid var(--line);padding:10px;box-shadow:0 6px 24px rgba(0,0,0,.15);flex-direction:column;gap:6px;min-width:190px}#hlbar.open .hltools{display:flex}
+#hlbar button{font:600 13px Barlow,sans-serif;border:1px solid var(--line);background:#fff;padding:7px 10px;cursor:pointer;text-align:left;color:var(--strong)}#hlbar button.on{background:var(--insight);border-color:var(--accent)}
+#hlbar #hlopen{background:#212529;color:#fff;border:0;padding:11px 16px;box-shadow:0 4px 14px rgba(0,0,0,.25)}#hlbar small{color:var(--soft);font-size:11.5px}
+.hlcols{display:flex;gap:6px}#hlbar .hc{width:26px;height:26px;padding:0}#hlbar .hc.on{outline:2px solid var(--strong);outline-offset:1px}
+.c-y{background:#fff3a3}.c-g{background:#c9f2c7}.c-p{background:#ffd1e0}.c-b{background:#cfe5ff}
+#hlbar .hc.c-y{background:#fff3a3}#hlbar .hc.c-g{background:#c9f2c7}#hlbar .hc.c-p{background:#ffd1e0}#hlbar .hc.c-b{background:#cfe5ff}
+mark.hl{color:inherit;padding:0}body.hl-erase mark.hl,body.hl-erase .areamark{cursor:pointer;outline:1px dashed #a12a1b}
+main.page{position:relative}#hlareas{position:absolute;inset:0;pointer-events:none;z-index:30}.areamark{position:absolute;border:2px solid rgba(0,0,0,.35);opacity:.55;mix-blend-mode:multiply}body.hl-erase .areamark{pointer-events:auto}
+#hlcap{display:none;position:absolute;inset:0;z-index:40;cursor:crosshair;touch-action:none}body.hl-area #hlcap{display:block}body.hl-text main{cursor:text}
+@media print{#toc,#tocbtn,#hlbar,button.lnk{display:none!important}mark.hl,.areamark{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+@media(max-width:700px){.dcard{flex-direction:column}.dcard .stagebox{width:100%}}
+"""
 POP = '<script>(function(){var p=document.createElement("div");p.id="dpop";document.body.appendChild(p);function show(el){while(p.firstChild)p.removeChild(p.firstChild);var t=document.createElement("div");t.className="th pic "+el.dataset.cls;var b=document.createElement("b");b.textContent="Design "+el.dataset.id;var s=document.createElement("small");s.textContent=el.dataset.name;p.appendChild(t);p.appendChild(b);p.appendChild(s);p.style.display="block";var r=el.getBoundingClientRect(),w=p.offsetWidth,h=p.offsetHeight,x=Math.min(Math.max(8,r.left),window.innerWidth-w-8),y=r.bottom+6;if(y+h>window.innerHeight-8)y=Math.max(8,r.top-h-6);p.style.left=x+"px";p.style.top=y+"px"}function hide(){p.style.display="none"}function ref(ev){return ev.target.closest&&ev.target.closest(".dref")}document.addEventListener("mouseover",function(ev){var el=ref(ev);if(el)show(el)});document.addEventListener("mouseout",function(ev){if(ref(ev))hide()});document.addEventListener("focusin",function(ev){var el=ref(ev);if(el)show(el)});document.addEventListener("focusout",function(ev){if(ref(ev))hide()});document.addEventListener("click",function(ev){var el=ref(ev);if(el)show(el);else hide()});document.addEventListener("keydown",function(ev){if(ev.key==="Escape"){hide();hg()}});})();(function(){var g=document.createElement("div");g.id="gpop";document.body.appendChild(g);function gl(ev){return ev.target.closest&&ev.target.closest(".gl")}function sg(el){g.textContent=el.dataset.tip;g.style.display="block";var r=el.getBoundingClientRect(),w=g.offsetWidth,h=g.offsetHeight,x=Math.min(Math.max(8,r.left),window.innerWidth-w-8),y=r.bottom+6;if(y+h>window.innerHeight-8)y=Math.max(8,r.top-h-6);g.style.left=x+"px";g.style.top=y+"px"}window.hg=function(){g.style.display="none"};document.addEventListener("mouseover",function(ev){var el=gl(ev);if(el)sg(el)});document.addEventListener("mouseout",function(ev){if(gl(ev))hg()});document.addEventListener("click",function(ev){var el=gl(ev);if(el)sg(el);else hg()});})();</script>'
 
 CSS = """
@@ -1567,6 +1859,7 @@ p.concl{font-size:17.5px;font-weight:600;color:var(--strong);margin:12px 0 4px}
 ul.evs{list-style:none;padding:0;margin:6px 0}li.ev{background:var(--bg);padding:10px 14px;margin:6px 0}li.ev .evt{color:var(--ink)}.evd{margin:6px 0 2px}
 .dchip{display:inline-block;background:#fff;border:1px solid var(--line);padding:2px 8px;font-size:12.5px;margin:2px 6px 2px 0;color:var(--muted)}.dchip b{color:var(--strong)}
 .evl{font-size:13px;color:var(--muted);margin:6px 0 0}.evl span{font-weight:600}.evl .sepdot{color:#c9c5bf;margin:0 4px}a.ref{color:#d9532f;text-decoration:none;font-weight:600}a.ref:hover{text-decoration:underline}
+.readnote{background:var(--bg);border-left:4px solid var(--accent);padding:12px 16px;margin:0 0 14px;color:var(--ink)}
 footer{color:var(--soft);font-size:13px;text-align:center;padding:10px 0 30px}
 @media(max-width:700px){.sec{padding:20px 16px}.aoicard{grid-template-columns:1fr}.xgrid{grid-template-columns:1fr}dl.kv{grid-template-columns:1fr}.hd{flex-direction:column}.comp-chart .crow{grid-template-columns:1fr}.bar nav{display:none}}
 @media print{.finding{break-inside:avoid}.wtabs .tabs{display:none}.wtabs .wpane{display:block!important}#dpop,#gpop,.btnrow,details.datapack{display:none!important}#agent-prompt{height:auto}.bar{position:static}.bar nav,.btn{display:none}body{background:#fff}.sec{break-inside:avoid;border-color:#ddd}details{display:block}}
@@ -1574,10 +1867,15 @@ footer{color:var(--soft);font-size:13px;text-align:center;padding:10px 0 30px}
 
 
 def build(spec, base):
+    raw = json.dumps({k: x for k, x in spec.items() if not k.startswith("_")}, ensure_ascii=False, indent=1)
     spec["_base"] = base
     spec["_generated"] = spec.get("generated") or datetime.date.today().isoformat()
     ERRORS.clear()
     REFS.clear()
+    CUR["spec"] = spec
+    spec.update(expand_all({k: x for k, x in spec.items() if not k.startswith("_")}))
+    spec["_raw_json"] = raw
+    lint_differences(spec)
     for v in spec["variants"]:
         uri, _ = load_image(base, src_of(v["stimulus"]))
         DESIGNS[v["id"]] = {"name": v["name"], "cls": reg_image(uri)}
@@ -1591,13 +1889,16 @@ def build(spec, base):
     limits = "".join(f"<li>{rich(x)}</li>" for x in spec.get("limits", []))
     changes = "".join(f"<li>{rich(x)}</li>" for x in spec.get("would_change", []))
     sources = "".join(f"<li>{rich(x)}</li>" for x in spec.get("sources", []))
-    defs = "".join(f"<dt>{e(k)}</dt><dd>{e(x)}</dd>" for k, x in {
+    defs = "".join(f"<dt>{e(k)}</dt><dd>{e(x)}{support_link(k)}</dd>" for k, x in {
         "VAI": "RealEye's Visual Attention Index (0–100): the equal-weight mean of Reach, Speed and Hold. A relative score, not a share of viewers or of attention.",
         "Reach": "Share of viewers who looked at the AOI at least once in the window.", "Speed": "How soon the AOI is noticed after it becomes visible. Used to rank the viewing order.",
         "Hold": "How long attention stays on the AOI relative to the window.", "Viewing order": "AOIs ranked by VAI Speed: a relative hierarchy across viewers, not one person's scan path.",
         "AOI": "Area of Interest: a saved region of the image (tagline, pack, face, logo, brand name).", "Windows": "First 3, 5 and 10 s are cumulative and start at 0.5 s.",
         "Webcam eye tracking": "Gaze estimated from participants' own webcams in the RealEye platform. It shows where attention concentrates, with less precision than lab trackers.",
-        "Quality filter": m.get("quality_filter", "Only viewers with data quality Average or better.")}.items())
+        "Quality filter": m.get("quality_filter", "Only viewers with data quality Average or better."),
+        "Heatmap": "A picture of where viewers looked: warm colours (yellow, orange, red) mark where attention concentrated, cool colours where it did not.",
+        "Gender and age": "Viewers' own answers to the gender and age questions of the study. Audience groups under 30 viewers are indicative only.",
+        "RealEye": "The online research platform with webcam eye tracking that ran this study and produced every number here."}.items())
     appendix = section("technical", "Technical appendix",
                        '<p class="muted">For analysts and researchers: how the study was run, the data used, and the limits of the evidence.</p>' + method_block(spec) + participants_appendix(spec) + version_block(spec) + vai_tech_notes()
                        + f'<h3>Evidence and limits</h3><ul class="plain">{limits}</ul>' + (f'<h4>What would change the recommendation</h4><ul class="plain">{changes}</ul>' if changes else "")
@@ -1612,8 +1913,8 @@ def build(spec, base):
     page = (f'<div class="kicker"><span class="re-tag">Report</span><span class="t">Neuromarketing report</span><span class="ver">made with {SKILL_NAME} v{SKILL_VERSION} · {e(spec["_generated"])}</span></div>'
             f'<div class="hd"><div><h1>{e(spec.get("title", ""))}</h1><p>{e(spec.get("subtitle", ""))} {e(spec.get("date", ""))}{" · " + e(spec["prepared_for"]) if spec.get("prepared_for") else ""}</p></div>'
             f'<button class="btn" onclick="window.print()">{printer} Print / Save as PDF</button></div>'
-            f'<div class="strip">{info}<div><b>How this was measured</b><span>{e(m.get("banner", "RealEye platform, webcam eye tracking."))}</span></div></div>'
-            f'{overall}{intro_section(spec)}<div class="tiles">{tiles}</div>{participants_section(spec)}{vai_guide(spec)}{order_section(spec)}{body}{compare_section(spec)}{audience_section(spec)}{retest}{appendix}{blueprint_section(spec)}{agent_section(spec)}'
+            f'{designs_band(spec)}<div class="strip">{info}<div><b>How this was measured</b><span>{e(m.get("banner", "RealEye platform, webcam eye tracking."))}</span></div></div>'
+            f'{overall}{audience_section(spec)}{hypotheses_section(spec)}{intro_section(spec)}<div class="tiles">{tiles}</div>{participants_section(spec)}{vai_guide(spec)}{order_section(spec)}{body}{compare_section(spec)}{retest}{improve_section(spec)}{appendix}{blueprint_section(spec)}{agent_section(spec)}'
             f'<footer>Generated with the RealEye {SKILL_NAME} skill v{SKILL_VERSION} (report format {SCHEMA_VERSION}) on {e(spec["_generated"])}. Eye tracking shows where people looked, not what they understood, liked or will buy.</footer>')
     ids = set(re.findall(r'\bid="([^"]+)"', page))
     for r in sorted(set(REFS)):
@@ -1627,8 +1928,8 @@ def build(spec, base):
     return (f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="{SKILL_NAME} {SKILL_VERSION}">'
             f'<title>{e(spec.get("title", "Neuromarketing report"))}</title>'
             '<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">'
-            f'<style>{CSS}</style></head><body><div class="bar"><span class="logo"><b>Re</b>alEye</span><span class="sep"></span><span class="study">{e(study)}</span><nav>{nav}</nav></div>'
-            f'<main class="page">{page}</main><style>{css_imgs}</style>' + POP + POP2 + '</body></html>')
+            f'<style>{CSS}{NEW_CSS}</style></head><body><div class="bar"><span class="logo"><b>Re</b>alEye</span><span class="sep"></span><span class="study">{e(study)}</span></div>'
+            f'<main class="page">{page}</main>' + toc_html(spec, ids) + HLBAR + f'<style>{css_imgs}</style>' + POP + POP2 + POP3 + POP4 + '</body></html>')
 
 
 def main():

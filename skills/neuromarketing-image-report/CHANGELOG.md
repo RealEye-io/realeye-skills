@@ -2,6 +2,17 @@
 
 The version is in `SKILL.md` (`metadata.version`) and is stamped into every report this skill builds.
 
+## 1.14.0
+- The whole designs open the report, each with what it presents and its assumed purpose.
+- Higher VAI is stated as better at attracting visual attention (findings, explainer, tooltips, tables).
+- Differences between designs are always shown: `{{cmp}}`, `{{diff}}` and `{{gap}}` tokens read the numbers from the data; the build warns about unpaired numbers.
+- Hypotheses section: the designer's assumptions tested with verdicts and proven evidence.
+- Gender and age insights moved directly after the overall findings.
+- "How to improve the study": AOIs, respondents, survey questions, benchmarking, other ideas.
+- Every "RealEye" has a tooltip that links to www.RealEye.io; Definitions link to RealEye support pages.
+- Floating contents menu with scroll tracking and copy-link buttons; link buttons on headings.
+- Mark up tool: highlight text, mark areas, erase; saved in the reader's browser.
+
 ## 1.13.0
 - Overall findings and conclusions are the first and strongest section. Every finding is its own sub-section with conclusion, why, evidence (numbers checked against the data by the build script, links to tables, charts, heatmaps and the RealEye dashboard), what it means and confidence. Conclusions and actions are sub-sections that link to the findings they follow from. Build fails on wrong numbers, missing why/evidence or broken links.
 - Rules for checking conclusions before publishing.

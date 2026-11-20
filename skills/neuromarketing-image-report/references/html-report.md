@@ -58,6 +58,17 @@ Brand-manager main sections, technical detail in the appendix · VAI only · Rea
 
 `overall.conclusions[]` and `actions[]` are objects `{title, text, based_on: [finding numbers]}` (actions also `preserve`). `variants[].findings[]` and `segment_findings[]` may be strings ("Title: text") or objects `{title, text, evidence | ref | data}`; each is its own sub-section and links to its tables.
 
+## Designs, hypotheses and study improvements
+
+- `variants[].presents` and `variants[].purpose` (required): shown with the whole image at the top of the report.
+- `hypotheses[]` (at least 3): `{hypothesis, verdict: supported | partly supported | not supported | cannot tell, conclusion, why, evidence[] (same shape as a finding's), so_what, confidence}`. Each is its own sub-section (H1, H2 …) and is checked like a finding.
+- `study_improvements[]`: `{category: aois | respondents | survey | benchmark | other, title, text, why, questions: [{question, why, answer_type}], steps: []}`. The categories aois, respondents, survey and benchmark are required.
+- Difference tokens in any text: `{{cmp:vai:Tagline:3:A,B}}`, `{{diff:reach:Pack (product):10:A,B}}`, `{{gap:vai:Tagline:3:A:Women,Men}}` (metric: vai, reach, speed, hold; window 3, 5 or 10).
+
+## Reading aids
+
+The report has a floating contents menu with scroll tracking and copy-link buttons, link buttons on headings, RealEye tooltips (the word links to www.RealEye.io), definitions linked to RealEye support pages, and a Mark up tool (highlight text, mark an area, erase). All are produced by the script; nothing to put in the JSON.
+
 ## Study blueprint
 
 `blueprint` (study set-up), `study_info`, each variant's `aois[]` (name, colour, shape in % of the image, optional `type`, `time_range_s`) and `image_px` ([width, height] of the original stimulus, default read from the image) are rendered in the *Study blueprint* section with pixel coordinates, downloadable stimulus images, `study-blueprint.json` and the full `report.json`, plus steps to run the study again.
@@ -140,7 +151,7 @@ Use the user's signed-in browser (read-only). Never print participant names; nev
                          "device": {"Desktop": 201, "Tablet": 28},
                          "tracker_text": "…", "participant_type_text": "…", "screen_text": "1512 × 900 px", "age_text": "…"}},
   "participants_note": "optional: note under the participant charts",
-  "skill_version": "1.13.0",
+  "skill_version": "1.14.0",
   "blueprint": {"study_name": "…", "target_participants": "10,000", "demographics_asked": "gender and age", "random_order": "off",
                 "stimuli": {"A": {"file_name": "shampoo product.png", "display_seconds": 10, "finish_on": "keypress", "instructions": "off"}},
                 "recreate_steps": ["optional extra steps specific to this study"]},

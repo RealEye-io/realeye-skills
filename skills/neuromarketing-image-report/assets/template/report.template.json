@@ -340,9 +340,126 @@
    }
   ]
  },
+ "hypotheses": [
+  {
+   "hypothesis": "<A hypothesis the designer or brand owner probably had, e.g. the claim is read first>",
+   "verdict": "cannot tell",
+   "conclusion": "<The answer in one or two plain sentences>",
+   "why": "<Why: which comparison and numbers lead to the answer, and what is not known>",
+   "evidence": [
+    {
+     "text": "<Proof point in words, use {{cmp:vai:Tagline:10:A,B}} for numbers of two designs>",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Tagline",
+       "window": 10,
+       "metric": "vai"
+      }
+     ],
+     "ref": [
+      "order"
+     ]
+    }
+   ],
+   "so_what": "<What it means for the decision>",
+   "confidence": "<high | medium | low>"
+  },
+  {
+   "hypothesis": "<A hypothesis the designer or brand owner probably had, e.g. the claim is read first>",
+   "verdict": "cannot tell",
+   "conclusion": "<The answer in one or two plain sentences>",
+   "why": "<Why: which comparison and numbers lead to the answer, and what is not known>",
+   "evidence": [
+    {
+     "text": "<Proof point in words, use {{cmp:vai:Tagline:10:A,B}} for numbers of two designs>",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Tagline",
+       "window": 10,
+       "metric": "vai"
+      }
+     ],
+     "ref": [
+      "order"
+     ]
+    }
+   ],
+   "so_what": "<What it means for the decision>",
+   "confidence": "<high | medium | low>"
+  },
+  {
+   "hypothesis": "<A hypothesis the designer or brand owner probably had, e.g. the claim is read first>",
+   "verdict": "cannot tell",
+   "conclusion": "<The answer in one or two plain sentences>",
+   "why": "<Why: which comparison and numbers lead to the answer, and what is not known>",
+   "evidence": [
+    {
+     "text": "<Proof point in words, use {{cmp:vai:Tagline:10:A,B}} for numbers of two designs>",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Tagline",
+       "window": 10,
+       "metric": "vai"
+      }
+     ],
+     "ref": [
+      "order"
+     ]
+    }
+   ],
+   "so_what": "<What it means for the decision>",
+   "confidence": "<high | medium | low>"
+  }
+ ],
+ "study_improvements": [
+  {
+   "category": "aois",
+   "title": "<Different or more AOIs: which parts to split, which elements to add>",
+   "text": "<What to change>",
+   "why": "<Why it gives better insight>"
+  },
+  {
+   "category": "respondents",
+   "title": "<More or different respondents: which groups, how many, how to recruit>",
+   "text": "<What to change>",
+   "why": "<Why>"
+  },
+  {
+   "category": "survey",
+   "title": "<Survey to add after viewing>",
+   "text": "<Intro>",
+   "questions": [
+    {
+     "question": "<Question>",
+     "why": "<What it adds to the eye-tracking data>",
+     "answer_type": "<open text | scale | choice>"
+    }
+   ]
+  },
+  {
+   "category": "benchmark",
+   "title": "<Benchmark against the best performing similar designs, including competitors>",
+   "text": "<How>",
+   "why": "<Why>",
+   "steps": [
+    "<Step>"
+   ]
+  },
+  {
+   "category": "other",
+   "title": "<Other idea>",
+   "text": "<What>",
+   "why": "<Why>"
+  }
+ ],
  "variants": [
   {
    "id": "A",
+   "presents": "<A few words: what the design shows (the elements and how they are laid out)>",
+   "purpose": "<The assumed purpose of showing this design to people: what the designer wants viewers to do, notice or feel>",
    "item_id": "ITEM_ID_A",
    "name": "<design name, e.g. Profile gaze (file name)>",
    "description": "<one line describing the design>",
@@ -1498,6 +1615,8 @@
   },
   {
    "id": "B",
+   "presents": "<A few words: what the design shows (the elements and how they are laid out)>",
+   "purpose": "<The assumed purpose of showing this design to people: what the designer wants viewers to do, notice or feel>",
    "item_id": "ITEM_ID_B",
    "name": "<design name, e.g. Profile gaze (file name)>",
    "description": "<one line describing the design>",

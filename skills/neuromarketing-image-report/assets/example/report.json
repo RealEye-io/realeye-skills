@@ -2,7 +2,7 @@
  "title": "“Wake up the red in your hair”: two shampoo ad versions",
  "subtitle": "What viewers noticed, in what order, and for how long, using RealEye's VAI, by gender, age and time window.",
  "date": "20 Nov 2026",
- "skill_version": "1.13.0",
+ "skill_version": "1.14.0",
  "method": {
   "platform": "RealEye platform",
   "tracking": "Webcam eye tracking: participants viewed the images in their own browsers while RealEye estimated their gaze from their webcams.",
@@ -148,7 +148,7 @@
  ],
  "overall": {
   "verdict_label": "Conclusion: move the brand name into the warm zone and keep A's gaze cue, then test recall",
-  "verdict_text": "In both designs viewers notice the tagline first, then the pack, the face, the logo and last the brand name banner, and that order does not change from the first 3 to the first 10 seconds. The brand banner is the weak spot: its VAI is 14.3 in design A and 8.3 in design B. Design A reaches the logo and banner more often; design B holds the face better. Without a recall result this is a diagnosis, not a winner.",
+  "verdict_text": "In both designs viewers notice the tagline first, then the pack, the face, the logo and last the brand name banner, and that order does not change from the first 3 to the first 10 seconds. The brand banner is the weak spot: its {{cmp:vai:Brand name (banner):10:A,B}}. Design A reaches the logo and banner more often; design B holds the face better. Without a recall result this is a diagnosis, not a winner.",
   "summary": "All scores are RealEye VAI (0–100) and its three measures: Reach (how many viewers looked), Speed (how soon) and Hold (how long attention stayed).",
   "kpis": [
    {
@@ -159,12 +159,12 @@
    {
     "label": "Brand banner VAI, first 10 s",
     "value": "A 14.3 · B 8.3",
-    "note": "Reach 27% vs 16%"
+    "note": "{{diff:vai:Brand name (banner):10:A,B}}. {{cmp:reach:Brand name (banner):10:A,B}}"
    },
    {
     "label": "Face VAI, first 10 s",
     "value": "A 54.2 · B 58.4",
-    "note": "direct gaze holds the face"
+    "note": "{{diff:vai:Face:10:A,B}}: direct gaze holds the face"
    },
    {
     "label": "Tagline VAI, women minus men",
@@ -177,7 +177,7 @@
     "tag": "strength",
     "title": "Tagline and pack lead, in every window",
     "conclusion": "The tagline is noticed first and the pack second, in both designs and in the first 3, 5 and 10 seconds. This part of the layout works.",
-    "why": "VAI Speed puts the tagline first and the pack second for all viewers in every window and in both designs (viewing order). The tagline also has the highest VAI at 3 s (57.5 in A, 57.6 in B) with Reach near 80%, and the pack catches up by 10 s as more viewers get to it (VAI 61.2 in A, 61.8 in B). A high early VAI means many viewers look at it, soon and for a while, so the entry point is the claim and the anchor is the product.",
+    "why": "VAI Speed puts the tagline first and the pack second for all viewers in every window and in both designs (viewing order). In the first 3 s the tagline has the highest VAI of all elements ({{cmp:vai:Tagline:3:A,B}}) with Reach near 80%, and the pack catches up by 10 s as more viewers get to it ({{cmp:vai:Pack (product):10:A,B}}). A high early VAI means many viewers look at it, soon and for a while, so the entry point is the claim and the anchor is the product.",
     "evidence": [
      {
       "text": "Viewing order for all viewers is Tagline, Pack, Face, Logo, Banner in the first 3, 5 and 10 s, in both designs.",
@@ -188,7 +188,7 @@
       ]
      },
      {
-      "text": "Tagline VAI in the first 3 s is 57.5 in A and 57.6 in B; its Reach is near 80%.",
+      "text": "First 3 s: {{cmp:vai:Tagline:3:A,B}}; its Reach is near 80%.",
       "data": [
        {
         "design": "A",
@@ -231,7 +231,7 @@
       ]
      },
      {
-      "text": "The pack starts at VAI 42.2 and 41.0 in the first 3 s and reaches 61.2 and 61.8 by 10 s.",
+      "text": "The pack starts lower and catches up. First 3 s: {{cmp:vai:Pack (product):3:A,B}}. First 10 s: {{cmp:vai:Pack (product):10:A,B}}.",
       "data": [
        {
         "design": "A",
@@ -268,10 +268,10 @@
     "tag": "risk",
     "title": "The brand name banner is the weak spot",
     "conclusion": "Few viewers reach the brand name banner, late and briefly, so the brand name is mostly seen only on the pack label.",
-    "why": "The banner has the lowest VAI of the five elements in every window and in both designs, and all three components are low: Reach (how many looked) is 27% in A and 16% in B in the first 10 s, Speed (how soon) puts it last in the viewing order, and Hold (how long) is about 1. The measured heatmaps show the bottom band cold in every audience, which agrees with the numbers.",
+    "why": "The banner has the lowest VAI of the five elements in every window and in both designs, and all three components are low: Reach (how many looked) in the first 10 s is low: {{cmp:reach:Brand name (banner):10:A,B}}, Speed (how soon) puts it last in the viewing order, and Hold (how long) is about 1. The measured heatmaps show the bottom band cold in every audience, which agrees with the numbers.",
     "evidence": [
      {
-      "text": "Banner VAI grows from 3.6 to 14.3 in A and from 1.2 to 8.3 in B between the first 3 and the first 10 s, the lowest of any element.",
+      "text": "First 10 s: {{cmp:vai:Brand name (banner):10:A,B}}. It is the lowest of any element and grows only slowly from the first 3 s to the first 10 s in both designs.",
       "data": [
        {
         "design": "A",
@@ -312,7 +312,7 @@
       ]
      },
      {
-      "text": "Reach in the first 10 s is 27% in A and 16% in B; Hold in A is about 1.",
+      "text": "First 10 s: {{cmp:reach:Brand name (banner):10:A,B}}; {{cmp:hold:Brand name (banner):10:A,B}}.",
       "data": [
        {
         "design": "A",
@@ -589,9 +589,376 @@
    }
   ]
  },
+ "hypotheses": [
+  {
+   "hypothesis": "The tagline “Wake up the red in your hair” is the first thing viewers read.",
+   "verdict": "supported",
+   "conclusion": "Yes. In both designs the tagline is noticed before every other element, in the first 3, 5 and 10 seconds.",
+   "why": "Viewing order by VAI Speed puts the tagline first for all viewers in every window and in both designs. In the first 3 s it also has the highest VAI of all elements ({{cmp:vai:Tagline:3:A,B}}), with Reach already near 80%. The claim is the entry point, as designed.",
+   "evidence": [
+    {
+     "text": "The viewing order is the same in every window and design.",
+     "ref": [
+      "order"
+     ]
+    },
+    {
+     "text": "{{cmp:vai:Tagline:3:A,B}}.",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Tagline",
+       "window": 3,
+       "value": 57.5
+      },
+      {
+       "design": "B",
+       "aoi": "Tagline",
+       "window": 3,
+       "value": 57.6
+      },
+      {
+       "design": "A",
+       "aoi": "Tagline",
+       "window": 3,
+       "metric": "reach"
+      },
+      {
+       "design": "B",
+       "aoi": "Tagline",
+       "window": 3,
+       "metric": "reach"
+      }
+     ]
+    }
+   ],
+   "so_what": "Keep the tagline where it is.",
+   "confidence": "high"
+  },
+  {
+   "hypothesis": "The model's sideways gaze in A leads viewers' eyes to the pack.",
+   "verdict": "not supported",
+   "conclusion": "No measurable effect: the pack gets the same attention in A and in B, so the sideways gaze does not add attention to it.",
+   "why": "If the gaze cue worked, the pack would score clearly higher in A, where the model looks at it, than in B, where she looks at the viewer. In the first 10 s the pack scores {{cmp:vai:Pack (product):10:A,B}} and is noticed at the same speed ({{cmp:speed:Pack (product):10:A,B}}). The pack is second in the viewing order in both designs.",
+   "evidence": [
+    {
+     "text": "{{cmp:vai:Pack (product):10:A,B}}.",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Pack (product)",
+       "window": 10,
+       "value": 61.2
+      },
+      {
+       "design": "B",
+       "aoi": "Pack (product)",
+       "window": 10,
+       "value": 61.8
+      }
+     ]
+    },
+    {
+     "text": "{{cmp:speed:Pack (product):10:A,B}}.",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Pack (product)",
+       "window": 10,
+       "metric": "speed"
+      },
+      {
+       "design": "B",
+       "aoi": "Pack (product)",
+       "window": 10,
+       "metric": "speed"
+      }
+     ],
+     "ref": [
+      "order"
+     ]
+    }
+   ],
+   "so_what": "Do not count on the gaze direction to steer viewers to the product; use placement and size.",
+   "confidence": "medium",
+   "confidence_note": "Two designs with more than 220 viewers each; the images differ in more than the gaze."
+  },
+  {
+   "hypothesis": "Viewers see the brand name “BunnyEnchantment” in the banner at the bottom.",
+   "verdict": "not supported",
+   "conclusion": "Only a minority do: the banner is the least seen element in both designs, and it is reached late and briefly.",
+   "why": "The banner has the lowest VAI of the five elements in every window ({{cmp:vai:Brand name (banner):10:A,B}} in the first 10 s). Reach shows how few get there: {{cmp:reach:Brand name (banner):10:A,B}}, with a Hold of about 1.",
+   "evidence": [
+    {
+     "text": "{{cmp:reach:Brand name (banner):10:A,B}}.",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Brand name (banner)",
+       "window": 10,
+       "metric": "reach",
+       "value": 27.1
+      },
+      {
+       "design": "B",
+       "aoi": "Brand name (banner)",
+       "window": 10,
+       "metric": "reach",
+       "value": 16.3
+      }
+     ]
+    },
+    {
+     "text": "The heatmaps show the bottom band cold.",
+     "ref": [
+      "dA-heat",
+      "dB-heat"
+     ]
+    }
+   ],
+   "so_what": "The brand name needs a better place or size.",
+   "confidence": "high"
+  },
+  {
+   "hypothesis": "The model's face attracts attention without taking it away from the product.",
+   "verdict": "partly supported",
+   "conclusion": "The face attracts attention in both designs, and the pack does not lose attention to it. With direct gaze the face scores higher but the logo and banner score lower.",
+   "why": "The face is reached by most viewers ({{cmp:reach:Face:10:A,B}}) and scores {{cmp:vai:Face:10:A,B}}. The pack is not affected ({{cmp:vai:Pack (product):10:A,B}}), but the logo ({{cmp:vai:Logo:10:A,B}}) and the banner ({{cmp:vai:Brand name (banner):10:A,B}}) lose attention in B.",
+   "evidence": [
+    {
+     "text": "{{cmp:vai:Face:10:A,B}}.",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Face",
+       "window": 10,
+       "value": 54.2
+      },
+      {
+       "design": "B",
+       "aoi": "Face",
+       "window": 10,
+       "value": 58.4
+      }
+     ]
+    },
+    {
+     "text": "{{cmp:vai:Logo:10:A,B}}.",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Logo",
+       "window": 10,
+       "value": 28.0
+      },
+      {
+       "design": "B",
+       "aoi": "Logo",
+       "window": 10,
+       "value": 23.9
+      }
+     ]
+    }
+   ],
+   "so_what": "A direct-gaze face needs the brand name close to the eyes.",
+   "confidence": "medium"
+  },
+  {
+   "hypothesis": "The ad works equally well for women and men.",
+   "verdict": "partly supported",
+   "conclusion": "Both groups see the same elements in the same order, but women reach the tagline faster, and in A men look at the face earlier.",
+   "why": "The viewing order is the same for men and women. The speed differs: in the first 3 s women score higher on the tagline ({{gap:vai:Tagline:3:A:Women,Men}}; {{gap:vai:Tagline:3:B:Women,Men}}), while men score higher on the face in A ({{gap:vai:Face:3:A:Men,Women}}).",
+   "evidence": [
+    {
+     "text": "{{gap:vai:Tagline:3:A:Women,Men}}.",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Tagline",
+       "window": 3,
+       "audience": "Women",
+       "minus": {
+        "audience": "Men"
+       },
+       "value": 15.6
+      },
+      {
+       "design": "B",
+       "aoi": "Tagline",
+       "window": 3,
+       "audience": "Women",
+       "minus": {
+        "audience": "Men"
+       },
+       "value": 12.1
+      }
+     ]
+    },
+    {
+     "text": "{{gap:vai:Face:3:A:Men,Women}}.",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Face",
+       "window": 3,
+       "audience": "Men",
+       "value": 27.8
+      },
+      {
+       "design": "A",
+       "aoi": "Face",
+       "window": 3,
+       "audience": "Women",
+       "value": 19.0
+      }
+     ],
+     "ref": [
+      "order-audience"
+     ]
+    }
+   ],
+   "so_what": "Do not move or shrink the tagline without retesting with women.",
+   "confidence": "medium",
+   "confidence_note": "Both groups have more than 50 viewers per design."
+  },
+  {
+   "hypothesis": "Viewers will remember the brand name after seeing the ad.",
+   "verdict": "cannot tell",
+   "conclusion": "Attention data cannot show memory, but it points to a risk: few viewers look at the brand name.",
+   "why": "Recall was not measured. What is measured is that the banner is reached by {{cmp:reach:Brand name (banner):10:A,B}} and the logo on the pack by {{cmp:reach:Logo:10:A,B}}. Viewers who never look at the brand name cannot recall it from the image, but those who do may still forget it. A recall question in the study would answer this.",
+   "evidence": [
+    {
+     "text": "{{cmp:reach:Logo:10:A,B}}.",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Logo",
+       "window": 10,
+       "metric": "reach",
+       "value": 52.8
+      },
+      {
+       "design": "B",
+       "aoi": "Logo",
+       "window": 10,
+       "metric": "reach",
+       "value": 45.8
+      }
+     ]
+    },
+    {
+     "text": "How to measure recall in the next round.",
+     "ref": [
+      "improve"
+     ]
+    }
+   ],
+   "so_what": "Add an unaided brand recall question before judging the designs on brand building.",
+   "confidence": "low"
+  }
+ ],
+ "study_improvements": [
+  {
+   "category": "aois",
+   "title": "Split the big elements into the parts that matter",
+   "text": "Split the pack into the label, the “b” logo and the cap, and the tagline into “Wake up” and “the red in your hair”. Add AOIs for the model's eyes and hair, and one for the whole bottom band including the product shot.",
+   "why": "Large AOIs hide differences inside them (the pack reaches 92% of viewers, but we cannot tell which part they look at). Smaller AOIs show exactly which word or part carries the attention."
+  },
+  {
+   "category": "aois",
+   "title": "Add an AOI for any element you want people to act on",
+   "text": "If the final ad has a call to action, a price, a claim or a certification, add an AOI for it so its VAI can be compared with the elements here.",
+   "why": "An element without an AOI cannot be measured."
+  },
+  {
+   "category": "respondents",
+   "title": "Collect more viewers in the groups that are too small to read",
+   "text": "Aim for at least 100 viewers per design in each group you want to compare. Ages 25 and over are fewer than 50 viewers per design, and the 35+ group fewer than 15.",
+   "why": "Groups under 30 viewers are marked as indicative, so the age findings in this report are weak."
+  },
+  {
+   "category": "respondents",
+   "title": "Know who is looking: ask gender and age before the test",
+   "text": "About a third of viewers (74 in A, 70 in B) did not give a gender, and 40 to 45% gave no age. Make the questions required, or recruit through the RealEye panel with the target audience set.",
+   "why": "Every viewer without an answer drops out of the gender and age cuts."
+  },
+  {
+   "category": "respondents",
+   "title": "Match the audience to the buyers",
+   "text": "Most viewers are 18–24 and on a desktop. If the shampoo targets other ages or mobile shoppers, recruit them, and test on smartphones.",
+   "why": "Attention to an ad differs by audience and device."
+  },
+  {
+   "category": "survey",
+   "title": "Ask a few questions right after the image",
+   "text": "Short questions after viewing turn attention data into evidence about memory and choice. Ask them in this order, with the image no longer visible.",
+   "questions": [
+    {
+     "question": "Which brand was advertised? (open text)",
+     "why": "Unaided brand recall: shows whether looking at the banner or the logo turns into remembering the brand.",
+     "answer_type": "open text"
+    },
+    {
+     "question": "What was the main message of the ad? (open text)",
+     "why": "Message recall: shows whether the tagline that everyone reads is understood.",
+     "answer_type": "open text"
+    },
+    {
+     "question": "What was the first thing you noticed? (open text)",
+     "why": "Compares what viewers say with what the eye tracking measured.",
+     "answer_type": "open text"
+    },
+    {
+     "question": "How likely are you to buy this shampoo? (1 to 7)",
+     "why": "Purchase intent as a guardrail: checks that the design that gets attention does not lower interest.",
+     "answer_type": "1 to 7 scale"
+    },
+    {
+     "question": "How appealing is the ad? (1 to 7)",
+     "why": "Separates attention from liking.",
+     "answer_type": "1 to 7 scale"
+    },
+    {
+     "question": "Do you already know the brand? (yes, heard of it, no)",
+     "why": "Brand familiarity changes how viewers look at a brand name and must be controlled for.",
+     "answer_type": "single choice"
+    },
+    {
+     "question": "Which of the two shampoos would you pick from a shelf? (choice)",
+     "why": "A product choice is closer to behaviour than attention or intent.",
+     "answer_type": "single choice"
+    }
+   ]
+  },
+  {
+   "category": "benchmark",
+   "title": "Compare with the best similar designs",
+   "text": "Run the same elements (tagline, pack, face, logo, brand name) on the best-performing ads in the category, from your own earlier campaigns and from competitors, with the same time windows and viewer filter. Compare each element's VAI, Reach, Speed and Hold with those benchmarks.",
+   "why": "A VAI of 14 for a brand name only means something against what a good brand name scores in comparable ads.",
+   "steps": [
+    "Pick 3 to 5 category leaders and your own best earlier ad.",
+    "Add them to the same study (or to a study run the same way) and draw the same kinds of AOIs.",
+    "Compare each element's VAI against the benchmark and aim for the level of the best performers."
+   ]
+  },
+  {
+   "category": "benchmark",
+   "title": "Screen many creatives quickly with predicted attention",
+   "text": "To compare against many competitor creatives you cannot test with viewers, use RealEye's Attention Predictor to screen them, then confirm the shortlist with real viewers. Label predicted results as predicted.",
+   "why": "Predicted attention is fast and cheap, but it is not measured attention."
+  },
+  {
+   "category": "other",
+   "title": "Test in a realistic setting",
+   "text": "Show the image in a feed or on a shelf next to competing products, and for the time viewers really spend on it, instead of a forced 10 s view.",
+   "why": "Isolated viewing can overstate how much attention an element gets in the real world."
+  }
+ ],
  "variants": [
   {
    "id": "A",
+   "presents": "A tall shampoo ad: the tagline “Wake up the red in your hair.” at the top, a red BunnyEnchantment shampoo tube (Ravishing Red) on the left, a woman with red hair who looks sideways toward the product, and the brand name banner at the bottom.",
+   "purpose": "Get the claim read first, then the product, and let the model's sideways gaze lead viewers' eyes to the pack and the brand.",
    "item_id": "ITEM_ID_A",
    "name": "Profile gaze (shampoo product.png)",
    "description": "The model looks toward the pack.",
@@ -1747,6 +2114,8 @@
   },
   {
    "id": "B",
+   "presents": "The same shampoo ad and layout, but the woman looks straight at the viewer.",
+   "purpose": "Test whether eye contact makes the ad more engaging by drawing viewers to the model's face, at the risk of pulling attention away from the pack and the brand.",
    "item_id": "ITEM_ID_B",
    "name": "Direct gaze (shampoo camera.png)",
    "description": "The model looks straight at the viewer.",
@@ -2914,7 +3283,7 @@
     2,
     3
    ],
-   "text": "Banner VAI is 14.3 (A) and 8.3 (B). Place the brand name next to the tagline or on the pack at a larger size, or raise and enlarge the banner into the zone the heatmaps show is warm.",
+   "text": "Banner: {{cmp:vai:Brand name (banner):10:A,B}}. Place the brand name next to the tagline or on the pack at a larger size, or raise and enlarge the banner into the zone the heatmaps show is warm.",
    "preserve": "The tagline and the pack, which lead the viewing order."
   },
   {
@@ -2922,7 +3291,7 @@
    "based_on": [
     3
    ],
-   "text": "In A the logo and banner score higher in every window (first 3 s: logo VAI 7.9 vs 4.4, banner 3.6 vs 1.2)."
+   "text": "In A the logo and banner score higher in every window (first 3 s: logo {{cmp:vai:Logo:3:A,B}}; banner {{cmp:vai:Brand name (banner):3:A,B}})."
   },
   {
    "title": "Keep the claim prominent for women",
@@ -2938,7 +3307,7 @@
    "based_on": [
     3
    ],
-   "text": "{B} holds the face better (VAI 58.4 vs 54.2). Test a direct-gaze face with the brand name on the eye line or beside the face."
+   "text": "{B} holds the face better ({{cmp:vai:Face:10:A,B}}). Test a direct-gaze face with the brand name on the eye line or beside the face."
   }
  ],
  "retest": {
