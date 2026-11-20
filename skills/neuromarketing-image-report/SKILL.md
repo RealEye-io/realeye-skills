@@ -4,7 +4,7 @@ description: Interpret measured RealEye ET Platform webcam eye tracking for ads,
 license: MIT
 metadata:
   author: RealEye
-  version: "1.17.1"
+  version: "1.17.2"
 ---
 
 # Neuromarketing image report
@@ -98,7 +98,7 @@ Write in plain language. **The deliverable is a self-contained, professional HTM
 
 26. **Start with the designs.** Before anything else the report shows each whole design (full image, no AOI outlines) with a few words on *what it presents* and its *assumed purpose* (what the designer wants viewers to notice, do or feel): `variants[].presents` and `variants[].purpose`, both required.
 27. **Higher is better, and say so.** A higher VAI, Reach, Speed or Hold means the element is better at attracting visual attention. The report says it at the findings, in the VAI explainer, in the tooltips and under the tables, with the caveat that each element is judged against its role. Never write that a higher score is "not always better" without that context.
-28. **Whenever two designs' numbers are quoted, give the difference.** Never leave the reader to subtract. Write `{{cmp:metric:AOI:window:A,B}}` (renders "VAI 61.2 in A and 61.8 in B (B is 0.6 points higher)"), `{{diff:metric:AOI:window:A,B}}` (only "B is 0.6 points higher") or `{{gap:metric:AOI:window:design:Women,Men}}` for two audiences. The script looks the numbers up, so they cannot be mistyped. AOI names used in tokens must not contain a colon. The build warns about unpaired design numbers in prose.
+28. **Whenever two designs' numbers are quoted, give the difference.** Never leave the reader to subtract. Write `{{cmp:metric:AOI:window:A,B}}` (renders "VAI 61.2 in A and 61.8 in B – B is 0.6 points higher", with no brackets of its own so it can sit inside a sentence or in brackets), `{{diff:metric:AOI:window:A,B}}` (only "B is 0.6 points higher") or `{{gap:metric:AOI:window:design:Women,Men}}` for two audiences. The script looks the numbers up, so they cannot be mistyped. AOI names used in tokens must not contain a colon. The build warns about unpaired design numbers in prose.
 29. **Test the designer's hypotheses.** After the findings and the gender and age insights, a section *Did the design do what it was meant to?* states at least three assumptions the designer or brand owner probably had (`hypotheses[]`), answers each with a verdict (supported, partly supported, not supported, cannot tell), a conclusion, why, and proven evidence, exactly like a finding. Derive them from the design and its assumed purpose; use "cannot tell" for anything attention data cannot show (recall, liking, intent).
 30. **Gender and age insights come straight after the overall findings**, then the hypotheses; the detailed analysis follows.
 31. **Suggest how to improve the study.** A section *How to improve the study* (`study_improvements[]`) has at least one idea in each of: different or more AOIs, more or different respondents (name the groups and numbers that are too small), a survey (a table of concrete questions with why each helps: unaided brand and message recall, first noticed, purchase intent, appeal, familiarity, choice), and benchmarking against the best-performing similar designs including competitors (own earlier campaigns, category leaders; predicted attention may be used to screen many creatives but must be labelled predicted). Base ideas on what this study could not answer.

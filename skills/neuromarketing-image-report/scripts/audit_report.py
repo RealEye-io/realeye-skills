@@ -106,6 +106,7 @@ def main():
     # heatmaps are illustrations
     check("every heatmap block says it is for illustration only and that the analysis rests on the numbers", h.count("Heatmaps are for illustration only") >= 2 * len(set(re.findall(r'id="design-([A-Z])"', h))) and "not on how a heatmap looks" in h)
     check("every finding and hypothesis has evidence with data points (not heatmaps alone)", all('class="dchip"' in b for _, b in fs + hs))
+    check("differences between designs are written without nested brackets", not re.search(r"\([A-Z] is [\d.]+ points (higher|lower)\)", plain(h)))
     # study facts
     for lab in ("Study created", "Data collected", "RealEye version", "Who took part"):
         check(f"study facts: {lab}", lab in h)

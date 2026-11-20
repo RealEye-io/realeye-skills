@@ -1525,8 +1525,8 @@ CUR = {"spec": None}
 
 def _expand_tokens(text):
     # {{diff:metric:AOI:window:A,B}} -> "B is 0.6 points higher"
-    # {{cmp:metric:AOI:window:A,B[:audience]}}  -> "VAI 61.2 in {A} and 61.8 in {B} (B is 0.6 points higher)"
-    # {{gap:metric:AOI:window:design:Women,Men}} -> "VAI 70.1 for Women and 54.5 for Men in {A} (Women 15.6 points higher)"
+    # {{cmp:metric:AOI:window:A,B[:audience]}}  -> "VAI 61.2 in {A} and 61.8 in {B} – B is 0.6 points higher"
+    # {{gap:metric:AOI:window:design:Women,Men}} -> "VAI 70.1 for Women and 54.5 for Men in {A} – Women 15.6 points higher"
     spec = CUR["spec"]
 
     def one(m):
@@ -1546,12 +1546,12 @@ def _expand_tokens(text):
                 tail = "no difference" if abs(d) < 0.05 else f"{b_id} is {abs(d):.1f} points {'higher' if d > 0 else 'lower'}"
                 if kind == "diff":
                     return tail[0].upper() + tail[1:]
-                return f"{mn} {xa:.1f} in {{{a_id}}} and {xb:.1f} in {{{b_id}}} ({tail})"
+                return f"{mn} {xa:.1f} in {{{a_id}}} and {xb:.1f} in {{{b_id}}} – {tail}"
             d_id, pair = args[3], [x.strip() for x in args[4].split(",")]
             x1, x2 = val(seg_of(V(d_id), pair[0]), w, ai, metric), val(seg_of(V(d_id), pair[1]), w, ai, metric)
             d = x1 - x2
             tail = "no difference" if abs(d) < 0.05 else f"{pair[0]} {abs(d):.1f} points {'higher' if d > 0 else 'lower'}"
-            return f"{mn} {x1:.1f} for {pair[0]} and {x2:.1f} for {pair[1]} in {{{d_id}}} ({tail})"
+            return f"{mn} {x1:.1f} for {pair[0]} and {x2:.1f} for {pair[1]} in {{{d_id}}} – {tail}"
         except Exception as ex:
             ERRORS.append(f"cannot expand {m.group(0)} ({type(ex).__name__}: {ex})")
             return "?"

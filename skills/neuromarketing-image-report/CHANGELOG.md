@@ -2,6 +2,9 @@
 
 The version is in `SKILL.md` (`metadata.version`) and is stamped into every report this skill builds.
 
+## 1.17.2
+- Difference tokens are written with a dash instead of their own brackets, so they never produce nested brackets.
+
 ## 1.17.1
 - Evidence and dashboard links are subtle (muted grey, underline on hover accent) so they do not compete with the content.
 
