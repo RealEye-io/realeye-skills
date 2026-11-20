@@ -926,9 +926,9 @@ def data_tables(spec):
     if ps:
         pr = [["design", "group", "category", "viewers", "share_of_analysed_pct"]]
         for did, x in ps.items():
-            tot = x["analysed"]
+            tot = x["analysed"] or 1
             pr.append([did, "overall", "collected", x.get("collected", ""), ""])
-            pr.append([did, "overall", "analysed", tot, 100])
+            pr.append([did, "overall", "analysed", x["analysed"], 100])
             for grp, d in (("gender", x.get("gender", {})), ("age_band", x.get("age", {}).get("bands", {})), ("device", x.get("device", {}))):
                 for k, c in d.items():
                     pr.append([did, grp, k, c, round(c / tot * 100, 1)])
