@@ -4,7 +4,7 @@ description: Interpret measured RealEye ET Platform webcam eye tracking for ads,
 license: MIT
 metadata:
   author: RealEye
-  version: "1.8.0"
+  version: "1.9.0"
 ---
 
 # Neuromarketing image report
@@ -85,6 +85,8 @@ Write in plain language. **The deliverable is a self-contained, professional HTM
 16. **Make every design mention show its thumbnail.** Wherever a design is mentioned ("Design A", "A" in a table or chart legend, a badge), hovering it, focusing it or clicking it shows a small thumbnail of that design with its name, so readers always know which is A and which is B. The script does this automatically for design badges, tags and legends. In free text (verdicts, findings, actions, limits, notes) write designs as **"Design A"** or the token **`{A}`** (for example "in {A} and {B}"); common patterns such as "(A)", "in A", "A's", "A 14.3" and "A: …" are linked automatically. Do not leave a bare letter for a design elsewhere (a sentence-initial article "A" is fine).
 
 17. **Present the tested images and the AOIs in the intro.** Right after the "how this was measured" line, the report must show every tested image in a *Tested designs and the elements analysed* card: the design letter and name, the image with its AOIs outlined (with a *Show AOIs* switch for the clean image), a legend that says what each AOI covers (`aois[].role`, for example "The claim “Wake up the red in your hair.”"), the number of viewers, and links to the design's heatmap, AOI report and AOI VAI report in the RealEye dashboard. Whenever AOIs are analysed there must be at least this one place where the reader sees which part of the design each AOI is; write each `role` as a plain description of the area, not a category.
+
+18. **Explain every metric name with a tooltip.** Wherever a name like VAI, VAI Reach, VAI Speed, VAI Hold, Reach, Speed, Hold or AOI appears in the report (text, table headers, legends, tiles, navigation), hovering or clicking it shows a short plain-language definition. The script adds these tooltips automatically to all report text, so write the names exactly as they are (capitalised: VAI, Reach, Speed, Hold, AOI). If the report uses another term a brand manager might not know, add it to the report's `glossary` (`{"term": "definition"}`) and it gets a tooltip everywhere it appears.
 
 ### Build the report
 

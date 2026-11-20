@@ -84,6 +84,43 @@ def load_image(base, ref):
     return f"data:{mime};base64,{base64.b64encode(data).decode()}", image_size(data)
 
 
+GLOSSARY = {
+    "VAI Reach": "VAI Reach: the share of viewers who looked at the element at least once in the time window (0–100).",
+    "VAI Speed": "VAI Speed: how soon the element is noticed after it becomes visible (0–100). Used to rank the viewing order.",
+    "VAI Hold": "VAI Hold: how long attention stays on the element, relative to the time window (0–100).",
+    "VAI": "VAI (Visual Attention Index): RealEye's attention score for an element, 0–100. It is the average of Reach, Speed and Hold. Use it to compare, not as a percentage of viewers.",
+    "Reach": "Reach: the share of viewers who looked at the element at least once in the time window.",
+    "Speed": "Speed: how soon the element is noticed after it becomes visible. Used to rank the viewing order.",
+    "Hold": "Hold: how long attention stays on the element, relative to the time window.",
+    "AOIs": "AOI (Area of Interest): a region of the image, such as the tagline, pack, face or logo, that is measured separately.",
+    "AOI": "AOI (Area of Interest): a region of the image, such as the tagline, pack, face or logo, that is measured separately.",
+}
+_SKIP_TAGS = ("svg", "script", "style", "title", "option", "textarea")
+
+
+def make_tips(spec):
+    """Return a function that wraps every glossary term in the text of an HTML fragment in a tooltip span."""
+    terms = dict(GLOSSARY)
+    terms.update(spec.get("glossary", {}))
+    rx = re.compile(r"\b(" + "|".join(re.escape(t) for t in sorted(terms, key=len, reverse=True)) + r")\b")
+
+    def wrap(m):
+        return f'<span class="gl" data-tip="{e(terms[m.group(1)])}">{m.group(1)}</span>'
+
+    def tips(fragment):
+        out, depth = [], 0
+        for tok in re.split(r"(<[^>]*>)", fragment):
+            if tok.startswith("<"):
+                mt = re.match(r"<(/?)([a-zA-Z0-9]+)", tok)
+                if mt and mt.group(2).lower() in _SKIP_TAGS and not tok.endswith("/>"):
+                    depth += -1 if mt.group(1) else 1
+                out.append(tok)
+            else:
+                out.append(tok if depth > 0 else rx.sub(wrap, tok))
+        return "".join(out)
+    return tips
+
+
 DESIGNS = {}   # design id -> {"name", "cls"}: filled in build() so every mention can show a thumbnail
 
 
@@ -691,7 +728,7 @@ def method_block(spec):
     return f'<h3>About this study</h3><dl class="ctx">{rows}</dl><p class="hint">{e(m.get("note", ""))}</p>'
 
 
-POP = '<script>(function(){var p=document.createElement("div");p.id="dpop";document.body.appendChild(p);function show(el){while(p.firstChild)p.removeChild(p.firstChild);var t=document.createElement("div");t.className="th pic "+el.dataset.cls;var b=document.createElement("b");b.textContent="Design "+el.dataset.id;var s=document.createElement("small");s.textContent=el.dataset.name;p.appendChild(t);p.appendChild(b);p.appendChild(s);p.style.display="block";var r=el.getBoundingClientRect(),w=p.offsetWidth,h=p.offsetHeight,x=Math.min(Math.max(8,r.left),window.innerWidth-w-8),y=r.bottom+6;if(y+h>window.innerHeight-8)y=Math.max(8,r.top-h-6);p.style.left=x+"px";p.style.top=y+"px"}function hide(){p.style.display="none"}function ref(ev){return ev.target.closest&&ev.target.closest(".dref")}document.addEventListener("mouseover",function(ev){var el=ref(ev);if(el)show(el)});document.addEventListener("mouseout",function(ev){if(ref(ev))hide()});document.addEventListener("focusin",function(ev){var el=ref(ev);if(el)show(el)});document.addEventListener("focusout",function(ev){if(ref(ev))hide()});document.addEventListener("click",function(ev){var el=ref(ev);if(el)show(el);else hide()});document.addEventListener("keydown",function(ev){if(ev.key==="Escape")hide()});})();</script>'
+POP = '<script>(function(){var p=document.createElement("div");p.id="dpop";document.body.appendChild(p);function show(el){while(p.firstChild)p.removeChild(p.firstChild);var t=document.createElement("div");t.className="th pic "+el.dataset.cls;var b=document.createElement("b");b.textContent="Design "+el.dataset.id;var s=document.createElement("small");s.textContent=el.dataset.name;p.appendChild(t);p.appendChild(b);p.appendChild(s);p.style.display="block";var r=el.getBoundingClientRect(),w=p.offsetWidth,h=p.offsetHeight,x=Math.min(Math.max(8,r.left),window.innerWidth-w-8),y=r.bottom+6;if(y+h>window.innerHeight-8)y=Math.max(8,r.top-h-6);p.style.left=x+"px";p.style.top=y+"px"}function hide(){p.style.display="none"}function ref(ev){return ev.target.closest&&ev.target.closest(".dref")}document.addEventListener("mouseover",function(ev){var el=ref(ev);if(el)show(el)});document.addEventListener("mouseout",function(ev){if(ref(ev))hide()});document.addEventListener("focusin",function(ev){var el=ref(ev);if(el)show(el)});document.addEventListener("focusout",function(ev){if(ref(ev))hide()});document.addEventListener("click",function(ev){var el=ref(ev);if(el)show(el);else hide()});document.addEventListener("keydown",function(ev){if(ev.key==="Escape"){hide();hg()}});})();(function(){var g=document.createElement("div");g.id="gpop";document.body.appendChild(g);function gl(ev){return ev.target.closest&&ev.target.closest(".gl")}function sg(el){g.textContent=el.dataset.tip;g.style.display="block";var r=el.getBoundingClientRect(),w=g.offsetWidth,h=g.offsetHeight,x=Math.min(Math.max(8,r.left),window.innerWidth-w-8),y=r.bottom+6;if(y+h>window.innerHeight-8)y=Math.max(8,r.top-h-6);g.style.left=x+"px";g.style.top=y+"px"}window.hg=function(){g.style.display="none"};document.addEventListener("mouseover",function(ev){var el=gl(ev);if(el)sg(el)});document.addEventListener("mouseout",function(ev){if(gl(ev))hg()});document.addEventListener("click",function(ev){var el=gl(ev);if(el)sg(el);else hg()});})();</script>'
 
 CSS = """
 :root{--bg:#f6f5f3;--card:#fff;--ink:#333;--strong:#1a1a1a;--muted:#5c5c5c;--soft:#8b8b8b;--line:#e7e4e0;--line2:#f0edea;--thbg:#fbfaf9;--accent:#fc7753;
@@ -741,6 +778,8 @@ tr.grp th,tr.grp td{border-top:2px solid var(--line)}td.vc b{font-size:16px;colo
 .vp{display:inline-block;padding:3px 9px;font-weight:600}.vp.best{background:var(--best-bg);color:var(--best-fg)}.vp.worst{background:var(--worst-bg);color:var(--worst-fg)}
 .comp-chart .crow{display:grid;grid-template-columns:200px 1fr;gap:14px;padding:12px 0;border-bottom:1px solid var(--line2);align-items:center}.cname{font-weight:600;color:var(--strong)}
 .brow{display:grid;grid-template-columns:1fr 46px;gap:10px;align-items:center;margin:3px 0}.brow b{font-size:13px;color:var(--strong)}.track{height:9px;background:#ece9e5}.track i{display:block;height:100%}
+.gl{cursor:help;border-bottom:1px dotted var(--soft)}
+#gpop{position:fixed;z-index:101;display:none;max-width:300px;background:#1a1a1a;color:#fff;padding:9px 12px;font-size:13px;line-height:1.4;box-shadow:0 6px 22px rgba(0,0,0,.3);pointer-events:none;text-transform:none;letter-spacing:0;font-weight:400}
 .dref{cursor:help;border-bottom:1px dotted var(--soft)}.dref.vtag,.dref.badge{border-bottom:0}.dref:focus{outline:2px solid var(--accent);outline-offset:1px}
 #dpop{position:fixed;z-index:100;display:none;background:#fff;border:1px solid var(--line);box-shadow:0 8px 28px rgba(0,0,0,.2);padding:8px;width:152px;pointer-events:none}#dpop .th{width:136px;aspect-ratio:2/3}#dpop b{display:block;margin-top:6px;color:var(--strong)}#dpop small{display:block;color:var(--muted);line-height:1.25}
 .flow{margin:4px 0 6px}.step{display:grid;grid-template-columns:26px minmax(130px,170px) 1fr 108px;gap:10px;align-items:center;border-left:3px solid var(--c);background:#fff;padding:7px 10px;margin:4px 0;border-top:1px solid var(--line2);border-bottom:1px solid var(--line2);border-right:1px solid var(--line2)}.step .no{display:grid;place-items:center;width:24px;height:24px;background:#212529;color:#fff;font-weight:700;font-size:13px}.step small{color:var(--muted);font-size:12px;text-align:right;white-space:nowrap;margin:0}.step .track{margin:0}.arr{display:none}
@@ -758,7 +797,7 @@ dl.kv{display:grid;grid-template-columns:220px 1fr;gap:10px 18px;margin:0}dl.kv 
 details.dash{border:1px solid var(--line);padding:14px 18px;margin:12px 0}details summary{cursor:pointer;font-weight:600;color:var(--strong)}
 footer{color:var(--soft);font-size:13px;text-align:center;padding:10px 0 30px}
 @media(max-width:700px){.sec{padding:20px 16px}.aoicard{grid-template-columns:1fr}.xgrid{grid-template-columns:1fr}dl.kv{grid-template-columns:1fr}.hd{flex-direction:column}.comp-chart .crow{grid-template-columns:1fr}.bar nav{display:none}}
-@media print{#dpop{display:none!important}.bar{position:static}.bar nav,.btn{display:none}body{background:#fff}.sec{break-inside:avoid;border-color:#ddd}details{display:block}}
+@media print{#dpop,#gpop{display:none!important}.bar{position:static}.bar nav,.btn{display:none}body{background:#fff}.sec{break-inside:avoid;border-color:#ddd}details{display:block}}
 """
 
 
@@ -810,6 +849,8 @@ def build(spec, base):
             f'<div class="strip">{info}<div><b>How this was measured</b><span>{e(m.get("banner", "RealEye platform, webcam eye tracking."))}</span></div></div>'
             f'{intro_section(spec)}<div class="tiles">{tiles}</div>{overall}{vai_guide(spec)}{order_section(spec)}{body}{compare_section(spec)}{audience_section(spec)}{retest}{appendix}'
             '<footer>Generated with the RealEye neuromarketing-image-report skill. Eye tracking shows where people looked, not what they understood, liked or will buy.</footer>')
+    tips = make_tips(spec)
+    nav, page = tips(nav), tips(page)
     css_imgs = "".join(f".{c}{{background-image:url('{u}')}}" for u, c in IMAGES.items())
     return (f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
             f'<title>{e(spec.get("title", "Neuromarketing report"))}</title>'

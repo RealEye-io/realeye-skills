@@ -32,6 +32,10 @@ Brand-manager main sections, technical detail in the appendix · VAI only · Rea
 - `assets/example/`: a finished two-design report (`report.json`, its images, and the built `example-report.html`). Open the HTML to see the target look. The ids in it are placeholders (`STUDY_ID`, `ITEM_ID_A`), so its links are illustrative.
 - Reports must look like the example: same sections in the same order, same plain tone, same tables, charts and heatmap sheets. Do not restyle; the script owns the look.
 
+## Tooltips for metric names
+
+Every use of **VAI, VAI Reach, VAI Speed, VAI Hold, Reach, Speed, Hold and AOI** in the report text (including table headers, legends, tiles and the navigation) gets a dotted underline and a tooltip with a plain-language definition on hover or click. This is automatic. Write the names capitalised exactly like this (lower-case "reach", "hold" or "speed" in ordinary sentences is not treated as a metric). Add your own terms with the top-level `glossary` object, for example `"glossary": {"Banner": "The brand name strip at the bottom of the image."}`; they get tooltips everywhere they appear.
+
 ## Design mentions and thumbnails
 
 Every mention of a design shows a thumbnail of it on hover, focus or click (a small popover with the clean image and the design name). The script does this for badges, tags and legends. In the free text of the JSON write designs as `Design A` or the token `{A}`; patterns like `(A)`, `(A and B)`, `in A`, `than B`, `A's`, `A 14.3` and `A: …` are linked automatically. A sentence-initial article "A" is left alone.
@@ -77,6 +81,7 @@ Use the user's signed-in browser (read-only). Never print participant names; nev
     "segments": "All viewers; men and women; ages …; gender × age. Audiences under 30 viewers are marked †.",
     "task": "…", "source": "…", "note": "…"},
   "dashboard": {"base": "https://app.realeye.io", "study_id": "<STUDY_ID>", "min_quality": 3},
+  "glossary": {"optional term": "optional definition shown as a tooltip"},
   "aoi_order": ["Tagline", "Pack (product)", "Face", "Logo", "Brand name (banner)"],
   "overall": {
     "verdict_label": "…", "verdict_text": "…", "summary": "…",
