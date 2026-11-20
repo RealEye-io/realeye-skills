@@ -4,7 +4,7 @@ description: Interpret measured RealEye ET Platform eye tracking for ads, packag
 license: MIT
 metadata:
   author: RealEye
-  version: "1.0.0"
+  version: "1.2.0"
 ---
 
 # Neuromarketing image report
@@ -59,7 +59,27 @@ For each finding: cite the **observation** (AOI, value, sample, window, source),
 
 ## 6. Deliver the brief
 
-Write in plain language. Default to a short Markdown brief with a technical appendix, or use the user's requested format if available. See the [worked example](references/worked-example.md).
+Write in plain language. **Default deliverable: a self-contained, professional HTML report** (one file, images embedded, dark mode, print-to-PDF ready) built with the bundled script; use another format only if the user asks for it. See [the HTML report guide](references/html-report.md) for the JSON schema and build steps, and the [worked example](references/worked-example.md) for tone.
+
+### Standing rules for every report
+
+These apply whenever the data allows them; the full how-to is in [the HTML report guide](references/html-report.md).
+
+1. **Quality filter: analyse only participants with data quality Average or better** (RealEye's *Data quality* filter set to Average–Perfect; in the dashboard URL hash `participantQualityGradeItemMin=3&participantQualityGradeItemMax=6`). Apply it to every table, heatmap and segment. State the analysed N and how many tests the filter removed. If a source cannot be filtered (the dashboard *AOI VAI report* ignores filters), label it as unfiltered, never mix it silently into the filtered results.
+2. **Gender and age insights whenever possible.** Re-run the AOI report with the Gender filter (men, women) and Age bands (e.g. 18–24, 25–34, 35+) on top of the quality filter. Report viewing ratio, TTFF and VAI with its components per segment, show N for each segment, mute segments under 30 viewers, give a women-vs-men difference with a 95% interval, and say plainly when a gap is within noise. Viewers with other or unspecified gender or no recorded age are not in those cuts: say so. Skip a cut only if the data is not available, and say that.
+3. **Viewing order, viewing ratio and VAI in detail.** For every design and AOI show: viewing ratio (fixation ratio with count/N), TTFF, fixation time among fixators, VAI with Reach, Speed and Hold, and the viewing order ranked two ways (VAI Speed and average TTFF) with numbered markers on the AOI image. Viewing order is a relative hierarchy across viewers, never one person's scan path.
+4. **Embed everything the AOI VAI report contains**, especially the analysed image with its AOIs drawn on it: AOI overlay, measured heatmap, executive summary, AOI overview, VAI components, the per-window VAI, Reach, Speed and Hold tables (0.5–3, 0.5–5, 0.5–10 s) and the dashboard's insights. Place it per design as a labelled "Dashboard AOI VAI report" block.
+5. **Heatmaps and AOI images must be clean and complete.** Show the whole image, not a cropped viewport (zoom the dashboard out until the full creative is visible; check the bottom of tall images). Move the mouse pointer off the image before capturing, so no cursor appears on any heatmap or overlay. Name each AOI by what it actually covers on the image (e.g. the brand name banner, not the label printed on the pack).
+6. **Never state a number you did not read.** Every value comes from the RealEye data with its window and N.
+
+### Build the report
+
+1. Capture the evidence next to the JSON: AOI overlay image and measured heatmap per design (crop dashboard chrome with the `crop` option; never invent a visual).
+2. Write `report.json` (schema in the guide).
+3. Run `python scripts/build_report.py report.json -o report.html`. The script draws the charts, the viewing order, the segment matrices and the head-to-head table (differences with a 95% interval) so you do not compute them by hand.
+4. Open the HTML, check that it renders (no pointer on images, nothing cut off) and that the numbers match the source, then hand the file to the user. Keep several designs (each analysed separately, then compared) in one report.
+
+The report must contain:
 
 1. **Decision at a glance:** Creative/version, study context, and recommendation: prefer a version for the stated outcome, keep a feature, revise and retest, or collect more evidence. Lead with the primary outcome and uncertainty when measured. Otherwise say what can and cannot be decided from gaze alone.
 2. **Two to four findings:** What worked, what risks the objective, and where evidence is weak. If provided and approved for the report, show the matching stimulus/AOI overlay and measured heatmap with a caption naming the item, view type, sample and window. Do not invent missing visuals.
