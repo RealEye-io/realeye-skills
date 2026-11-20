@@ -2,6 +2,10 @@
 
 The version is in `SKILL.md` (`metadata.version`) and is stamped into every report this skill builds.
 
+## 1.15.1
+- `scripts/audit_report.py` checks a built report (and its JSON) against the standing rules; the bundled example passes all checks.
+- SKILL.md made consistent with the newer rules: current section order, "higher is better", duplicate rule removed.
+
 ## 1.15.0
 - Designs without AOIs: the skill defines 3 to 8 useful AOIs (`references/aoi-design.md`), checks them with `scripts/check_aois.py` (bounds, size, overlap, preview image), measures them read-only through `customAois` in `dashboard_vai_collect.js`, and marks them as proposed in the report and the blueprint.
 
