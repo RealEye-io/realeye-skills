@@ -4,7 +4,7 @@ description: Interpret measured RealEye ET Platform webcam eye tracking for ads,
 license: MIT
 metadata:
   author: RealEye
-  version: "1.9.0"
+  version: "1.10.0"
 ---
 
 # Neuromarketing image report
@@ -87,6 +87,8 @@ Write in plain language. **The deliverable is a self-contained, professional HTM
 17. **Present the tested images and the AOIs in the intro.** Right after the "how this was measured" line, the report must show every tested image in a *Tested designs and the elements analysed* card: the design letter and name, the image with its AOIs outlined (with a *Show AOIs* switch for the clean image), a legend that says what each AOI covers (`aois[].role`, for example "The claim “Wake up the red in your hair.”"), the number of viewers, and links to the design's heatmap, AOI report and AOI VAI report in the RealEye dashboard. Whenever AOIs are analysed there must be at least this one place where the reader sees which part of the design each AOI is; write each `role` as a plain description of the area, not a category.
 
 18. **Explain every metric name with a tooltip.** Wherever a name like VAI, VAI Reach, VAI Speed, VAI Hold, Reach, Speed, Hold or AOI appears in the report (text, table headers, legends, tiles, navigation), hovering or clicking it shows a short plain-language definition. The script adds these tooltips automatically to all report text, so write the names exactly as they are (capitalised: VAI, Reach, Speed, Hold, AOI). If the report uses another term a brand manager might not know, add it to the report's `glossary` (`{"term": "definition"}`) and it gets a tooltip everywhere it appears.
+
+19. **End the report with an AI-agent prompt.** The very last section, *Continue the analysis with an AI agent*, holds a ready-to-use prompt with a *Copy prompt* button and a *Download as .txt* button. The script builds it from the report data, so it is always complete: the study and method, how to read VAI, the designs and AOIs (with what each covers and where), every VAI, Reach, Speed and Hold number for every design, audience and window, the dashboard's AOI VAI report, the findings, actions and limits, the dashboard links, and rules for answering (cite design, audience, window and N; separate observation, interpretation and hypothesis; flag small audiences; never invent metrics; say when the data cannot answer) plus ideas to explore. The agent confirms it has read the report and asks what to explore. Set the optional `agent_context` (the campaign goal, the decision to make, anything the assistant should know) to add context to the prompt. Do not remove or shorten this section.
 
 ### Build the report
 

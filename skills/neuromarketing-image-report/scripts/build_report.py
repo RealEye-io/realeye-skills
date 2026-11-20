@@ -719,6 +719,141 @@ def intro_section(spec):
     return section("tested", "Tested designs and the elements analysed", body)
 
 
+def agent_prompt(spec):
+    """A self-contained prompt for an AI agent: the whole report (method, definitions, designs, AOIs, every number, findings) plus rules for answering."""
+    m, o, variants, n = spec["method"], spec["overall"], spec["variants"], names(spec)
+    c = lambda t: re.sub(r"\{([A-Z])\}", r"\1", str(t))
+    L = []
+    add = L.append
+    add("You are a senior neuromarketing and eye-tracking analyst. Below is the complete content of a report produced from a RealEye study. "
+        "Read all of it. Then answer my questions about it, run further analyses on the data, and offer other insights you think are useful. "
+        "Use only the data and context in this message; if something is not here, say so instead of guessing.")
+    add("")
+    add("=== STUDY ===")
+    add(f"Title: {c(spec.get('title', ''))}")
+    add(f"Date: {c(spec.get('date', ''))}")
+    for k, lab in (("platform", "Platform"), ("tracking", "Eye tracking"), ("study", "Study"), ("participants", "Participants analysed"), ("quality_filter", "Participant quality filter"),
+                   ("windows", "Time windows"), ("segments", "Audiences"), ("task", "Task and exposure"), ("source", "Source"), ("precision", "Tracker precision"), ("note", "Note")):
+        if m.get(k):
+            add(f"{lab}: {c(m[k])}")
+    if spec.get("agent_context"):
+        add(f"Extra context: {c(spec['agent_context'])}")
+    add("")
+    add("=== HOW TO READ THE METRICS ===")
+    add("The report uses ONLY RealEye's VAI (Visual Attention Index, 0-100) and its three components. Never use or invent other metrics such as time to first fixation.")
+    add("- VAI = equal-weight mean of Reach, Speed and Hold. It is a relative index, not a percentage of viewers or of attention. Compare like with like (same element, window, audience size).")
+    add("- Reach: share of viewers who looked at the element at least once in the window.")
+    add("- Speed: how soon the element is noticed after it becomes visible. Ranking elements by Speed gives the viewing order (a relative hierarchy across viewers, not one person's scan path).")
+    add("- Hold: how long attention stays on the element relative to the window. It can fall as the window grows even when viewers keep looking.")
+    add("- Windows are cumulative and start at 0.5 s: 'first 3 s' = 0.5-3 s, 'first 5 s' = 0.5-5 s, 'first 10 s' = 0.5-10 s.")
+    add(f"- Audiences with fewer than {MIN_N} viewers are anecdotal (marked with a dagger in the report); say so when you use them. Viewers with other or unspecified gender, or no recorded age, are in 'All' but not in the gender or age cuts.")
+    add("- VAI shows attention, not understanding, liking, recall or purchase. Never claim an effectiveness winner without outcome data.")
+    add("")
+    add("=== DESIGNS AND ELEMENTS (AOIs) ===")
+    for v in variants:
+        add(f"Design {v['id']}: {c(v['name'])}. {c(v.get('description', ''))} Viewers analysed: {seg_of(v, 'All')['n']}.")
+        for a in v["aois"]:
+            if a.get("shape"):
+                x0, y0, x1, y1 = bbox(a["shape"])
+                where = f" Location: x {x0:.0f}-{x1:.0f}%, y {y0:.0f}-{y1:.0f}% of the image (0,0 = top-left)."
+            else:
+                where = ""
+            add(f"  - {a['name']}: {c(a.get('role', ''))}.{where}")
+    add("")
+    add("=== DATA: VAI / Reach / Speed / Hold (0-100) per element, design, audience and time window ===")
+    add("Format per element: Name VAI/Reach/Speed/Hold")
+    for v in variants:
+        for sg in v["segments"]:
+            add(f"Design {v['id']} | audience: {sg['label']} | N={sg['n']}{' (small, anecdotal)' if small(sg) else ''} | kind: {sg['kind']}")
+            for w in WIN:
+                cells = "; ".join(f"{nm} {val(sg, w, i, 'vai'):g}/{val(sg, w, i, 'reach'):g}/{val(sg, w, i, 'speed'):g}/{val(sg, w, i, 'hold'):g}" for i, nm in enumerate(n))
+                add(f"  {WIN_LABEL[w]}: {cells}")
+    dv = [v for v in variants if v.get("dashboard_vai")]
+    if dv:
+        add("")
+        add("=== DASHBOARD AOI VAI REPORT (all participants with data, NOT quality-filtered; windows 0.5-3, 0.5-5, 0.5-10 s) ===")
+        for v in dv:
+            d = v["dashboard_vai"]
+            add(f"Design {v['id']} | participants: {d['participants']}")
+            for nm in d["summary"]:
+                sm = d["summary"][nm]
+                add(f"  {nm}: average VAI {sm['vai']:g}, Reach {sm['reach']:g}, Speed {sm['speed']:g}, Hold {sm['hold']:g}; "
+                    + "; ".join(f"{k} by window {'/'.join(f'{x:g}' for x in d['by_window'][k][nm])}" for k in ("vai", "reach", "speed", "hold")))
+    add("")
+    add("=== THE REPORT'S FINDINGS AND CONCLUSIONS ===")
+    add(f"Conclusion: {c(o.get('verdict_label', ''))}. {c(o.get('verdict_text', ''))}")
+    add(c(o.get("summary", "")))
+    for f in o.get("findings", []):
+        add(f"- [{f.get('tag', '')}] {c(f['title'])}: {c(f['text'])}")
+    for x in o.get("conclusions", []):
+        add(f"- Conclusion: {c(x)}")
+    for v in variants:
+        for x in v.get("findings", []):
+            add(f"- Design {v['id']}: {c(x)}")
+    for x in spec.get("segment_findings", []):
+        add(f"- Gender/age: {c(x)}")
+    add("")
+    add("=== RECOMMENDED ACTIONS AND RETEST PLAN ===")
+    for a in spec.get("actions", []):
+        add(f"- {c(a['title'])}: {c(a['text'])}" + (f" Preserve: {c(a['preserve'])}" if a.get("preserve") else ""))
+    for k, x in spec.get("retest", {}).items():
+        add(f"- Retest {k.replace('_', ' ')}: {c(x)}")
+    add("")
+    add("=== LIMITS OF THE EVIDENCE ===")
+    for x in spec.get("limits", []):
+        add(f"- {c(x)}")
+    for x in spec.get("would_change", []):
+        add(f"- Would change the recommendation: {c(x)}")
+    links = [(v, u) for v in variants for u in (dash_url(spec, v, "heatmap"), dash_url(spec, v, "aoi"), dash_url(spec, v, "vai")) if u]
+    if links:
+        add("")
+        add("=== RealEye DASHBOARD LINKS (need a signed-in RealEye account; use them only if you have browser access) ===")
+        for v in variants:
+            add(f"Design {v['id']}: heatmap {dash_url(spec, v, 'heatmap')} | AOI report {dash_url(spec, v, 'aoi')} | AOI VAI report {dash_url(spec, v, 'vai')}")
+    add("")
+    add("=== HOW TO ANSWER ===")
+    add("1. Base every answer on the data above. Quote the numbers with the design, audience, time window and N (for example: 'Design A, Women, first 3 s, N=88: Tagline VAI 65.4').")
+    add("2. Compute what I ask for: differences between designs, audiences and windows; rankings; viewing order per audience; gaps; build-up over time; which audiences behave differently. Show the arithmetic briefly.")
+    add("3. Separate observation (the data), interpretation (what it likely means) and hypothesis (what to test). Do not present a hypothesis as a finding.")
+    add("4. Flag small audiences and differences that may be noise. Do not over-read gaps of a few VAI points.")
+    add("5. If I ask something the data cannot answer (recall, liking, sales, other metrics, audiences or windows not listed), say so and suggest how to measure it.")
+    add("6. Be concise and plain-spoken: I may be a brand manager. Lead with the answer, then the evidence. Use tables when comparing.")
+    add("7. Proactively suggest insights I did not ask for when they matter (blind spots, surprising audience differences, order changes, quick wins, test ideas).")
+    add("")
+    add("=== IDEAS TO EXPLORE (offer these, and any others you think of) ===")
+    for q in ("Which element is the weakest blind spot overall and for each audience, and what would you change first?",
+              "Where does the viewing order differ between audiences or designs, and why might that matter?",
+              "Which audience pays the most and the least attention to the brand name and logo, in each window?",
+              "How does attention build up from the first 3 s to the first 10 s for each element, and which element gains most?",
+              "Compare the designs for one audience of my choice (for example women 18-24) in every window.",
+              "Which differences between designs look real and which are probably noise, given the audience sizes?",
+              "Draft a short brief for the creative team: what to keep, what to change, what to test.",
+              "Design a recall and message-takeout survey to confirm what these attention results suggest.",
+              "Propose three layout variants to test next, with the expected effect on each element's Reach, Speed and Hold.",
+              "Write a one-slide summary and a five-bullet executive summary of this report."):
+        add(f"- {q}")
+    add("")
+    add("First, confirm you have read everything: summarise the study and the main conclusion in five lines, list the data you can analyse, then ask me what I want to explore.")
+    return "\n".join(L)
+
+
+def agent_section(spec):
+    prompt = agent_prompt(spec)
+    body = ('<p class="lead">Want to go further? Copy the prompt below into your AI assistant (Claude, ChatGPT or similar). It carries the whole report: the study, how to read VAI, '
+            'the designs and elements, every VAI, Reach, Speed and Hold number for every audience and time window, the findings, actions and limits. The assistant can then answer follow-up questions, '
+            'run extra comparisons and suggest insights you did not think to ask for.</p>'
+            '<div class="btnrow"><button class="btn" type="button" data-act="copy">Copy prompt</button><button class="btn" type="button" data-act="download">Download as .txt</button></div>'
+            f'<textarea id="agent-prompt" readonly rows="18" spellcheck="false">{e(prompt)}</textarea>'
+            f'<p class="hint">{len(prompt):,} characters. It contains your results, so share it only with tools you trust. The dashboard links in it work only for people signed in to RealEye.</p>')
+    return section("agent", "Continue the analysis with an AI agent", body)
+
+
+POP2 = ('<script>(function(){document.addEventListener("click",function(ev){var b=ev.target.closest&&ev.target.closest("[data-act]");if(!b)return;var t=document.getElementById("agent-prompt");if(!t)return;'
+        'if(b.dataset.act==="copy"){var done=function(){var o=b.textContent;b.textContent="Copied to clipboard";setTimeout(function(){b.textContent=o},1800)};'
+        'if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t.value).then(done,function(){t.select();document.execCommand("copy");done()})}else{t.select();document.execCommand("copy");done()}}'
+        'else if(b.dataset.act==="download"){var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t.value],{type:"text/plain"}));a.download="neuromarketing-report-ai-prompt.txt";document.body.appendChild(a);a.click();a.remove()}})})();</script>')
+
+
 def method_block(spec):
     m = spec["method"]
     rows = "".join(f'<div><dt>{e(k)}</dt><dd>{rich(x)}</dd></div>' for k, x in (
@@ -785,6 +920,7 @@ tr.grp th,tr.grp td{border-top:2px solid var(--line)}td.vc b{font-size:16px;colo
 .flow{margin:4px 0 6px}.step{display:grid;grid-template-columns:26px minmax(130px,170px) 1fr 108px;gap:10px;align-items:center;border-left:3px solid var(--c);background:#fff;padding:7px 10px;margin:4px 0;border-top:1px solid var(--line2);border-bottom:1px solid var(--line2);border-right:1px solid var(--line2)}.step .no{display:grid;place-items:center;width:24px;height:24px;background:#212529;color:#fff;font-weight:700;font-size:13px}.step small{color:var(--muted);font-size:12px;text-align:right;white-space:nowrap;margin:0}.step .track{margin:0}.arr{display:none}
 .ochip{display:inline-flex;align-items:center;font-weight:600;color:var(--strong);font-size:14px;line-height:1.2}
 table.ord td.oc{text-align:left;padding:9px 10px;min-width:118px}table.ord td.oc.diff{box-shadow:inset 0 0 0 2px var(--accent);background:var(--insight)}table.ord td.oc small{margin-top:2px}table.ord td.st{font-size:13px;color:var(--muted);white-space:nowrap}table.ord td.st .ok{color:var(--best-fg);font-weight:600}table.ord th[scope=row]{white-space:nowrap}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}#agent-prompt{width:100%;height:360px;font:12.5px/1.5 ui-monospace,Consolas,Menlo,monospace;color:var(--ink);background:var(--thbg);border:1px solid var(--line);padding:14px;resize:vertical}
 .thead{display:flex;gap:12px;align-items:center;margin-bottom:12px}.thead h4{margin:0}.thead p{margin:2px 0 0}.tcol .switch{margin-top:12px}.alist{margin-top:10px}.alist .li{display:flex;gap:8px;margin:7px 0;align-items:flex-start}.alist .li .sw{margin-top:4px;flex:none}.alist .li span{display:block;color:var(--muted);font-size:13.5px}
 .legend{display:flex;gap:16px;flex-wrap:wrap;margin:8px 0;font-size:13.5px;color:var(--muted)}.legend.small{font-size:13px}.legend span{display:inline-flex;align-items:center}
 .chart{width:100%;height:auto;display:block;max-width:440px}.chart.wide{max-width:none}.chart .grid{stroke:var(--line);stroke-width:1}.chart text{fill:var(--ink);font-size:12px}.chart .axis{fill:var(--soft)}.chart .val{font-weight:600}
@@ -797,7 +933,7 @@ dl.kv{display:grid;grid-template-columns:220px 1fr;gap:10px 18px;margin:0}dl.kv 
 details.dash{border:1px solid var(--line);padding:14px 18px;margin:12px 0}details summary{cursor:pointer;font-weight:600;color:var(--strong)}
 footer{color:var(--soft);font-size:13px;text-align:center;padding:10px 0 30px}
 @media(max-width:700px){.sec{padding:20px 16px}.aoicard{grid-template-columns:1fr}.xgrid{grid-template-columns:1fr}dl.kv{grid-template-columns:1fr}.hd{flex-direction:column}.comp-chart .crow{grid-template-columns:1fr}.bar nav{display:none}}
-@media print{#dpop,#gpop{display:none!important}.bar{position:static}.bar nav,.btn{display:none}body{background:#fff}.sec{break-inside:avoid;border-color:#ddd}details{display:block}}
+@media print{#dpop,#gpop,.btnrow{display:none!important}#agent-prompt{height:auto}.bar{position:static}.bar nav,.btn{display:none}body{background:#fff}.sec{break-inside:avoid;border-color:#ddd}details{display:block}}
 """
 
 
@@ -838,7 +974,7 @@ def build(spec, base):
                        + f'<h3>Definitions</h3><dl class="kv">{defs}</dl><h3>Sources</h3><ul class="plain">{sources}</ul><h3>Dashboard AOI VAI report (unfiltered copy)</h3>'
                        + "".join(dashboard_vai(spec, v, i) for i, v in enumerate(variants)))
     nav = "".join(f'<a href="#{i}">{t}</a>' for i, t in (("tested", "Designs tested"), ("overall", "Findings"), ("vai", "VAI"), ("order", "Viewing order"), ("design-A", "Analysis"), ("compare", "Comparison"),
-                                                          ("audience", "Gender and age"), ("actions", "Next steps"), ("technical", "Appendix")))
+                                                          ("audience", "Gender and age"), ("actions", "Next steps"), ("technical", "Appendix"), ("agent", "Ask an AI")))
     body = "".join(('<a id="design-A"></a>' if i == 0 else "") + design_sections(spec, v, i) for i, v in enumerate(variants))
     study = spec.get("app_title") or m.get("study") or spec.get("title", "")
     printer = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8"><path d="M6 9V3h12v6M6 18H4v-7h16v7h-2M7 14h10v7H7z"/></svg>'
@@ -847,7 +983,7 @@ def build(spec, base):
             f'<div class="hd"><div><h1>{e(spec.get("title", ""))}</h1><p>{e(spec.get("subtitle", ""))} {e(spec.get("date", ""))}{" · " + e(spec["prepared_for"]) if spec.get("prepared_for") else ""}</p></div>'
             f'<button class="btn" onclick="window.print()">{printer} Print / Save as PDF</button></div>'
             f'<div class="strip">{info}<div><b>How this was measured</b><span>{e(m.get("banner", "RealEye platform, webcam eye tracking."))}</span></div></div>'
-            f'{intro_section(spec)}<div class="tiles">{tiles}</div>{overall}{vai_guide(spec)}{order_section(spec)}{body}{compare_section(spec)}{audience_section(spec)}{retest}{appendix}'
+            f'{intro_section(spec)}<div class="tiles">{tiles}</div>{overall}{vai_guide(spec)}{order_section(spec)}{body}{compare_section(spec)}{audience_section(spec)}{retest}{appendix}{agent_section(spec)}'
             '<footer>Generated with the RealEye neuromarketing-image-report skill. Eye tracking shows where people looked, not what they understood, liked or will buy.</footer>')
     tips = make_tips(spec)
     nav, page = tips(nav), tips(page)
@@ -856,7 +992,7 @@ def build(spec, base):
             f'<title>{e(spec.get("title", "Neuromarketing report"))}</title>'
             '<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">'
             f'<style>{CSS}</style></head><body><div class="bar"><span class="logo"><b>Re</b>alEye</span><span class="sep"></span><span class="study">{e(study)}</span><nav>{nav}</nav></div>'
-            f'<main class="page">{page}</main><style>{css_imgs}</style>' + POP + '</body></html>')
+            f'<main class="page">{page}</main><style>{css_imgs}</style>' + POP + POP2 + '</body></html>')
 
 
 def main():

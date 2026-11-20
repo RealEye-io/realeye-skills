@@ -2446,6 +2446,7 @@
   "<Data source>",
   "<Data source>"
  ],
+ "agent_context": "<optional: campaign goal, the decision to make, anything the AI assistant should know>",
  "_help": [
   "Template for scripts/build_report.py. Replace every <…> with your own content, keep the structure and the section order.",
   "See assets/example/example-report.html for how the finished report should look and read.",
@@ -2453,6 +2454,7 @@
   "values: 60 numbers per segment = for window 3, 5, 10 s -> for each AOI in aoi_order -> [vai, reach, speed, hold].",
   "Replace item_id and dashboard.study_id with the real RealEye ids so every table and heatmap links to the dashboard.",
   "For one design only, delete the second item of variants. Keep all 12 audiences (All, Men, Women, three age bands, six gender × age) when the data exists.",
+  "The last section (an AI-agent prompt with every number) is built automatically; set agent_context to add the campaign goal or decision.",
   "Write main sections for brand managers (plain words, no technical detail); technical detail goes in method, limits and definitions (appendix)."
  ]
 }
