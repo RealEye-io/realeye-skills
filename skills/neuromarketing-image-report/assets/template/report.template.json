@@ -1,0 +1,2850 @@
+{
+ "title": "<Report title: the creative and what was compared, e.g. “Wake up the red in your hair”: two shampoo ad versions>",
+ "subtitle": "<One line: what viewers noticed, in what order, for how long, by audience>",
+ "date": "<date>",
+ "skill_version": "<the version from SKILL.md>",
+ "method": {
+  "platform": "RealEye platform",
+  "tracking": "Webcam eye tracking: participants viewed the images in their own browsers while RealEye estimated their gaze from their webcams.",
+  "banner": "This test was run on the RealEye platform with webcam eye tracking: viewers saw the images on their own devices and their gaze was recorded through their webcams.",
+  "precision": "Webcam eye tracking is less precise than a lab tracker, so small elements are measured less precisely than large ones.",
+  "study": "<study name and the stimulus numbers of each design>",
+  "participants": "<per design: viewers analysed and how many were removed for low data quality>",
+  "quality_filter": "Only viewers with data quality Average or better are analysed.",
+  "windows": "First 3 s (0.5–3 s), first 5 s (0.5–5 s) and first 10 s (0.5–10 s), cumulative.",
+  "segments": "All viewers; men and women; ages <bands>; and every gender × age combination. Audiences under 30 viewers are marked †.",
+  "task": "<task and exposure, e.g. free viewing, up to 10 s>",
+  "source": "<where the data came from>",
+  "note": "<viewers with other or unspecified gender, or no recorded age, are in the overall results but not in the audience cuts>"
+ },
+ "dashboard": {
+  "base": "https://app.realeye.io",
+  "study_id": "STUDY_ID",
+  "min_quality": 3
+ },
+ "app_title": "<app_title>",
+ "study_info": {
+  "created": "<created>",
+  "status": "<status>",
+  "type": "<type>",
+  "realeye_version": "<realeye_version>",
+  "version_note": "<version_note>",
+  "tracker": "<tracker>",
+  "analysed_on": "<analysed_on>",
+  "settings": "<settings>",
+  "panel": "<panel>"
+ },
+ "participants": {
+  "A": {
+   "collected": 0,
+   "analysed": 0,
+   "collected_from": "<YYYY-MM-DD>",
+   "collected_to": "<YYYY-MM-DD>",
+   "quality": {
+    "Very low": 0,
+    "Low": 0,
+    "Average": 0,
+    "Good": 0,
+    "Very good": 0,
+    "Perfect": 0
+   },
+   "gender": {
+    "Men": 0,
+    "Women": 0,
+    "Other": 0,
+    "Not specified": 0
+   },
+   "age": {
+    "bands": {
+     "Under 18": 0,
+     "18–24": 0,
+     "25–34": 0,
+     "35–44": 0,
+     "45–54": 0,
+     "55+": 0
+    },
+    "with_age": 0,
+    "median": 0,
+    "mean": 0
+   },
+   "device": {
+    "Desktop": 0,
+    "Tablet": 0
+   },
+   "tracker_text": "<tracker_text>",
+   "participant_type_text": "<participant_type_text>",
+   "screen_text": "<screen_text>",
+   "age_text": "<age_text>"
+  },
+  "B": {
+   "collected": 0,
+   "analysed": 0,
+   "collected_from": "<YYYY-MM-DD>",
+   "collected_to": "<YYYY-MM-DD>",
+   "quality": {
+    "Very low": 0,
+    "Low": 0,
+    "Average": 0,
+    "Good": 0,
+    "Very good": 0,
+    "Perfect": 0
+   },
+   "gender": {
+    "Men": 0,
+    "Women": 0,
+    "Other": 0,
+    "Not specified": 0
+   },
+   "age": {
+    "bands": {
+     "Under 18": 0,
+     "18–24": 0,
+     "25–34": 0,
+     "35–44": 0,
+     "45–54": 0,
+     "55+": 0
+    },
+    "with_age": 0,
+    "median": 0,
+    "mean": 0
+   },
+   "device": {
+    "Desktop": 0,
+    "Tablet": 0,
+    "Smartphone": 0
+   },
+   "tracker_text": "<tracker_text>",
+   "participant_type_text": "<participant_type_text>",
+   "screen_text": "<screen_text>",
+   "age_text": "<age_text>"
+  }
+ },
+ "blueprint": {
+  "study_name": "<study_name>",
+  "target_participants": "<target_participants>",
+  "demographics_asked": "<demographics_asked>",
+  "random_order": "<random_order>",
+  "stimuli": {
+   "A": {
+    "file_name": "<file_name>",
+    "display_seconds": 10,
+    "finish_on": "<finish_on>",
+    "instructions": "<instructions>"
+   },
+   "B": {
+    "file_name": "<file_name>",
+    "display_seconds": 10,
+    "finish_on": "<finish_on>",
+    "instructions": "<instructions>"
+   }
+  }
+ },
+ "aoi_order": [
+  "Tagline",
+  "Pack (product)",
+  "Face",
+  "Logo",
+  "Brand name (banner)"
+ ],
+ "overall": {
+  "verdict_label": "<Conclusion: the recommendation in one line>",
+  "verdict_text": "<Three sentences a brand manager can act on: the viewing order, the weak spot with its VAI, how the designs differ, and that without a recall result this is a diagnosis, not a winner>",
+  "summary": "All scores are RealEye VAI (0–100) and its three measures: Reach (how many viewers looked), Speed (how soon) and Hold (how long attention stayed).",
+  "kpis": [
+   {
+    "label": "<KPI label>",
+    "value": "<headline value>",
+    "note": "<short note>"
+   },
+   {
+    "label": "<KPI label>",
+    "value": "<headline value>",
+    "note": "<short note>"
+   },
+   {
+    "label": "<KPI label>",
+    "value": "<headline value>",
+    "note": "<short note>"
+   },
+   {
+    "label": "<KPI label>",
+    "value": "<headline value>",
+    "note": "<short note>"
+   }
+  ],
+  "findings": [
+   {
+    "tag": "<strength | risk | opportunity | weak-evidence>",
+    "title": "<Finding 1: a short headline>",
+    "conclusion": "<What you conclude, in one or two plain sentences a brand manager can act on>",
+    "why": "<Why: how the conclusion follows from the data. Name the comparison (elements, designs, audiences, windows), the numbers and the reasoning, and what rules out the obvious alternative>",
+    "evidence": [
+     {
+      "text": "<One proof point in words, with the numbers>",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Tagline",
+        "window": 10,
+        "metric": "vai",
+        "audience": "All",
+        "value": 0
+       }
+      ],
+      "ref": [
+       "order"
+      ],
+      "dash": [
+       {
+        "design": "A",
+        "kind": "heatmap",
+        "window": 10
+       }
+      ]
+     },
+     {
+      "text": "<A second proof point: a gap between two audiences or designs>",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Brand name (banner)",
+        "window": 10,
+        "metric": "vai",
+        "audience": "Women",
+        "minus": {
+         "audience": "Men"
+        }
+       }
+      ],
+      "ref": [
+       "audience"
+      ]
+     }
+    ],
+    "so_what": "<What this means for the decision>",
+    "confidence": "<high | medium | low>",
+    "confidence_note": "<Why: sample sizes, consistency across windows, designs and audiences>"
+   },
+   {
+    "tag": "<strength | risk | opportunity | weak-evidence>",
+    "title": "<Finding 2: a short headline>",
+    "conclusion": "<What you conclude, in one or two plain sentences a brand manager can act on>",
+    "why": "<Why: how the conclusion follows from the data. Name the comparison (elements, designs, audiences, windows), the numbers and the reasoning, and what rules out the obvious alternative>",
+    "evidence": [
+     {
+      "text": "<One proof point in words, with the numbers>",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Tagline",
+        "window": 10,
+        "metric": "vai",
+        "audience": "All",
+        "value": 0
+       }
+      ],
+      "ref": [
+       "order"
+      ],
+      "dash": [
+       {
+        "design": "A",
+        "kind": "heatmap",
+        "window": 10
+       }
+      ]
+     },
+     {
+      "text": "<A second proof point: a gap between two audiences or designs>",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Brand name (banner)",
+        "window": 10,
+        "metric": "vai",
+        "audience": "Women",
+        "minus": {
+         "audience": "Men"
+        }
+       }
+      ],
+      "ref": [
+       "audience"
+      ]
+     }
+    ],
+    "so_what": "<What this means for the decision>",
+    "confidence": "<high | medium | low>",
+    "confidence_note": "<Why: sample sizes, consistency across windows, designs and audiences>"
+   },
+   {
+    "tag": "<strength | risk | opportunity | weak-evidence>",
+    "title": "<Finding 3: a short headline>",
+    "conclusion": "<What you conclude, in one or two plain sentences a brand manager can act on>",
+    "why": "<Why: how the conclusion follows from the data. Name the comparison (elements, designs, audiences, windows), the numbers and the reasoning, and what rules out the obvious alternative>",
+    "evidence": [
+     {
+      "text": "<One proof point in words, with the numbers>",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Tagline",
+        "window": 10,
+        "metric": "vai",
+        "audience": "All",
+        "value": 0
+       }
+      ],
+      "ref": [
+       "order"
+      ],
+      "dash": [
+       {
+        "design": "A",
+        "kind": "heatmap",
+        "window": 10
+       }
+      ]
+     },
+     {
+      "text": "<A second proof point: a gap between two audiences or designs>",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Brand name (banner)",
+        "window": 10,
+        "metric": "vai",
+        "audience": "Women",
+        "minus": {
+         "audience": "Men"
+        }
+       }
+      ],
+      "ref": [
+       "audience"
+      ]
+     }
+    ],
+    "so_what": "<What this means for the decision>",
+    "confidence": "<high | medium | low>",
+    "confidence_note": "<Why: sample sizes, consistency across windows, designs and audiences>"
+   }
+  ],
+  "conclusions": [
+   {
+    "title": "<Conclusion headline>",
+    "text": "<What to keep, change or test>",
+    "based_on": [
+     1
+    ]
+   }
+  ]
+ },
+ "hypotheses": [
+  {
+   "hypothesis": "<A hypothesis the designer or brand owner probably had, e.g. the claim is read first>",
+   "verdict": "cannot tell",
+   "conclusion": "<The answer in one or two plain sentences>",
+   "why": "<Why: which comparison and numbers lead to the answer, and what is not known>",
+   "evidence": [
+    {
+     "text": "<Proof point in words, use {{cmp:vai:Tagline:10:A,B}} for numbers of two designs>",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Tagline",
+       "window": 10,
+       "metric": "vai"
+      }
+     ],
+     "ref": [
+      "order"
+     ]
+    }
+   ],
+   "so_what": "<What it means for the decision>",
+   "confidence": "<high | medium | low>"
+  },
+  {
+   "hypothesis": "<A hypothesis the designer or brand owner probably had, e.g. the claim is read first>",
+   "verdict": "cannot tell",
+   "conclusion": "<The answer in one or two plain sentences>",
+   "why": "<Why: which comparison and numbers lead to the answer, and what is not known>",
+   "evidence": [
+    {
+     "text": "<Proof point in words, use {{cmp:vai:Tagline:10:A,B}} for numbers of two designs>",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Tagline",
+       "window": 10,
+       "metric": "vai"
+      }
+     ],
+     "ref": [
+      "order"
+     ]
+    }
+   ],
+   "so_what": "<What it means for the decision>",
+   "confidence": "<high | medium | low>"
+  },
+  {
+   "hypothesis": "<A hypothesis the designer or brand owner probably had, e.g. the claim is read first>",
+   "verdict": "cannot tell",
+   "conclusion": "<The answer in one or two plain sentences>",
+   "why": "<Why: which comparison and numbers lead to the answer, and what is not known>",
+   "evidence": [
+    {
+     "text": "<Proof point in words, use {{cmp:vai:Tagline:10:A,B}} for numbers of two designs>",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Tagline",
+       "window": 10,
+       "metric": "vai"
+      }
+     ],
+     "ref": [
+      "order"
+     ]
+    }
+   ],
+   "so_what": "<What it means for the decision>",
+   "confidence": "<high | medium | low>"
+  }
+ ],
+ "study_improvements": [
+  {
+   "category": "aois",
+   "title": "<Different or more AOIs: which parts to split, which elements to add>",
+   "text": "<What to change>",
+   "why": "<Why it gives better insight>"
+  },
+  {
+   "category": "respondents",
+   "title": "<More or different respondents: which groups, how many, how to recruit>",
+   "text": "<What to change>",
+   "why": "<Why>"
+  },
+  {
+   "category": "survey",
+   "title": "<Survey to add after viewing>",
+   "text": "<Intro>",
+   "questions": [
+    {
+     "question": "<Question>",
+     "why": "<What it adds to the eye-tracking data>",
+     "answer_type": "<open text | scale | choice>"
+    }
+   ]
+  },
+  {
+   "category": "benchmark",
+   "title": "<Benchmark against the best performing similar designs, including competitors>",
+   "text": "<How>",
+   "why": "<Why>",
+   "steps": [
+    "<Step>"
+   ]
+  },
+  {
+   "category": "other",
+   "title": "<Other idea>",
+   "text": "<What>",
+   "why": "<Why>"
+  }
+ ],
+ "variants": [
+  {
+   "id": "A",
+   "presents": "<A few words: what the design shows (the elements and how they are laid out)>",
+   "purpose": "<The assumed purpose of showing this design to people: what the designer wants viewers to do, notice or feel>",
+   "item_id": "ITEM_ID_A",
+   "name": "<design name, e.g. Profile gaze (file name)>",
+   "description": "<one line describing the design>",
+   "stimulus": {
+    "src": "stimulus-A.jpg"
+   },
+   "image_px": [
+    1024,
+    1536
+   ],
+   "heatmap": {
+    "src": "heatmap-A.jpg",
+    "caption": "<what the image shows: item, view, audience, window>"
+   },
+   "heatmap_sheets": {
+    "3": "heat-sheet-A-3.jpg",
+    "5": "heat-sheet-A-5.jpg",
+    "10": "heat-sheet-A-10.jpg"
+   },
+   "heatmap_note": "One heatmap per audience and time window. Warmer colours mean more attention. Each map is scaled on its own, so compare where attention goes, not how strong it is. Small audiences look noisier.",
+   "aois": [
+    {
+     "name": "Tagline",
+     "role": "The claim “Wake up the red in your hair.”",
+     "color": "#96d732",
+     "shape": [
+      [
+       3.5,
+       3.4
+      ],
+      [
+       44.0,
+       3.8
+      ],
+      [
+       44.4,
+       11.6
+      ],
+      [
+       35.4,
+       24.4
+      ],
+      [
+       23.5,
+       31.1
+      ],
+      [
+       4.4,
+       31.2
+      ]
+     ],
+     "marker": [
+      23.7,
+      17.5
+     ]
+    },
+    {
+     "name": "Pack (product)",
+     "role": "The shampoo tube (pack shot)",
+     "color": "#d73296",
+     "shape": [
+      [
+       5.4,
+       33.6
+      ],
+      [
+       11.6,
+       83.7
+      ],
+      [
+       34.5,
+       83.6
+      ],
+      [
+       41.4,
+       33.4
+      ]
+     ],
+     "marker": [
+      23.3,
+      38.0
+     ]
+    },
+    {
+     "name": "Face",
+     "role": "The model’s face",
+     "color": "#6ec850",
+     "shape": [
+      [
+       42.5,
+       13.7
+      ],
+      [
+       92.6,
+       13.7
+      ],
+      [
+       92.6,
+       51.0
+      ],
+      [
+       42.5,
+       51.0
+      ]
+     ],
+     "marker": [
+      67.6,
+      32.3
+     ]
+    },
+    {
+     "name": "Logo",
+     "role": "The “b” logo on the pack",
+     "color": "#3296d7",
+     "shape": [
+      [
+       15.1,
+       54.9
+      ],
+      [
+       32.9,
+       54.9
+      ],
+      [
+       32.9,
+       66.9
+      ],
+      [
+       15.1,
+       66.9
+      ]
+     ],
+     "marker": [
+      23.9,
+      60.9
+     ]
+    },
+    {
+     "name": "Brand name (banner)",
+     "role": "The BunnyEnchantment brand name banner at the bottom",
+     "color": "#d77732",
+     "shape": [
+      [
+       10.1,
+       86.5
+      ],
+      [
+       87.0,
+       86.5
+      ],
+      [
+       87.0,
+       93.6
+      ],
+      [
+       10.1,
+       93.6
+      ]
+     ],
+     "marker": [
+      48.4,
+      90.0
+     ]
+    }
+   ],
+   "segments": [
+    {
+     "label": "All",
+     "kind": "overall",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "Men",
+     "kind": "gender",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "Women",
+     "kind": "gender",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "18–24",
+     "kind": "age",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "25–34",
+     "kind": "age",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "35+",
+     "kind": "age",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "Men 18–24",
+     "kind": "gender_age",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "Men 25–34",
+     "kind": "gender_age",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "Men 35+",
+     "kind": "gender_age",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "Women 18–24",
+     "kind": "gender_age",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "Women 25–34",
+     "kind": "gender_age",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "Women 35+",
+     "kind": "gender_age",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "findings": [
+    "<Finding with the numbers: element, VAI and Reach/Speed/Hold, audience, window>",
+    "<Finding with the numbers: element, VAI and Reach/Speed/Hold, audience, window>",
+    "<Finding with the numbers: element, VAI and Reach/Speed/Hold, audience, window>",
+    "<Finding with the numbers: element, VAI and Reach/Speed/Hold, audience, window>",
+    "<Finding with the numbers: element, VAI and Reach/Speed/Hold, audience, window>"
+   ],
+   "dashboard_vai": {
+    "scope": "all <N> participants with data, not quality-filtered",
+    "participants": 0,
+    "windows": [
+     "0.5–3 s",
+     "0.5–5 s",
+     "0.5–10 s"
+    ],
+    "summary": {
+     "Tagline": {
+      "vai": 0,
+      "reach": 0,
+      "speed": 0,
+      "hold": 0
+     },
+     "Pack (product)": {
+      "vai": 0,
+      "reach": 0,
+      "speed": 0,
+      "hold": 0
+     },
+     "Face": {
+      "vai": 0,
+      "reach": 0,
+      "speed": 0,
+      "hold": 0
+     },
+     "Logo": {
+      "vai": 0,
+      "reach": 0,
+      "speed": 0,
+      "hold": 0
+     },
+     "Brand name (banner)": {
+      "vai": 0,
+      "reach": 0,
+      "speed": 0,
+      "hold": 0
+     }
+    },
+    "by_window": {
+     "vai": {
+      "Tagline": [
+       0,
+       0,
+       0
+      ],
+      "Pack (product)": [
+       0,
+       0,
+       0
+      ],
+      "Face": [
+       0,
+       0,
+       0
+      ],
+      "Logo": [
+       0,
+       0,
+       0
+      ],
+      "Brand name (banner)": [
+       0,
+       0,
+       0
+      ]
+     },
+     "reach": {
+      "Tagline": [
+       0,
+       0,
+       0
+      ],
+      "Pack (product)": [
+       0,
+       0,
+       0
+      ],
+      "Face": [
+       0,
+       0,
+       0
+      ],
+      "Logo": [
+       0,
+       0,
+       0
+      ],
+      "Brand name (banner)": [
+       0,
+       0,
+       0
+      ]
+     },
+     "speed": {
+      "Tagline": [
+       0,
+       0,
+       0
+      ],
+      "Pack (product)": [
+       0,
+       0,
+       0
+      ],
+      "Face": [
+       0,
+       0,
+       0
+      ],
+      "Logo": [
+       0,
+       0,
+       0
+      ],
+      "Brand name (banner)": [
+       0,
+       0,
+       0
+      ]
+     },
+     "hold": {
+      "Tagline": [
+       0,
+       0,
+       0
+      ],
+      "Pack (product)": [
+       0,
+       0,
+       0
+      ],
+      "Face": [
+       0,
+       0,
+       0
+      ],
+      "Logo": [
+       0,
+       0,
+       0
+      ],
+      "Brand name (banner)": [
+       0,
+       0,
+       0
+      ]
+     }
+    },
+    "aoi_colors": {
+     "Tagline": "#96d732",
+     "Pack (product)": "#d73296",
+     "Face": "#6ec850",
+     "Logo": "#3296d7",
+     "Brand name (banner)": "#d77732"
+    },
+    "aoi_image": {
+     "src": "aoi-A.jpg",
+     "crop": [
+      435,
+      12,
+      941,
+      771
+     ],
+     "caption": "Analysed image with AOIs (dashboard AOI VAI report)."
+    },
+    "insights": [
+     "<Insight text copied from the dashboard AOI VAI report>",
+     "<Insight text copied from the dashboard AOI VAI report>",
+     "<Insight text copied from the dashboard AOI VAI report>"
+    ],
+    "note": "Copy of the RealEye AOI VAI Report. The dashboard cannot filter that report by participant quality, so it covers every participant with data. The quality-filtered tables above hold the same measures and are the primary analysis."
+   }
+  },
+  {
+   "id": "B",
+   "presents": "<A few words: what the design shows (the elements and how they are laid out)>",
+   "purpose": "<The assumed purpose of showing this design to people: what the designer wants viewers to do, notice or feel>",
+   "item_id": "ITEM_ID_B",
+   "name": "<design name, e.g. Profile gaze (file name)>",
+   "description": "<one line describing the design>",
+   "stimulus": {
+    "src": "stimulus-B.jpg"
+   },
+   "image_px": [
+    1024,
+    1536
+   ],
+   "heatmap": {
+    "src": "heatmap-B.jpg",
+    "caption": "<what the image shows: item, view, audience, window>"
+   },
+   "heatmap_sheets": {
+    "3": "heat-sheet-B-3.jpg",
+    "5": "heat-sheet-B-5.jpg",
+    "10": "heat-sheet-B-10.jpg"
+   },
+   "heatmap_note": "One heatmap per audience and time window. Warmer colours mean more attention. Each map is scaled on its own, so compare where attention goes, not how strong it is. Small audiences look noisier.",
+   "aois": [
+    {
+     "name": "Tagline",
+     "role": "The claim “Wake up the red in your hair.”",
+     "color": "#96d732",
+     "shape": [
+      [
+       3.5,
+       3.4
+      ],
+      [
+       44.0,
+       3.8
+      ],
+      [
+       44.4,
+       11.6
+      ],
+      [
+       35.4,
+       24.4
+      ],
+      [
+       23.5,
+       29.8
+      ],
+      [
+       4.5,
+       29.9
+      ]
+     ],
+     "marker": [
+      23.7,
+      16.6
+     ]
+    },
+    {
+     "name": "Pack (product)",
+     "role": "The shampoo tube (pack shot)",
+     "color": "#d73296",
+     "shape": [
+      [
+       6.0,
+       32.6
+      ],
+      [
+       12.9,
+       88.0
+      ],
+      [
+       35.4,
+       88.0
+      ],
+      [
+       42.0,
+       32.5
+      ]
+     ],
+     "marker": [
+      23.9,
+      41.9
+     ]
+    },
+    {
+     "name": "Face",
+     "role": "The model’s face",
+     "color": "#6ec850",
+     "shape": [
+      [
+       43.8,
+       13.7
+      ],
+      [
+       94.8,
+       13.7
+      ],
+      [
+       94.8,
+       56.4
+      ],
+      [
+       43.8,
+       56.4
+      ]
+     ],
+     "marker": [
+      69.4,
+      35.0
+     ]
+    },
+    {
+     "name": "Logo",
+     "role": "The “b” logo on the pack",
+     "color": "#3296d7",
+     "shape": [
+      [
+       15.9,
+       56.5
+      ],
+      [
+       33.7,
+       56.5
+      ],
+      [
+       33.7,
+       68.5
+      ],
+      [
+       15.9,
+       68.5
+      ]
+     ],
+     "marker": [
+      24.7,
+      62.5
+     ]
+    },
+    {
+     "name": "Brand name (banner)",
+     "role": "The BunnyEnchantment brand name banner at the bottom",
+     "color": "#d77732",
+     "shape": [
+      [
+       9.9,
+       89.6
+      ],
+      [
+       82.5,
+       89.6
+      ],
+      [
+       82.5,
+       96.7
+      ],
+      [
+       9.9,
+       96.7
+      ]
+     ],
+     "marker": [
+      46.0,
+      93.0
+     ]
+    }
+   ],
+   "segments": [
+    {
+     "label": "All",
+     "kind": "overall",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "Men",
+     "kind": "gender",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "Women",
+     "kind": "gender",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "18–24",
+     "kind": "age",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "25–34",
+     "kind": "age",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "35+",
+     "kind": "age",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "Men 18–24",
+     "kind": "gender_age",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "Men 25–34",
+     "kind": "gender_age",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "Men 35+",
+     "kind": "gender_age",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "Women 18–24",
+     "kind": "gender_age",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "Women 25–34",
+     "kind": "gender_age",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "label": "Women 35+",
+     "kind": "gender_age",
+     "n": 0,
+     "values": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "findings": [
+    "<Finding with the numbers: element, VAI and Reach/Speed/Hold, audience, window>",
+    "<Finding with the numbers: element, VAI and Reach/Speed/Hold, audience, window>",
+    "<Finding with the numbers: element, VAI and Reach/Speed/Hold, audience, window>",
+    "<Finding with the numbers: element, VAI and Reach/Speed/Hold, audience, window>"
+   ],
+   "dashboard_vai": {
+    "scope": "all <N> participants with data, not quality-filtered",
+    "participants": 0,
+    "windows": [
+     "0.5–3 s",
+     "0.5–5 s",
+     "0.5–10 s"
+    ],
+    "summary": {
+     "Tagline": {
+      "vai": 0,
+      "reach": 0,
+      "speed": 0,
+      "hold": 0
+     },
+     "Pack (product)": {
+      "vai": 0,
+      "reach": 0,
+      "speed": 0,
+      "hold": 0
+     },
+     "Face": {
+      "vai": 0,
+      "reach": 0,
+      "speed": 0,
+      "hold": 0
+     },
+     "Logo": {
+      "vai": 0,
+      "reach": 0,
+      "speed": 0,
+      "hold": 0
+     },
+     "Brand name (banner)": {
+      "vai": 0,
+      "reach": 0,
+      "speed": 0,
+      "hold": 0
+     }
+    },
+    "by_window": {
+     "vai": {
+      "Tagline": [
+       0,
+       0,
+       0
+      ],
+      "Pack (product)": [
+       0,
+       0,
+       0
+      ],
+      "Face": [
+       0,
+       0,
+       0
+      ],
+      "Logo": [
+       0,
+       0,
+       0
+      ],
+      "Brand name (banner)": [
+       0,
+       0,
+       0
+      ]
+     },
+     "reach": {
+      "Tagline": [
+       0,
+       0,
+       0
+      ],
+      "Pack (product)": [
+       0,
+       0,
+       0
+      ],
+      "Face": [
+       0,
+       0,
+       0
+      ],
+      "Logo": [
+       0,
+       0,
+       0
+      ],
+      "Brand name (banner)": [
+       0,
+       0,
+       0
+      ]
+     },
+     "speed": {
+      "Tagline": [
+       0,
+       0,
+       0
+      ],
+      "Pack (product)": [
+       0,
+       0,
+       0
+      ],
+      "Face": [
+       0,
+       0,
+       0
+      ],
+      "Logo": [
+       0,
+       0,
+       0
+      ],
+      "Brand name (banner)": [
+       0,
+       0,
+       0
+      ]
+     },
+     "hold": {
+      "Tagline": [
+       0,
+       0,
+       0
+      ],
+      "Pack (product)": [
+       0,
+       0,
+       0
+      ],
+      "Face": [
+       0,
+       0,
+       0
+      ],
+      "Logo": [
+       0,
+       0,
+       0
+      ],
+      "Brand name (banner)": [
+       0,
+       0,
+       0
+      ]
+     }
+    },
+    "aoi_colors": {
+     "Tagline": "#96d732",
+     "Pack (product)": "#d73296",
+     "Face": "#6ec850",
+     "Logo": "#3296d7",
+     "Brand name (banner)": "#d77732"
+    },
+    "aoi_image": {
+     "src": "aoi-A.jpg",
+     "crop": [
+      435,
+      12,
+      941,
+      771
+     ],
+     "caption": "Analysed image with AOIs (dashboard AOI VAI report)."
+    },
+    "insights": [
+     "<Insight text copied from the dashboard AOI VAI report>",
+     "<Insight text copied from the dashboard AOI VAI report>",
+     "<Insight text copied from the dashboard AOI VAI report>"
+    ],
+    "note": "Copy of the RealEye AOI VAI Report. The dashboard cannot filter that report by participant quality, so it covers every participant with data. The quality-filtered tables above hold the same measures and are the primary analysis."
+   }
+  }
+ ],
+ "segment_findings": [
+  "<Gender or age finding with the VAI points and the audience sizes; say when it is anecdotal (under 30 viewers)>",
+  "<Gender or age finding with the VAI points and the audience sizes; say when it is anecdotal (under 30 viewers)>",
+  "<Gender or age finding with the VAI points and the audience sizes; say when it is anecdotal (under 30 viewers)>",
+  "<Gender or age finding with the VAI points and the audience sizes; say when it is anecdotal (under 30 viewers)>",
+  "<Gender or age finding with the VAI points and the audience sizes; say when it is anecdotal (under 30 viewers)>"
+ ],
+ "actions": [
+  {
+   "title": "<Report title: the creative and what was compared, e.g. “Wake up the red in your hair”: two shampoo ad versions>",
+   "based_on": [
+    1
+   ],
+   "text": "<text>",
+   "preserve": "<preserve>"
+  },
+  {
+   "title": "<Report title: the creative and what was compared, e.g. “Wake up the red in your hair”: two shampoo ad versions>",
+   "based_on": [
+    1
+   ],
+   "text": "<text>"
+  },
+  {
+   "title": "<Report title: the creative and what was compared, e.g. “Wake up the red in your hair”: two shampoo ad versions>",
+   "based_on": [
+    1
+   ],
+   "text": "<text>",
+   "preserve": "<preserve>"
+  },
+  {
+   "title": "<Report title: the creative and what was compared, e.g. “Wake up the red in your hair”: two shampoo ad versions>",
+   "based_on": [
+    1
+   ],
+   "text": "<text>"
+  }
+ ],
+ "retest": {
+  "design": "<design>",
+  "primary_outcome": "<primary_outcome>",
+  "guardrail": "<guardrail>",
+  "diagnostic_vai_metric": "<diagnostic_vai_metric>"
+ },
+ "limits": [
+  "<Limit of the evidence>",
+  "<Limit of the evidence>",
+  "<Limit of the evidence>",
+  "<Limit of the evidence>",
+  "<Limit of the evidence>",
+  "<Limit of the evidence>",
+  "<Limit of the evidence>"
+ ],
+ "would_change": [
+  "<Evidence that would change the recommendation>",
+  "<Evidence that would change the recommendation>",
+  "<Evidence that would change the recommendation>"
+ ],
+ "sources": [
+  "<Data source>",
+  "<Data source>",
+  "<Data source>",
+  "<Data source>"
+ ],
+ "agent_context": "<optional: campaign goal, the decision to make, anything the AI assistant should know>",
+ "_help": [
+  "Template for scripts/build_report.py. Replace every <…> with your own content, keep the structure and the section order.",
+  "See assets/example/example-report.html for how the finished report should look and read.",
+  "aoi_order and every AOI name must be identical across designs, segments and dashboard_vai; name AOIs by what they cover.",
+  "values: 60 numbers per segment = for window 3, 5, 10 s -> for each AOI in aoi_order -> [vai, reach, speed, hold].",
+  "Replace item_id and dashboard.study_id with the real RealEye ids so every table and heatmap links to the dashboard.",
+  "For one design only, delete the second item of variants. Keep all 12 audiences (All, Men, Women, three age bands, six gender × age) when the data exists.",
+  "The last section (an AI-agent prompt with every number) is built automatically; set agent_context to add the campaign goal or decision.",
+  "If a design has no AOIs in the study, define 3 to 8 useful ones (references/aoi-design.md), check them with scripts/check_aois.py, and set variants[].aoi_source to \"proposed\" with a role and why for every AOI.",
+  "Write main sections for brand managers (plain words, no technical detail); technical detail goes in method, limits and definitions (appendix)."
+ ]
+}

@@ -1,5 +1,8 @@
 # From eye tracking to a creative decision
 
+> **Report rule:** the HTML report uses only VAI and its components (Reach, Speed, Hold). Raw metrics mentioned below (fixation ratio, TTFF, fixation time, counts) explain RealEye exports and must not appear in the report.
+
+
 ## Questions a brand team needs answered
 
 Define what earns attention for a reason. The strongest visual need not be the best-performing brand asset; the useful question is whether it directs enough attention to what the creative is meant to communicate.
