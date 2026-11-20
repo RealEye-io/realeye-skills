@@ -2,6 +2,7 @@
  "title": "“Wake up the red in your hair”: two shampoo ad versions",
  "subtitle": "What viewers noticed, in what order, and for how long, using RealEye's VAI, by gender, age and time window.",
  "date": "20 Nov 2026",
+ "skill_version": "1.13.0",
  "method": {
   "platform": "RealEye platform",
   "tracking": "Webcam eye tracking: participants viewed the images in their own browsers while RealEye estimated their gaze from their webcams.",
@@ -118,6 +119,26 @@
    "age_text": "median 23, mean 24.9, reported range 1–88 (self-reported, so some values are implausible)"
   }
  },
+ "blueprint": {
+  "study_name": "Shampoo A/B: profile gaze versus direct gaze",
+  "target_participants": "10,000 (the study was still running)",
+  "demographics_asked": "gender and age",
+  "random_order": "off",
+  "stimuli": {
+   "A": {
+    "file_name": "shampoo product.png",
+    "display_seconds": 10,
+    "finish_on": "keypress",
+    "instructions": "off"
+   },
+   "B": {
+    "file_name": "shampoo camera.png",
+    "display_seconds": 10,
+    "finish_on": "keypress",
+    "instructions": "off"
+   }
+  }
+ },
  "aoi_order": [
   "Tagline",
   "Pack (product)",
@@ -155,35 +176,417 @@
    {
     "tag": "strength",
     "title": "Tagline and pack lead, in every window",
-    "text": "Tagline VAI is 57.5 (A) and 57.6 (B) in the first 3 s with Reach near 80%. The pack follows (VAI 42.2 and 41.0) and catches up by 10 s (61.2 and 61.8). This part of the layout works."
+    "conclusion": "The tagline is noticed first and the pack second, in both designs and in the first 3, 5 and 10 seconds. This part of the layout works.",
+    "why": "VAI Speed puts the tagline first and the pack second for all viewers in every window and in both designs (viewing order). The tagline also has the highest VAI at 3 s (57.5 in A, 57.6 in B) with Reach near 80%, and the pack catches up by 10 s as more viewers get to it (VAI 61.2 in A, 61.8 in B). A high early VAI means many viewers look at it, soon and for a while, so the entry point is the claim and the anchor is the product.",
+    "evidence": [
+     {
+      "text": "Viewing order for all viewers is Tagline, Pack, Face, Logo, Banner in the first 3, 5 and 10 s, in both designs.",
+      "ref": [
+       "order",
+       "dA-summary",
+       "dB-summary"
+      ]
+     },
+     {
+      "text": "Tagline VAI in the first 3 s is 57.5 in A and 57.6 in B; its Reach is near 80%.",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Tagline",
+        "window": 3,
+        "metric": "vai",
+        "value": 57.5
+       },
+       {
+        "design": "B",
+        "aoi": "Tagline",
+        "window": 3,
+        "metric": "vai",
+        "value": 57.6
+       },
+       {
+        "design": "A",
+        "aoi": "Tagline",
+        "window": 3,
+        "metric": "reach"
+       },
+       {
+        "design": "B",
+        "aoi": "Tagline",
+        "window": 3,
+        "metric": "reach"
+       }
+      ],
+      "dash": [
+       {
+        "design": "A",
+        "kind": "heatmap",
+        "window": 3
+       },
+       {
+        "design": "B",
+        "kind": "heatmap",
+        "window": 3
+       }
+      ]
+     },
+     {
+      "text": "The pack starts at VAI 42.2 and 41.0 in the first 3 s and reaches 61.2 and 61.8 by 10 s.",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Pack (product)",
+        "window": 3,
+        "value": 42.2
+       },
+       {
+        "design": "B",
+        "aoi": "Pack (product)",
+        "window": 3,
+        "value": 41.0
+       },
+       {
+        "design": "A",
+        "aoi": "Pack (product)",
+        "window": 10,
+        "value": 61.2
+       },
+       {
+        "design": "B",
+        "aoi": "Pack (product)",
+        "window": 10,
+        "value": 61.8
+       }
+      ]
+     }
+    ],
+    "so_what": "Keep both where they are; any change to the layout should be tested against them.",
+    "confidence": "high",
+    "confidence_note": "Both designs have more than 220 viewers and the order is identical in every window."
    },
    {
     "tag": "risk",
     "title": "The brand name banner is the weak spot",
-    "text": "Banner VAI is 3.6 → 7.5 → 14.3 in A and 1.2 → 3.6 → 8.3 in B (first 3, 5 and 10 s). Reach is 27% and 16% and Hold is about 1: few viewers get there, late, and only briefly. The heatmaps show the bottom band cold in every audience."
+    "conclusion": "Few viewers reach the brand name banner, late and briefly, so the brand name is mostly seen only on the pack label.",
+    "why": "The banner has the lowest VAI of the five elements in every window and in both designs, and all three components are low: Reach (how many looked) is 27% in A and 16% in B in the first 10 s, Speed (how soon) puts it last in the viewing order, and Hold (how long) is about 1. The measured heatmaps show the bottom band cold in every audience, which agrees with the numbers.",
+    "evidence": [
+     {
+      "text": "Banner VAI grows from 3.6 to 14.3 in A and from 1.2 to 8.3 in B between the first 3 and the first 10 s, the lowest of any element.",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Brand name (banner)",
+        "window": 3,
+        "value": 3.6
+       },
+       {
+        "design": "A",
+        "aoi": "Brand name (banner)",
+        "window": 5,
+        "value": 7.5
+       },
+       {
+        "design": "A",
+        "aoi": "Brand name (banner)",
+        "window": 10,
+        "value": 14.3
+       },
+       {
+        "design": "B",
+        "aoi": "Brand name (banner)",
+        "window": 3,
+        "value": 1.2
+       },
+       {
+        "design": "B",
+        "aoi": "Brand name (banner)",
+        "window": 5,
+        "value": 3.6
+       },
+       {
+        "design": "B",
+        "aoi": "Brand name (banner)",
+        "window": 10,
+        "value": 8.3
+       }
+      ]
+     },
+     {
+      "text": "Reach in the first 10 s is 27% in A and 16% in B; Hold in A is about 1.",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Brand name (banner)",
+        "window": 10,
+        "metric": "reach",
+        "value": 27.1
+       },
+       {
+        "design": "B",
+        "aoi": "Brand name (banner)",
+        "window": 10,
+        "metric": "reach",
+        "value": 16.3
+       },
+       {
+        "design": "A",
+        "aoi": "Brand name (banner)",
+        "window": 10,
+        "metric": "hold",
+        "value": 1.2
+       }
+      ]
+     },
+     {
+      "text": "The heatmaps show the bottom band cold in every audience and window.",
+      "ref": [
+       "dA-heat",
+       "dA-sheets",
+       "dB-heat",
+       "dB-sheets"
+      ],
+      "dash": [
+       {
+        "design": "A",
+        "kind": "heatmap",
+        "window": 10
+       },
+       {
+        "design": "B",
+        "kind": "heatmap",
+        "window": 10
+       }
+      ]
+     }
+    ],
+    "so_what": "The brand name needs a better place or size before the design can be expected to build brand recall.",
+    "confidence": "high",
+    "confidence_note": "The gap is large and consistent across windows, designs and audiences. VAI shows attention, not recall."
    },
    {
     "tag": "risk",
     "title": "Direct gaze helps the face and costs the brand",
-    "text": "In B the face scores higher (VAI 58.4 vs 54.2, Hold 17.0 vs 12.8), while the logo falls from 28.0 to 23.9 and the banner from 14.3 to 8.3. Gaze direction is the likely cause but the designs differ in more than the pose."
+    "conclusion": "In design B the face holds attention better, while the logo and the banner score lower than in A.",
+    "why": "Comparing B with A on the same elements and window (first 10 s): the face scores 4.2 VAI points higher in B and its Hold is 4.2 higher, so viewers stay on it longer; the logo scores 4.1 lower and the banner 6.0 lower. Attention that goes to the face is not going to the brand. The designs differ in more than the model's gaze direction, so the pose is the likely cause, not a proven one.",
+    "evidence": [
+     {
+      "text": "Face VAI and Hold are higher in B than in A (first 10 s).",
+      "data": [
+       {
+        "design": "B",
+        "aoi": "Face",
+        "window": 10,
+        "metric": "vai",
+        "minus": {
+         "design": "A"
+        },
+        "value": 4.2
+       },
+       {
+        "design": "B",
+        "aoi": "Face",
+        "window": 10,
+        "metric": "hold",
+        "minus": {
+         "design": "A"
+        },
+        "value": 4.2
+       }
+      ]
+     },
+     {
+      "text": "Logo and banner VAI are lower in B than in A (first 10 s).",
+      "data": [
+       {
+        "design": "B",
+        "aoi": "Logo",
+        "window": 10,
+        "minus": {
+         "design": "A"
+        },
+        "value": -4.1
+       },
+       {
+        "design": "B",
+        "aoi": "Brand name (banner)",
+        "window": 10,
+        "minus": {
+         "design": "A"
+        },
+        "value": -6.0
+       }
+      ]
+     },
+     {
+      "text": "Where the heatmap concentrates in each design.",
+      "ref": [
+       "dA-heat",
+       "dB-heat"
+      ]
+     }
+    ],
+    "so_what": "Test a direct-gaze face with the brand name on the eye line, so the strong face also carries the brand.",
+    "confidence": "medium",
+    "confidence_note": "The differences are consistent but small, and the two images differ in other ways than gaze."
    },
    {
     "tag": "strength",
     "title": "Women get to the claim first",
-    "text": "Women score higher on the tagline than men in every window and in both designs: VAI +15.6 and +12.1 in the first 3 s, +7.2 and +10.4 in the first 10 s (A and B). In A, men reach the face and pack earlier."
+    "conclusion": "Women score higher on the tagline than men in every window and in both designs; the gap is biggest in the first 3 seconds.",
+    "why": "Women minus men on the tagline is +15.6 in A and +12.1 in B in the first 3 s, and +7.2 and +10.4 in the first 10 s, mainly through Speed: women notice the claim sooner. In A, men score higher on the face early (27.8 against 19.0 in the first 3 s), so the two groups open the image differently.",
+    "evidence": [
+     {
+      "text": "Tagline VAI, women minus men, first 3 s.",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Tagline",
+        "window": 3,
+        "audience": "Women",
+        "minus": {
+         "audience": "Men"
+        },
+        "value": 15.6
+       },
+       {
+        "design": "B",
+        "aoi": "Tagline",
+        "window": 3,
+        "audience": "Women",
+        "minus": {
+         "audience": "Men"
+        },
+        "value": 12.1
+       }
+      ]
+     },
+     {
+      "text": "Tagline VAI, women minus men, first 10 s.",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Tagline",
+        "window": 10,
+        "audience": "Women",
+        "minus": {
+         "audience": "Men"
+        },
+        "value": 7.2
+       },
+       {
+        "design": "B",
+        "aoi": "Tagline",
+        "window": 10,
+        "audience": "Women",
+        "minus": {
+         "audience": "Men"
+        },
+        "value": 10.4
+       }
+      ],
+      "dash": [
+       {
+        "design": "A",
+        "kind": "heatmap",
+        "audience": "Women",
+        "window": 3
+       },
+       {
+        "design": "A",
+        "kind": "heatmap",
+        "audience": "Men",
+        "window": 3
+       }
+      ]
+     },
+     {
+      "text": "Men's face VAI is higher than women's early in A.",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Face",
+        "window": 3,
+        "audience": "Men",
+        "value": 27.8
+       },
+       {
+        "design": "A",
+        "aoi": "Face",
+        "window": 3,
+        "audience": "Women",
+        "value": 19.0
+       }
+      ]
+     }
+    ],
+    "so_what": "Do not move or shrink the tagline without retesting with women.",
+    "confidence": "medium",
+    "confidence_note": "Both groups have more than 50 viewers (Women 88 and 81, Men 59 and 67), and the direction is the same in both designs."
    },
    {
     "tag": "weak-evidence",
     "title": "Age groups other than 18–24 are small",
-    "text": "18–24 viewers (82 and 83) behave like the overall sample. Groups of 25–34 (28 and 31) and 35+ (7 and 14) are too small to separate real differences from noise."
+    "conclusion": "Only the 18–24 group is large enough to read; it behaves like the whole sample. Other age groups are too small to separate real differences from noise.",
+    "why": "18–24 viewers number 82 (A) and 83 (B). The 25–34 groups have 28 and 31 viewers and the 35+ groups fewer than 15, below the 30-viewer threshold for a stable score. Differences seen in those groups are marked † in the tables and are hypotheses to test, not findings.",
+    "evidence": [
+     {
+      "text": "Age mix of the analysed viewers: most are 18–24 and many gave no age.",
+      "ref": [
+       "who"
+      ]
+     },
+     {
+      "text": "VAI by age for every element and window, with small groups marked †.",
+      "ref": [
+       "dA-age",
+       "dB-age"
+      ]
+     }
+    ],
+    "so_what": "To read age effects, recruit more viewers aged 25 and over before drawing conclusions.",
+    "confidence": "high",
+    "confidence_note": "The limit is the sample size, not the effect."
    }
   ],
   "conclusions": [
-   "The tagline is the entry point and the pack the anchor: keep both where they are.",
-   "The brand name is only reliably seen on the pack label. The bottom banner adds little: move the brand name into the tagline-to-pack column, or raise and enlarge the banner.",
-   "Use design A's profile gaze as the base for brand visibility; test a direct-gaze face with the brand name on the eye line.",
-   "Women reach the claim sooner than men in both designs: do not move or shrink the tagline without retesting.",
-   "VAI shows attention, not understanding: confirm the changes with an unaided brand and message recall test."
+   {
+    "title": "Keep the tagline and the pack where they are",
+    "text": "The tagline is the entry point and the pack the anchor; they already lead the viewing order.",
+    "based_on": [
+     1
+    ]
+   },
+   {
+    "title": "Give the brand name a better place",
+    "text": "The brand name is reliably seen only on the pack label. The bottom banner adds little: move the brand name into the tagline-to-pack column, or raise and enlarge the banner.",
+    "based_on": [
+     2,
+     3
+    ]
+   },
+   {
+    "title": "Use A's profile gaze as the base, and test a brand-carrying direct gaze",
+    "text": "A's profile gaze leaves more attention for the logo and banner; test a direct-gaze face with the brand name on the eye line.",
+    "based_on": [
+     3
+    ]
+   },
+   {
+    "title": "Protect the claim for women",
+    "text": "Women reach the claim sooner than men in both designs: do not move or shrink the tagline without retesting.",
+    "based_on": [
+     4
+    ]
+   },
+   {
+    "title": "Confirm with recall, not attention alone",
+    "text": "VAI shows attention, not understanding: confirm the changes with an unaided brand and message recall test.",
+    "based_on": [
+     1,
+     2,
+     5
+    ]
+   }
   ]
  },
  "variants": [
@@ -195,6 +598,10 @@
    "stimulus": {
     "src": "stimulus-A.jpg"
    },
+   "image_px": [
+    1024,
+    1536
+   ],
    "heatmap": {
     "src": "heatmap-A.jpg",
     "caption": "All viewers, first 10 seconds. Warmer colours mean more attention."
@@ -1346,6 +1753,10 @@
    "stimulus": {
     "src": "stimulus-B.jpg"
    },
+   "image_px": [
+    1024,
+    1536
+   ],
    "heatmap": {
     "src": "heatmap-B.jpg",
     "caption": "All viewers, first 10 seconds. Warmer colours mean more attention."
@@ -2499,20 +2910,34 @@
  "actions": [
   {
    "title": "Move the brand name out of the cold bottom band",
+   "based_on": [
+    2,
+    3
+   ],
    "text": "Banner VAI is 14.3 (A) and 8.3 (B). Place the brand name next to the tagline or on the pack at a larger size, or raise and enlarge the banner into the zone the heatmaps show is warm.",
    "preserve": "The tagline and the pack, which lead the viewing order."
   },
   {
    "title": "Use A's profile gaze as the base for brand visibility",
+   "based_on": [
+    3
+   ],
    "text": "In A the logo and banner score higher in every window (first 3 s: logo VAI 7.9 vs 4.4, banner 3.6 vs 1.2)."
   },
   {
    "title": "Keep the claim prominent for women",
+   "based_on": [
+    1,
+    4
+   ],
    "text": "Women's tagline VAI is 7 to 16 points above men's in every window. Retest before changing the tagline's position or size.",
    "preserve": "Tagline position and size."
   },
   {
    "title": "Test B's face strength without losing the brand",
+   "based_on": [
+    3
+   ],
    "text": "{B} holds the face better (VAI 58.4 vs 54.2). Test a direct-gaze face with the brand name on the eye line or beside the face."
   }
  ],

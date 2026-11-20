@@ -32,6 +32,40 @@ Brand-manager main sections, technical detail in the appendix · VAI only · Rea
 - `assets/example/`: a finished two-design report (`report.json`, its images, and the built `example-report.html`). Open the HTML to see the target look. The ids in it are placeholders (`STUDY_ID`, `ITEM_ID_A`), so its links are illustrative.
 - Reports must look like the example: same sections in the same order, same plain tone, same tables, charts and heatmap sheets. Do not restyle; the script owns the look.
 
+## Findings, conclusions and actions (schema 2)
+
+`overall.findings[]` (each becomes its own sub-section, numbered from 1):
+
+```json
+{"tag": "strength | risk | opportunity | weak-evidence",
+ "title": "Short headline",
+ "conclusion": "What we conclude, one or two plain sentences",
+ "why": "How the conclusion follows from the data: the comparison, the numbers, the reasoning, what rules out the obvious alternative",
+ "evidence": [
+   {"text": "One proof point in words",
+    "data": [{"design": "A", "aoi": "Tagline", "window": 3, "metric": "vai", "audience": "All", "value": 57.5},
+             {"design": "A", "aoi": "Tagline", "window": 3, "audience": "Women", "minus": {"audience": "Men"}, "value": 15.6}],
+    "ref": ["order", "dA-summary"],
+    "dash": [{"design": "A", "kind": "heatmap", "audience": "All", "window": 3}]}],
+ "so_what": "What it means for the decision",
+ "confidence": "high | medium | low", "confidence_note": "Sample sizes and consistency"}
+```
+
+- `data` points are looked up in `variants[].segments` by the build script: `design`, `aoi`, `window` (3, 5 or 10), `metric` (vai, reach, speed, hold), `audience` (default All) and optional `minus` ({design, audience}) for a gap. `value` is optional; when given it must match the data (within 0.15) or the build fails; without it the script fills the real number. A chip with the audience size is shown for every point and links to its table.
+- `ref` lists anchors in the report; unknown anchors fail the build. Anchors: `order`, `order-audience`, `who`, `vai`, `tested`, `compare`, `audience`, `technical`, `blueprint`, `design-<ID>`, and per design `d<ID>-` + `aois`, `heat`, `glance`, `findings`, `overview`, `summary`, `build`, `audience`, `gender`, `age`, `gender_age`, `sheets`.
+- `dash` adds RealEye dashboard links (`kind`: heatmap, aoi, vai; optional `audience`, `window`).
+- Every evidence item must resolve to at least one link (via `ref` or `data`).
+
+`overall.conclusions[]` and `actions[]` are objects `{title, text, based_on: [finding numbers]}` (actions also `preserve`). `variants[].findings[]` and `segment_findings[]` may be strings ("Title: text") or objects `{title, text, evidence | ref | data}`; each is its own sub-section and links to its tables.
+
+## Study blueprint
+
+`blueprint` (study set-up), `study_info`, each variant's `aois[]` (name, colour, shape in % of the image, optional `type`, `time_range_s`) and `image_px` ([width, height] of the original stimulus, default read from the image) are rendered in the *Study blueprint* section with pixel coordinates, downloadable stimulus images, `study-blueprint.json` and the full `report.json`, plus steps to run the study again.
+
+## Versioning
+
+The build script reads the skill version from `SKILL.md` and stamps it in the header, footer, `<meta name="generator">`, the appendix (*Report and skill version*), the data pack and the blueprint. `skill_version` in the JSON records which version the data was written for; a mismatch is shown in the appendix. `generated` (optional, ISO date) overrides the generation date. `CHANGELOG.md` lists changes per version.
+
 ## Study facts and participants
 
 `study_info` and `participants` (per design id) drive three things: the tiles *Study created*, *Data collected* (the earliest and latest `collected_from` / `collected_to`) and *RealEye version*; the *Who took part* card (charts of gender, age bands plus "No age given", and device, with counts and percentages); and the appendix block *Study and platform* with the data-quality distribution of all collected viewers (Very low and Low are shown as removed) and the set-up details. The same facts go into the data pack (tables `study` and `participants`) and the AI prompt. Collect them with the browser playbook (section 2b) and `scripts/dashboard_participants.js`. Never include participant or author names.
@@ -106,6 +140,10 @@ Use the user's signed-in browser (read-only). Never print participant names; nev
                          "device": {"Desktop": 201, "Tablet": 28},
                          "tracker_text": "…", "participant_type_text": "…", "screen_text": "1512 × 900 px", "age_text": "…"}},
   "participants_note": "optional: note under the participant charts",
+  "skill_version": "1.13.0",
+  "blueprint": {"study_name": "…", "target_participants": "10,000", "demographics_asked": "gender and age", "random_order": "off",
+                "stimuli": {"A": {"file_name": "shampoo product.png", "display_seconds": 10, "finish_on": "keypress", "instructions": "off"}},
+                "recreate_steps": ["optional extra steps specific to this study"]},
   "aoi_order": ["Tagline", "Pack (product)", "Face", "Logo", "Brand name (banner)"],
   "overall": {
     "verdict_label": "…", "verdict_text": "…", "summary": "…",

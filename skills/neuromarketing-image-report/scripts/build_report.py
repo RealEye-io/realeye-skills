@@ -12,6 +12,7 @@ result is a single file. See references/html-report.md for the JSON schema.
 """
 import argparse
 import base64
+import datetime
 import html
 import json
 import math
@@ -746,7 +747,7 @@ def order_section(spec):
     body = (f'<p class="lead">{lead}</p>'
             '<p class="hint">The order in which viewers notice the elements, across all viewers (not one person\'s scan path). #1 is noticed soonest; it is ranked by VAI Speed. The numbered circles show the first-10-seconds order.</p>'
             f'<div class="two">{blocks}</div>' + (f'<p class="hint">See the data in RealEye. {olinks}</p>' if olinks else "")
-            + '<h3>Viewing order by audience</h3><p class="hint">For every audience (all viewers, gender, age, gender × age) and time window: the elements in the order they are noticed (1st to 5th), ranked by VAI Speed. An outlined cell is an element in a different place than for all viewers. † marks a small audience (fewer than %d viewers).</p>' % MIN_N
+            + '<h3 id="order-audience">Viewing order by audience</h3><p class="hint">For every audience (all viewers, gender, age, gender × age) and time window: the elements in the order they are noticed (1st to 5th), ranked by VAI Speed. An outlined cell is an element in a different place than for all viewers. † marks a small audience (fewer than %d viewers).</p>' % MIN_N
             + "".join(f'<h4>{chip(v["id"], e(v["id"]), "vtag", "background:" + vcolor(vi))} {e(v["name"])}</h4>{order_by_audience(spec, v)}' for vi, v in enumerate(variants)))
     return section("order", "Viewing order", body)
 
@@ -762,8 +763,8 @@ def design_sections(spec, v, vi):
               f'<span class="trk"></span><span>Show AOIs</span></label><p class="hint">AOI regions are highlighted directly on the image.</p>'
               + "".join(f'<div class="li">{swatch(a.get("color", "#999"))}{e(a["name"])}</div>' for a in v["aois"])
               + '<p class="box">Each element is an Area of Interest (AOI) measured separately; elements may overlap.</p></div></div>')
-    image_card = section(None, "Image with AOIs", toggle)
-    heat_card = section(None, "Measured heatmap", note("How to read it:", "warm colours (yellow, orange, red) mark where viewers looked most; cool colours (blue) mark where they looked least. "
+    image_card = section(f'd{v["id"]}-aois', "Image with AOIs", toggle)
+    heat_card = section(f'd{v["id"]}-heat', "Measured heatmap", note("How to read it:", "warm colours (yellow, orange, red) mark where viewers looked most; cool colours (blue) mark where they looked least. "
                         "The heatmap is built from the webcam eye-tracking fixations of this study's viewers (first 10 seconds, all viewers).")
                         + f'<div class="heat">{figure(base, v.get("heatmap"), "Measured heatmap", "All viewers, first 10 seconds.")}</div>')
     best = lambda k: max(range(len(n)), key=lambda i: val(seg, "10", i, k))
@@ -774,30 +775,30 @@ def design_sections(spec, v, vi):
         ("Highest VAI Speed", f'{b(best("speed"))} is noticed soonest ({val(seg, "10", best("speed"), "speed"):.1f}/100).'),
         ("Highest VAI Hold", f'{b(best("hold"))} holds attention longest ({val(seg, "10", best("hold"), "hold"):.1f}/100).'),
         ("Lowest VAI Reach", f'{b(worst("reach"))} is reached by the smallest share of viewers ({val(seg, "10", worst("reach"), "reach"):.1f}/100).')))
-    glance_card = section(None, "At a glance", f'<div class="xgrid">{glance}</div><p class="hint">All viewers, first 10 seconds.</p>')
-    insights = section(None, "What the data says", "".join(insight(t) for t in v.get("findings", [])))
+    glance_card = section(f'd{v["id"]}-glance', "At a glance", f'<div class="xgrid">{glance}</div><p class="hint">All viewers, first 10 seconds.</p>')
+    insights = section(f'd{v["id"]}-findings', "What the data says", "".join(insight_card(spec, t, f'd{v["id"]}-finding-{k + 1}', [f'd{v["id"]}-summary', f'd{v["id"]}-build']) for k, t in enumerate(v.get("findings", []))))
     cards = "".join(
         f'<div class="aoicard2">{aoi_crop(base, v, a)}<div class="meta"><b>{e(a["name"])}</b><p>VAI <b>{val(seg, "10", i, "vai"):.1f}</b><span>·</span>Reach <b>{val(seg, "10", i, "reach"):.1f}</b>'
         f'<span>·</span>Speed <b>{val(seg, "10", i, "speed"):.1f}</b><span>·</span>Hold <b>{val(seg, "10", i, "hold"):.1f}</b></p></div><i class="cbar" style="background:{a.get("color", "#999")}"></i></div>'
         for i, a in enumerate(v["aois"]))
-    overview = section(None, "AOIs overview", f'<div class="cards3">{cards}</div><p class="hint">All viewers, first 10 seconds. VAI and its components, 0–100.</p>')
-    summary = section(None, "VAI summary", '<p class="hint">Measured VAI and its Reach / Speed / Hold per element, all viewers, first 10 seconds. Values are indices (0–100), not shares; elements overlap and do not need to total 100%.</p>'
+    overview = section(f'd{v["id"]}-overview', "AOIs overview", f'<div class="cards3">{cards}</div><p class="hint">All viewers, first 10 seconds. VAI and its components, 0–100.</p>')
+    summary = section(f'd{v["id"]}-summary', "VAI summary", '<p class="hint">Measured VAI and its Reach / Speed / Hold per element, all viewers, first 10 seconds. Values are indices (0–100), not shares; elements overlap and do not need to total 100%.</p>'
                       + vai_summary(spec, v) + '<h4>VAI component averages per element</h4>' + comp_bars(spec, v, seg, "10") + '<h4>VAI by time window</h4>' + window_table(spec, v))
     series = lambda k: {nm: ([val(seg, w, i, k) for w in WIN], acolor(v, nm, i)) for i, nm in enumerate(n)}
     xl = ["first 3 s", "first 5 s", "first 10 s"]
     mini = "".join(f'<div><h5>{lab} by window</h5>{lines(series(k), xl, lab)}</div>' for k, lab in COMP)
-    build_up = section(None, "How attention builds up over time", legend([(nm, acolor(v, nm, i)) for i, nm in enumerate(n)]) + f'<div class="grid2">{mini}</div>')
-    aud = section(None, "By gender, age and gender × age",
+    build_up = section(f'd{v["id"]}-build', "How attention builds up over time", legend([(nm, acolor(v, nm, i)) for i, nm in enumerate(n)]) + f'<div class="grid2">{mini}</div>')
+    aud = section(f'd{v["id"]}-audience', "By gender, age and gender × age",
                   '<p class="hint">Each cell is the VAI for that audience, element and window, with Reach · Speed · Hold underneath. † marks a small audience (fewer than %d viewers): read it as indicative.</p>' % MIN_N
-                  + segment_chart(spec, v, "gender", "By gender") + segment_table(spec, v, "gender", "By gender")
-                  + segment_chart(spec, v, "age", "By age") + segment_table(spec, v, "age", "By age")
-                  + segment_chart(spec, v, "gender_age", "By gender × age") + segment_table(spec, v, "gender_age", "By gender × age"))
+                  + f'<span id="d{v["id"]}-gender"></span>' + segment_chart(spec, v, "gender", "By gender") + segment_table(spec, v, "gender", "By gender")
+                  + f'<span id="d{v["id"]}-age"></span>' + segment_chart(spec, v, "age", "By age") + segment_table(spec, v, "age", "By age")
+                  + f'<span id="d{v["id"]}-gender_age"></span>' + segment_chart(spec, v, "gender_age", "By gender × age") + segment_table(spec, v, "gender_age", "By gender × age"))
 
     def sheet(w):
         ls = " · ".join(alink(dash_url(spec, v, "heatmap", sg["label"], int(w)), sg["label"], "ext s") for sg in v["segments"] if dash_url(spec, v, "heatmap", sg["label"], int(w)))
         return (f'<h5>Heatmaps, {WIN_LABEL[w]}</h5><div class="sheet">{figure(base, v["heatmap_sheets"][w], f"Heatmaps by audience, {WIN_LABEL[w]}")}</div>'
                 + (f'<p class="links small">Open in the RealEye heatmap: {ls}</p>' if ls else ""))
-    sheets = section(None, "Heatmaps by audience and time window", f'<p class="hint">{rich(v.get("heatmap_note", ""))}</p>' + "".join(sheet(w) for w in WIN if w in v.get("heatmap_sheets", {})))
+    sheets = section(f'd{v["id"]}-sheets', "Heatmaps by audience and time window", f'<p class="hint">{rich(v.get("heatmap_note", ""))}</p>' + "".join(sheet(w) for w in WIN if w in v.get("heatmap_sheets", {})))
     return head + image_card + heat_card + glance_card + insights + overview + summary + build_up + aud + sheets
 
 
@@ -833,7 +834,7 @@ def compare_section(spec):
 
 def audience_section(spec):
     variants = spec["variants"]
-    text = "".join(insight(x) for x in spec.get("segment_findings", []))
+    text = "".join(insight_card(spec, x, f"seg-finding-{k + 1}", ["audience"] + [f'd{v["id"]}-audience' for v in variants]) for k, x in enumerate(spec.get("segment_findings", [])))
     ages = [s["label"] for s in variants[0]["segments"] if s["kind"] == "age"]
     ga = gap_table(spec, variants, "18–24", "25–34", "Viewers 25–34 minus viewers 18–24 (the 25–34 group is small: anecdotal)") if "18–24" in ages and "25–34" in ages else ""
     lk = ' · '.join('Design ' + e(x["id"]) + ': ' + open_links(spec, x, "Women", None, ("aoi", "heatmap")) + ' (women)' for x in variants) if open_links(spec, variants[0]) else ""
@@ -915,7 +916,7 @@ def data_tables(spec):
         ("title", spec.get("title", "")), ("date", spec.get("date", "")), ("platform", spec["method"].get("platform", "")), ("eye_tracking", spec["method"].get("tracking", "")),
         ("study", spec["method"].get("study", "")), ("participants_analysed", spec["method"].get("participants", "")), ("quality_filter", spec["method"].get("quality_filter", "")),
         ("windows", spec["method"].get("windows", "")), ("audiences", spec["method"].get("segments", "")), ("task", spec["method"].get("task", "")),
-        ("small_audience_threshold", f"fewer than {MIN_N} viewers")) if v]
+        ("small_audience_threshold", f"fewer than {MIN_N} viewers"), ("report_generated_by", f"{SKILL_NAME} v{SKILL_VERSION} (report format {SCHEMA_VERSION})"), ("report_generated_on", spec.get("_generated", ""))) if v]
     si = spec.get("study_info") or {}
     for k, vv in si.items():
         t["study"].append(["study_" + k, re.sub(r"\{([A-Z])\}", r"\1", str(vv))])
@@ -944,6 +945,11 @@ def data_tables(spec):
             b = bbox(a["shape"]) if a.get("shape") else ("", "", "", "")
             el.append([v["id"], a["name"], a.get("role", ""), a.get("color", ""), *[round(x, 1) if x != "" else "" for x in b]])
     t["elements"] = el
+    ac = [["design", "element", "shape", "colour", "image_width_px", "image_height_px", "x1_px", "y1_px", "x2_px", "y2_px", "vertices_px", "time_range_s"]]
+    for v in variants:
+        for a in aoi_records(spec, v):
+            ac.append([v["id"], a["name"], a["type"], a["color"] or "", a["image_px"][0], a["image_px"][1], *a["bbox_px"], " ".join(f"({x},{y})" for x, y in a["points_px"]), "-".join(str(x) for x in a["time_range_s"])])
+    t["aoi_coordinates"] = ac
     au = [["design", "audience", "kind", "gender", "age_band", "viewers", "small_audience"]]
     vai = [["design", "audience", "window_s", "element", "vai", "reach", "speed", "hold", "speed_rank", "vai_rank"]]
     for v in variants:
@@ -981,7 +987,7 @@ def data_pack(spec):
     """Markdown 'data pack': a short guide plus every table as CSV, so an AI assistant can use the data without parsing the report."""
     t = data_tables(spec)
     guide = {
-        "study": "Study context, including when the study was created, when the data was collected and the RealEye version.", "participants": "Viewer profile per design: gender, age bands (self-reported), device, and data quality of all collected viewers. share_of_analysed_pct is of the analysed viewers.", "designs": "The tested designs.", "elements": "AOIs (elements) per design: what each covers and its bounding box in % of the image (0,0 = top-left).",
+        "study": "Study context, including when the study was created, when the data was collected and the RealEye version.", "participants": "Viewer profile per design: gender, age bands (self-reported), device, and data quality of all collected viewers. share_of_analysed_pct is of the analysed viewers.", "designs": "The tested designs.", "aoi_coordinates": "Exact AOI geometry in image pixels (origin top-left), enough to redraw every AOI in RealEye and rerun the study.", "elements": "AOIs (elements) per design: what each covers and its bounding box in % of the image (0,0 = top-left).",
         "audiences": "Audiences and their sizes. kind: overall | gender | age | gender_age. small_audience = fewer than 30 viewers (anecdotal).",
         "vai_by_audience": ("MAIN TABLE, one row per design x audience x window x element. vai, reach, speed, hold are 0-100 (vai = mean of reach, speed, hold). "
                             "window_s = 3, 5 or 10: cumulative windows 0.5-3, 0.5-5, 0.5-10 s. speed_rank = viewing order position (1 = noticed first). vai_rank = rank by VAI."),
@@ -1048,15 +1054,17 @@ def agent_prompt(spec):
     add("=== THE REPORT'S FINDINGS AND CONCLUSIONS ===")
     add(f"Conclusion: {c(o.get('verdict_label', ''))}. {c(o.get('verdict_text', ''))}")
     add(c(o.get("summary", "")))
-    for f in o.get("findings", []):
-        add(f"- [{f.get('tag', '')}] {c(f['title'])}: {c(f['text'])}")
+    for i, f in enumerate(o.get("findings", []), 1):
+        ev = "; ".join(c(x if isinstance(x, str) else x.get("text", "")) for x in f.get("evidence", []))
+        add(f"- Finding {i} [{f.get('tag', '')}] {c(f['title'])}: {c(f.get('conclusion') or f.get('text', ''))}" + (f" Why: {c(f['why'])}" if f.get("why") else "") + (f" Evidence: {ev}" if ev else ""))
     for x in o.get("conclusions", []):
-        add(f"- Conclusion: {c(x)}")
+        add(f"- Conclusion: {c(x if isinstance(x, str) else x.get('title', '') + ': ' + x.get('text', ''))}" + ("" if isinstance(x, str) else f" (follows from findings {', '.join(str(b) for b in x.get('based_on', []))})"))
+    _t = lambda x: x if isinstance(x, str) else x.get("title", "") + ": " + x.get("text", "")
     for v in variants:
         for x in v.get("findings", []):
-            add(f"- Design {v['id']}: {c(x)}")
+            add(f"- Design {v['id']}: {c(_t(x))}")
     for x in spec.get("segment_findings", []):
-        add(f"- Gender/age: {c(x)}")
+        add(f"- Gender/age: {c(_t(x))}")
     add("")
     add("=== RECOMMENDED ACTIONS AND RETEST PLAN ===")
     for a in spec.get("actions", []):
@@ -1136,6 +1144,342 @@ def method_block(spec):
     return f'<h3>About this study</h3><dl class="ctx">{rows}</dl><p class="hint">{e(m.get("note", ""))}</p>'
 
 
+# ------------------------------------------------------------------ versioning
+SKILL_NAME = "neuromarketing-image-report"
+SCHEMA_VERSION = 2   # report JSON format: 2 = findings with why + evidence, study blueprint
+
+
+class ReportError(Exception):
+    pass
+
+
+def _skill_version():
+    # the single source of truth is the version in SKILL.md (metadata.version)
+    try:
+        txt = (Path(__file__).resolve().parent.parent / "SKILL.md").read_text(encoding="utf-8")
+        m = re.search(r'^\s*version:\s*"?([0-9][0-9A-Za-z.\-+]*)"?\s*$', txt, re.M)
+        return m.group(1) if m else "unknown"
+    except OSError:
+        return "unknown"
+
+
+SKILL_VERSION = _skill_version()
+ERRORS, REFS = [], []
+
+
+# ------------------------------------------------------------------ findings with evidence
+TAG_COLORS = {"strength": "#17652f", "risk": "#a12a1b", "weak-evidence": "#8a6500", "opportunity": "#1d5fb4"}
+_DLAB = {"aois": "image with AOIs", "heat": "measured heatmap", "glance": "at a glance", "findings": "what the data says", "overview": "AOIs overview",
+         "summary": "VAI summary tables", "build": "how attention builds up over time", "audience": "by gender, age and gender × age", "gender": "VAI by gender",
+         "age": "VAI by age", "gender_age": "VAI by gender × age", "sheets": "heatmaps by audience and time window"}
+_FIXED = {"who": "Who took part", "tested": "Tested designs and AOIs", "vai": "What the scores mean (VAI)", "order": "Viewing order", "order-audience": "Viewing order by audience",
+          "compare": "Head-to-head comparison", "audience": "Gender and age insights", "actions": "How to test it next", "technical": "Technical appendix",
+          "blueprint": "Study blueprint", "agent": "Ask an AI agent", "overall": "Overall findings"}
+
+
+def anchor_label(ref):
+    if ref in _FIXED:
+        return _FIXED[ref]
+    m = re.match(r"^design-([A-Z])$", ref)
+    if m:
+        return f"Design {m.group(1)}: full analysis"
+    m = re.match(r"^d([A-Z])-(\w+)$", ref)
+    if m and m.group(2) in _DLAB:
+        return f"Design {m.group(1)}: {_DLAB[m.group(2)]}"
+    m = re.match(r"^f(\d+)$", ref)
+    if m:
+        return f"Finding {m.group(1)}"
+    return ref
+
+
+def point(spec, p):
+    # Look up one number in the report data (design, aoi, window, metric, optional audience and minus), check any stated value, and return (chip html, refs, dashboard links).
+    try:
+        v = next(x for x in spec["variants"] if x["id"] == p["design"])
+        ai, k, w = names(spec).index(p["aoi"]), p.get("metric", "vai"), str(p.get("window", "10"))
+        if k not in dict(COMP) or w not in WIN:
+            raise ValueError("metric or window")
+        aud = p.get("audience", "All")
+        sa = seg_of(v, aud)
+        if sa is None:
+            raise ValueError("no audience " + aud)
+        got, v2, aud2, mi = val(sa, w, ai, k), v, aud, p.get("minus")
+        if mi:
+            v2 = next(x for x in spec["variants"] if x["id"] == mi.get("design", p["design"]))
+            aud2 = mi.get("audience", aud)
+            sb = seg_of(v2, aud2)
+            if sb is None:
+                raise ValueError("no audience " + aud2)
+            got -= val(sb, w, ai, k)
+    except Exception as ex:
+        ERRORS.append(f"evidence data point {json.dumps(p, ensure_ascii=False)} is not in the report data ({type(ex).__name__}: {ex})")
+        return "", [], []
+    if "value" in p and abs(round(got, 1) - float(p["value"])) > 0.15:
+        ERRORS.append(f"evidence data point {json.dumps(p, ensure_ascii=False)} says {p['value']} but the report data gives {got:.1f}")
+    mname = dict(COMP)[k]
+    if mi:
+        lab = f"{{{v['id']}}} {aud} − {{{v2['id']}}} {aud2}"
+        shown = f"{got:+.1f}"
+        refs = ["compare"] if v2["id"] != v["id"] else [f"d{v['id']}-{sa.get('kind', 'audience')}" if sa.get("kind") in ("gender", "age", "gender_age") else f"d{v['id']}-audience", "audience"]
+    else:
+        lab = f"{{{v['id']}}} · {aud} (N={sa['n']})"
+        shown = f"{got:.1f}"
+        refs = [f"d{v['id']}-summary" if aud == "All" else (f"d{v['id']}-{sa['kind']}" if sa.get("kind") in ("gender", "age", "gender_age") else f"d{v['id']}-audience")]
+    dashes = [{"design": v["id"], "kind": "aoi", "audience": aud}]
+    if mi and v2["id"] == v["id"] and aud2 != aud:
+        dashes.append({"design": v["id"], "kind": "aoi", "audience": aud2})
+    chip_ = f'<span class="dchip">{rich(lab + " · " + p["aoi"] + " · " + WIN_LABEL[w] + " · " + mname)} <b>{shown}</b></span>'
+    return chip_, refs, dashes
+
+
+def ref_link(spec, r):
+    REFS.append(r)
+    return f'<a class="ref" href="#{e(r)}">{e(anchor_label(r))} ↓</a>'
+
+
+def dash_link(spec, d):
+    v = next((x for x in spec["variants"] if x["id"] == d.get("design")), None)
+    if v is None:
+        ERRORS.append(f"dash link {json.dumps(d)} names an unknown design")
+        return ""
+    kind, aud, w = d.get("kind", "heatmap"), d.get("audience", "All"), d.get("window")
+    u = dash_url(spec, v, kind, aud, int(w) if w else None)
+    if not u:
+        return ""
+    nm = {"heatmap": "heatmap", "aoi": "AOI report", "vai": "AOI VAI report"}[kind]
+    return alink(u, f"Design {v['id']} {nm}" + ("" if aud == "All" else f", {aud}") + (f", {WIN_LABEL[str(w)]}" if w and kind == "heatmap" else ""), "ext s")
+
+
+def evidence_html(spec, evs, where):
+    out = ""
+    for i, x in enumerate(evs):
+        x = {"text": x} if isinstance(x, str) else x
+        chips, refs, dashes = "", [], []
+        for p in x.get("data", []):
+            c_, r_, d_ = point(spec, p)
+            chips, refs, dashes = chips + c_, refs + r_, dashes + d_
+        r0 = x.get("ref", [])
+        refs += [r0] if isinstance(r0, str) else list(r0)
+        dashes += x.get("dash", [])
+        if not x.get("text"):
+            ERRORS.append(f"{where}: evidence item {i + 1} has no text")
+        if not refs:
+            ERRORS.append(f"{where}: evidence item {i + 1} links to no data in the report (add ref and/or data)")
+        rl = " · ".join(ref_link(spec, r) for r in dict.fromkeys(refs))
+        seen, dl = set(), []
+        for d in dashes:
+            key = json.dumps(d, sort_keys=True)
+            if key not in seen:
+                seen.add(key)
+                dl.append(dash_link(spec, d))
+        dl = " · ".join(x_ for x_ in dl if x_)
+        out += (f'<li class="ev"><div class="evt">{rich(x.get("text", ""))}</div>' + (f'<div class="evd">{chips}</div>' if chips else "")
+                + f'<div class="evl"><span>In this report:</span> {rl}' + (f' <span class="sepdot">|</span> <span>In RealEye:</span> {dl}' if dl else "") + '</div></li>')
+    return out
+
+
+def split_title(s):
+    s = str(s)
+    m = re.match(r"^([^:]{3,70}):\s+(.*)$", s, re.S)
+    if m:
+        return m.group(1), m.group(2)
+    words = s.split()
+    return " ".join(words[:7]) + ("…" if len(words) > 7 else ""), s
+
+
+def insight_card(spec, item, pid, default_refs=()):
+    # One insight as its own sub-section. item: a string ("Title: text") or {title, text, evidence | ref | data}.
+    if isinstance(item, str):
+        title, text = split_title(item)
+        evs = [{"text": "The numbers behind this are in", "ref": list(default_refs)}] if default_refs else []
+    else:
+        title, text, evs = item["title"], item.get("text", ""), item.get("evidence", [])
+        if not evs and (item.get("ref") or item.get("data")):
+            evs = [{"text": "The numbers behind this", "ref": item.get("ref", []), "data": item.get("data", [])}]
+        if not evs and default_refs:
+            evs = [{"text": "The numbers behind this are in", "ref": list(default_refs)}]
+    ev = f'<ul class="evs">{evidence_html(spec, evs, pid)}</ul>' if evs else ""
+    return f'<article class="finding mini" id="{e(pid)}"><h4>{rich(title)}</h4><p>{rich(text)}</p>{ev}</article>'
+
+
+def finding_card(spec, f, n):
+    where = f"finding {n}"
+    for key in ("title", "why", "evidence"):
+        if not f.get(key):
+            ERRORS.append(f"{where} ({f.get('title', '?')}): missing '{key}'. Every finding needs a title, a conclusion, a why (how the conclusion follows from the data) and evidence with links.")
+    concl = f.get("conclusion") or f.get("text") or ""
+    if not concl:
+        ERRORS.append(f"{where}: missing 'conclusion'")
+    tag = f.get("tag", "")
+    col = TAG_COLORS.get(tag, "#fc7753")
+    conf = f.get("confidence", "")
+    cchip = f'<span class="fconf">{e(conf)} confidence</span>' if conf else ""
+    ev = evidence_html(spec, f.get("evidence", []), where)
+    return (f'<article class="finding" id="f{n}" style="--c:{col}"><div class="fhead"><span class="fnum">{n}</span><div><span class="ftag" style="background:{col}">{e(tag.replace("-", " ") or "finding")}</span>{cchip}'
+            f'<h3>{rich(f.get("title", ""))}</h3></div></div><p class="concl">{rich(concl)}</p>'
+            f'<h5>Why we conclude this</h5><p>{rich(f.get("why", ""))}</p>'
+            f'<h5>Evidence, with links to the data</h5><ul class="evs">{ev}</ul>'
+            + (f'<h5>What it means for the decision</h5><p>{rich(f["so_what"])}</p>' if f.get("so_what") else "")
+            + (f'<p class="hint"><b>Confidence: {e(conf)}.</b> {rich(f["confidence_note"])}</p>' if f.get("confidence_note") else "") + '</article>')
+
+
+def based_on(spec, item, where, nf):
+    bo = item.get("based_on")
+    if not bo:
+        ERRORS.append(f"{where}: needs 'based_on' (the finding numbers it follows from, for example [1, 3])")
+        return ""
+    links = []
+    for b in bo:
+        n = int(str(b).lstrip("f"))
+        if not 1 <= n <= nf:
+            ERRORS.append(f"{where}: based_on {b} is not a finding number (1 to {nf})")
+            continue
+        REFS.append(f"f{n}")
+        links.append(f'<a class="ref" href="#f{n}">Finding {n}: {e(spec["overall"]["findings"][n - 1].get("title", ""))} ↓</a>')
+    return f'<p class="evl"><span>Follows from:</span> {" · ".join(links)}</p>'
+
+
+def findings_section(spec):
+    o = spec["overall"]
+    fs = o.get("findings", [])
+    cards = "".join(finding_card(spec, f, i + 1) for i, f in enumerate(fs))
+    glance = "".join(
+        f'<li><a href="#f{i + 1}"><span class="ftag" style="background:{TAG_COLORS.get(f.get("tag", ""), "#fc7753")}">{e(f.get("tag", "").replace("-", " ") or "finding")}</span> '
+        f'<b>{rich(f.get("title", ""))}</b></a><span class="muted"> {rich(f.get("conclusion") or f.get("text") or "")}</span></li>' for i, f in enumerate(fs))
+    kp = "".join(tile(k["label"], k["value"], k.get("note", "")) for k in o.get("kpis", []))
+    concl = ""
+    for i, x in enumerate(o.get("conclusions", [])):
+        if isinstance(x, str):
+            ERRORS.append(f"conclusion {i + 1}: write it as an object {{title, text, based_on}} so it links to the findings it follows from")
+            continue
+        concl += (f'<article class="finding mini" id="c{i + 1}"><h4>{rich(x.get("title", ""))}</h4><p>{rich(x.get("text", ""))}</p>' + based_on(spec, x, f"conclusion {i + 1}", len(fs)) + '</article>')
+    acts = ""
+    for i, a in enumerate(spec.get("actions", [])):
+        acts += (f'<article class="finding mini" id="a{i + 1}"><h4>{rich(a.get("title", ""))}</h4><p>{rich(a.get("text", ""))}'
+                 + (f' <b>Preserve:</b> {rich(a["preserve"])}' if a.get("preserve") else "") + '</p>' + based_on(spec, a, f"action {i + 1}", len(fs)) + '</article>')
+    return section("overall", "Overall findings and conclusions",
+                   f'<div class="callout big"><span class="lab">{rich(o.get("verdict_label", "Conclusion"))}</span><p>{rich(o.get("verdict_text", ""))}</p></div><p class="lead">{rich(o.get("summary", ""))}</p>'
+                   f'<div class="tiles">{kp}</div><h3>The findings at a glance</h3><ol class="glance">{glance}</ol>'
+                   f'<h3>The findings, and the evidence behind each</h3><p class="hint">Every finding states what we conclude, why, and the numbers that prove it, each linked to its table, chart or heatmap in this report and in the RealEye dashboard.</p>{cards}'
+                   + (f"<h3>Conclusions</h3>{concl}" if concl else "") + f"<h3>What to do next</h3>{acts}"
+                   '<p class="hint">The detailed analysis follows: what the scores mean, the viewing order, each design, gender and age. Technical details and the study blueprint are at the end.</p>', "hero")
+
+
+# ------------------------------------------------------------------ study blueprint (backup of what was analysed)
+def _img_px(spec, v):
+    if v.get("image_px"):
+        return list(v["image_px"])
+    _, size = load_image(spec["_base"], src_of(v["stimulus"]))
+    return list(size) if size else [1024, 1536]
+
+
+def aoi_records(spec, v):
+    W, H = _img_px(spec, v)
+    out = []
+    for a in v["aois"]:
+        sh = a.get("shape") or []
+        if not sh:
+            continue
+        x0, y0, x1, y1 = bbox(sh)
+        rect = len(sh) == 4 and len({round(p[0], 1) for p in sh}) == 2 and len({round(p[1], 1) for p in sh}) == 2
+        out.append({"name": a["name"], "color": a.get("color"), "type": a.get("type") or ("rectangle" if rect else "polygon"), "image_px": [W, H],
+                    "bbox_px": [round(x0 / 100 * W), round(y0 / 100 * H), round(x1 / 100 * W), round(y1 / 100 * H)], "bbox_pct": [round(x0, 1), round(y0, 1), round(x1, 1), round(y1, 1)],
+                    "points_px": [[round(p[0] / 100 * W), round(p[1] / 100 * H)] for p in sh], "points_pct": [[round(p[0], 2), round(p[1], 2)] for p in sh],
+                    "time_range_s": a.get("time_range_s", [0.5, 10]), "role": a.get("role", "")})
+    return out
+
+
+def blueprint_data(spec):
+    bp, d = spec.get("blueprint") or {}, spec.get("dashboard") or {}
+    return {"format": "realeye-neuromarketing-study-blueprint",
+            "generated_by": {"skill": SKILL_NAME, "skill_version": SKILL_VERSION, "report_format": SCHEMA_VERSION, "generated": spec["_generated"]},
+            "study": {"title": spec.get("title", ""), "study_id": d.get("study_id"), "dashboard": d.get("base"), "info": spec.get("study_info", {}), "setup": {k: x for k, x in bp.items() if k != "recreate_steps"}},
+            "stimuli": [{"design": v["id"], "name": v["name"], "item_id": v.get("item_id"), "image_px": _img_px(spec, v), "aois": aoi_records(spec, v)} for v in spec["variants"]],
+            "analysis": {"metric": "VAI = mean of Reach, Speed and Hold", "windows_s": [[0.5, 3], [0.5, 5], [0.5, 10]], "min_data_quality": f"Average or better (grade {d.get('min_quality', 3)} or higher)",
+                         "small_audience_below_viewers": MIN_N, "audiences": [s["label"] for s in spec["variants"][0]["segments"]], "aoi_order": names(spec)},
+            "participants": spec.get("participants", {})}
+
+
+def _json_tag(obj):
+    return json.dumps(obj, ensure_ascii=False, indent=1).replace("</", "<\\/")
+
+
+def blueprint_section(spec):
+    bp, si = spec.get("blueprint") or {}, spec.get("study_info") or {}
+    d = spec.get("dashboard") or {}
+    variants = spec["variants"]
+    rows = []
+    surl = dash_url(spec, {}, "study")
+    rows.append(("Study", (alink(surl, bp.get("study_name") or spec.get("title", "")) if surl else e(bp.get("study_name") or spec.get("title", "")))))
+    for k, lab in (("created", "Created"), ("type", "Study type"), ("status", "Status when analysed"), ("tracker", "Eye tracker"), ("panel", "Participants")):
+        if si.get(k):
+            rows.append((lab, rich(si[k])))
+    for k, lab in (("target_participants", "Target number of participants"), ("participant_source", "Participant source"), ("demographics_asked", "Questions asked to participants"),
+                   ("devices", "Devices accepted"), ("random_order", "Random stimulus order"), ("notes", "Notes")):
+        if bp.get(k):
+            rows.append((lab, rich(bp[k])))
+    if si.get("settings") and not bp.get("stimuli"):
+        rows.append(("Stimulus settings", rich(si["settings"])))
+    for did, s in (bp.get("stimuli") or {}).items():
+        rows.append((f"Design {did} settings", rich(", ".join(f"{k.replace('_', ' ')}: {x}" for k, x in s.items()))))
+    setup = '<dl class="kv">' + "".join(f"<dt>{e(k)}</dt><dd>{x}</dd>" for k, x in rows) + "</dl>"
+    dl_img = ""
+    designs = ""
+    for vi, v in enumerate(variants):
+        uri, _ = load_image(spec["_base"], src_of(v["stimulus"]))
+        ext = "png" if uri.startswith("data:image/png") else "jpg"
+        W, H = _img_px(spec, v)
+        dl_img += f'<a class="btn" download="stimulus-{e(v["id"])}.{ext}" href="{e(uri)}">Download design {e(v["id"])} image (.{ext})</a>'
+        tr = ""
+        for a in aoi_records(spec, v):
+            x0, y0, x1, y1 = a["bbox_px"]
+            pts = "" if a["type"] == "rectangle" else "<small>Vertices (px): " + " ".join(f"({x},{y})" for x, y in a["points_px"]) + "</small>"
+            tr += (f'<tr><td>{swatch(a["color"] or "#999")}<b>{e(a["name"])}</b>{("<small>" + e(a["role"]) + "</small>") if a["role"] else ""}</td><td>{e(a["type"])}</td><td>{e(a["color"] or "")}</td>'
+                   f'<td>{x0}, {y0} → {x1}, {y1}{pts}</td><td>{a["bbox_pct"][0]}, {a["bbox_pct"][1]} → {a["bbox_pct"][2]}, {a["bbox_pct"][3]}</td><td>{a["time_range_s"][0]}–{a["time_range_s"][1]} s</td></tr>')
+        designs += (f'<h4>{chip(v["id"], e(v["id"]), "vtag", "background:" + vcolor(vi))} {e(v["name"])}</h4>'
+                    f'<div class="two"><div class="stagebox">{stage(spec["_base"], v)}</div><div><p class="hint">Image size {W} × {H} px. Coordinates are in image pixels, origin (0, 0) at the top-left, x to the right and y down. '
+                    f'Percent coordinates are the same box as a share of the image width and height.</p></div></div>'
+                    f'<div class="tablewrap"><table class="re"><thead><tr><th>Element (AOI)</th><th>Shape</th><th>Colour</th><th>Box in pixels (x1, y1 → x2, y2)</th><th>Box in %</th><th>Time range</th></tr></thead><tbody>{tr}</tbody></table></div>')
+    wins = "first 3 s (0.5–3 s), first 5 s (0.5–5 s) and first 10 s (0.5–10 s), cumulative"
+    analysis = ('<dl class="kv">'
+                f'<dt>Metric</dt><dd>VAI = equal-weight mean of Reach, Speed and Hold (0–100)</dd><dt>Time windows</dt><dd>{wins}</dd>'
+                f'<dt>Viewer filter</dt><dd>Data quality Average or better (grade {d.get("min_quality", 3)} or higher; grades: 1 Very low, 2 Low, 3 Average, 4 Good, 5 Very good, 6 Perfect)</dd>'
+                f'<dt>Audiences</dt><dd>{e(", ".join(s["label"] for s in variants[0]["segments"]))}</dd><dt>Small audiences</dt><dd>fewer than {MIN_N} viewers: indicative only</dd>'
+                f'<dt>Element order</dt><dd>{e(", ".join(names(spec)))}</dd></dl>')
+    wh = d.get("base", "https://app.realeye.io")
+    steps = [
+        f"Create a new study in RealEye ({e(si.get('type') or 'Images and Videos')}) at {e(wh)}.",
+        "Upload the stimulus images (download them above), in this order: " + "; ".join(f"design {e(v['id'])}" + (f" ({e(bp['stimuli'][v['id']]['file_name'])})" if (bp.get('stimuli') or {}).get(v['id'], {}).get('file_name') else "") for v in variants) + ".",
+        "Set each stimulus' options as listed under Study set-up (display time, how it finishes, instructions, order).",
+        "Open each stimulus' AOI editor and draw the elements from the tables above, using the pixel coordinates (image size as shown). Keep the same names and, if you want the new report to look the same, the same colours.",
+        "Add the participant questions (at least gender and age) so audience cuts work: " + e(bp.get("demographics_asked") or "gender and age") + ".",
+        "Invite participants: share the study link with your own participants or order RealEye panel participants. Plan for at least 100 viewers with Average or better data quality per design, and 30 or more in every audience you want to compare.",
+        "When data has come in, give an AI agent that has the neuromarketing-image-report skill the new study and item ids together with this report's data (download below). It collects the numbers, rebuilds the report and can compare it with this one.",
+    ] + [rich(x) for x in bp.get("recreate_steps", [])]
+    note = ('<p class="hint">The same study can also simply keep running: collect more participants, then rebuild the report. The report always states the collection dates and the number of viewers analysed, so two versions can be compared fairly.</p>')
+    body = (f'<p class="lead">This report is also a backup of what was analysed. It holds the study set-up, the images, the exact position of every element (AOI) and the analysis settings, so the study can be recreated in RealEye '
+            f'and run again with new participants.</p><div class="btnrow">{dl_img}<button class="btn" type="button" data-act="download" data-target="blueprint-json" data-file="study-blueprint.json">Download study blueprint (.json)</button>'
+            '<button class="btn" type="button" data-act="download" data-target="report-json" data-file="report.json">Download report data (report.json)</button></div>'
+            f'<h3>Study set-up</h3>{setup}<h3>Stimuli and AOI coordinates</h3>{designs}<h3>How the data was analysed</h3>{analysis}'
+            f'<h3>How to run this study again</h3><ol class="plain">{"".join(f"<li>{x}</li>" for x in steps)}</ol>{note}'
+            f'<textarea id="blueprint-json" hidden>{e(json.dumps(blueprint_data(spec), ensure_ascii=False, indent=1))}</textarea>'
+            f'<textarea id="report-json" hidden>{e(json.dumps({k: x for k, x in spec.items() if not k.startswith("_")}, ensure_ascii=False, indent=1))}</textarea>'
+            f'<script type="application/json" id="study-blueprint-data">{_json_tag(blueprint_data(spec))}</script>')
+    return section("blueprint", "Study blueprint: recreate and rerun this study", body)
+
+
+def version_block(spec):
+    authored = spec.get("skill_version")
+    rows = [("Skill", SKILL_NAME), ("Skill version used to build this report", f"v{SKILL_VERSION}"), ("Report format", f"version {SCHEMA_VERSION}"), ("Report generated on", spec["_generated"])]
+    if authored:
+        rows.append(("Report data written for skill version", f"v{authored}"))
+    note = ""
+    if authored and authored != SKILL_VERSION:
+        note = f'<p class="box">The report data was written for skill v{e(authored)} and rendered with v{e(SKILL_VERSION)}. Regenerate the data with the current skill if sections look incomplete.</p>'
+    return ('<h3>Report and skill version</h3><dl class="kv">' + "".join(f"<dt>{e(k)}</dt><dd>{e(x)}</dd>" for k, x in rows) + "</dl>" + note
+            + '<p class="hint">The skill version is in the skill\'s SKILL.md and its CHANGELOG.md lists what changed in each version. The same version is embedded in the data pack and the study blueprint.</p>')
+
+
 POP = '<script>(function(){var p=document.createElement("div");p.id="dpop";document.body.appendChild(p);function show(el){while(p.firstChild)p.removeChild(p.firstChild);var t=document.createElement("div");t.className="th pic "+el.dataset.cls;var b=document.createElement("b");b.textContent="Design "+el.dataset.id;var s=document.createElement("small");s.textContent=el.dataset.name;p.appendChild(t);p.appendChild(b);p.appendChild(s);p.style.display="block";var r=el.getBoundingClientRect(),w=p.offsetWidth,h=p.offsetHeight,x=Math.min(Math.max(8,r.left),window.innerWidth-w-8),y=r.bottom+6;if(y+h>window.innerHeight-8)y=Math.max(8,r.top-h-6);p.style.left=x+"px";p.style.top=y+"px"}function hide(){p.style.display="none"}function ref(ev){return ev.target.closest&&ev.target.closest(".dref")}document.addEventListener("mouseover",function(ev){var el=ref(ev);if(el)show(el)});document.addEventListener("mouseout",function(ev){if(ref(ev))hide()});document.addEventListener("focusin",function(ev){var el=ref(ev);if(el)show(el)});document.addEventListener("focusout",function(ev){if(ref(ev))hide()});document.addEventListener("click",function(ev){var el=ref(ev);if(el)show(el);else hide()});document.addEventListener("keydown",function(ev){if(ev.key==="Escape"){hide();hg()}});})();(function(){var g=document.createElement("div");g.id="gpop";document.body.appendChild(g);function gl(ev){return ev.target.closest&&ev.target.closest(".gl")}function sg(el){g.textContent=el.dataset.tip;g.style.display="block";var r=el.getBoundingClientRect(),w=g.offsetWidth,h=g.offsetHeight,x=Math.min(Math.max(8,r.left),window.innerWidth-w-8),y=r.bottom+6;if(y+h>window.innerHeight-8)y=Math.max(8,r.top-h-6);g.style.left=x+"px";g.style.top=y+"px"}window.hg=function(){g.style.display="none"};document.addEventListener("mouseover",function(ev){var el=gl(ev);if(el)sg(el)});document.addEventListener("mouseout",function(ev){if(gl(ev))hg()});document.addEventListener("click",function(ev){var el=gl(ev);if(el)sg(el);else hg()});})();</script>'
 
 CSS = """
@@ -1208,14 +1552,32 @@ table.ord td.oc{text-align:left;padding:9px 10px;min-width:118px}table.ord td.oc
 dl.ctx{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px 24px;margin:0}dl.ctx dt{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.72px;color:var(--muted)}dl.ctx dd{margin:3px 0 0}
 dl.kv{display:grid;grid-template-columns:220px 1fr;gap:10px 18px;margin:0}dl.kv dt{font-weight:600;color:var(--strong)}dl.kv dd{margin:0;color:var(--muted)}
 details.dash{border:1px solid var(--line);padding:14px 18px;margin:12px 0}details summary{cursor:pointer;font-weight:600;color:var(--strong)}
+.kicker .ver{margin-left:auto;color:var(--soft);font-size:12px}
+.sec.hero{border-top:6px solid var(--accent);padding:34px 40px;box-shadow:0 6px 28px rgba(252,119,83,.14)}.sec.hero>h2{font-size:30px;margin-bottom:20px}
+.callout.big{padding:22px 26px}.callout.big p{font-size:21px;line-height:1.35}
+ol.glance{list-style:none;padding:0;margin:8px 0 0;counter-reset:g}ol.glance li{counter-increment:g;padding:11px 0 11px 40px;border-bottom:1px solid var(--line2);position:relative}
+ol.glance li:before{content:counter(g);position:absolute;left:0;top:11px;width:26px;height:26px;background:#212529;color:#fff;font-weight:700;display:grid;place-items:center;font-size:14px}
+ol.glance a{color:var(--strong);text-decoration:none}ol.glance a:hover b{text-decoration:underline}
+.ftag{display:inline-block;color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;margin-right:8px}.fconf{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.finding{border:1px solid var(--line);border-left:5px solid var(--c,var(--accent));padding:22px 26px;margin:18px 0;background:#fff;scroll-margin-top:72px}
+.finding h3{border-top:0;padding-top:0;margin:6px 0 0;font-size:21px}.finding h5{margin:18px 0 6px}.finding p{margin:6px 0}
+.fhead{display:flex;gap:14px;align-items:flex-start}.fnum{flex:none;width:34px;height:34px;background:var(--c,var(--accent));color:#fff;font-weight:700;font-size:18px;display:grid;place-items:center}
+p.concl{font-size:17.5px;font-weight:600;color:var(--strong);margin:12px 0 4px}
+.finding.mini{border-left-width:3px;padding:14px 18px;margin:10px 0}.finding.mini h4{margin:0 0 4px;font-size:16.5px}
+ul.evs{list-style:none;padding:0;margin:6px 0}li.ev{background:var(--bg);padding:10px 14px;margin:6px 0}li.ev .evt{color:var(--ink)}.evd{margin:6px 0 2px}
+.dchip{display:inline-block;background:#fff;border:1px solid var(--line);padding:2px 8px;font-size:12.5px;margin:2px 6px 2px 0;color:var(--muted)}.dchip b{color:var(--strong)}
+.evl{font-size:13px;color:var(--muted);margin:6px 0 0}.evl span{font-weight:600}.evl .sepdot{color:#c9c5bf;margin:0 4px}a.ref{color:#d9532f;text-decoration:none;font-weight:600}a.ref:hover{text-decoration:underline}
 footer{color:var(--soft);font-size:13px;text-align:center;padding:10px 0 30px}
 @media(max-width:700px){.sec{padding:20px 16px}.aoicard{grid-template-columns:1fr}.xgrid{grid-template-columns:1fr}dl.kv{grid-template-columns:1fr}.hd{flex-direction:column}.comp-chart .crow{grid-template-columns:1fr}.bar nav{display:none}}
-@media print{.wtabs .tabs{display:none}.wtabs .wpane{display:block!important}#dpop,#gpop,.btnrow,details.datapack{display:none!important}#agent-prompt{height:auto}.bar{position:static}.bar nav,.btn{display:none}body{background:#fff}.sec{break-inside:avoid;border-color:#ddd}details{display:block}}
+@media print{.finding{break-inside:avoid}.wtabs .tabs{display:none}.wtabs .wpane{display:block!important}#dpop,#gpop,.btnrow,details.datapack{display:none!important}#agent-prompt{height:auto}.bar{position:static}.bar nav,.btn{display:none}body{background:#fff}.sec{break-inside:avoid;border-color:#ddd}details{display:block}}
 """
 
 
 def build(spec, base):
     spec["_base"] = base
+    spec["_generated"] = spec.get("generated") or datetime.date.today().isoformat()
+    ERRORS.clear()
+    REFS.clear()
     for v in spec["variants"]:
         uri, _ = load_image(base, src_of(v["stimulus"]))
         DESIGNS[v["id"]] = {"name": v["name"], "cls": reg_image(uri)}
@@ -1224,15 +1586,7 @@ def build(spec, base):
         tile("Designs compared", str(len(variants)), " · ".join("{" + v["id"] + "}: " + v["name"].split("(")[0].strip() for v in variants)),
         tile("Viewers analysed", " · ".join("{" + v["id"] + "} " + str(seg_of(v, "All")["n"]) for v in variants), "all viewers, by design"),
         *(study_tiles(spec) or [tile("Time windows", "3", "first 3, 5 and 10 seconds"), tile("Primary metric", "VAI", "Composite of Reach, Speed, Hold")])])
-    kp = "".join(tile(k["label"], k["value"], k.get("note", "")) for k in o.get("kpis", []))
-    finds = "".join(f'<div class="xtile"><span class="lab">{e(f.get("tag", "").replace("-", " "))}</span><p><b>{rich(f["title"])}</b></p><p class="muted">{rich(f["text"])}</p></div>' for f in o.get("findings", []))
-    actions = "".join(insight(a["text"] + (f' Preserve: {a["preserve"]}' if a.get("preserve") else ""), a["title"] + ".") for a in spec.get("actions", []))
-    concl = "".join(insight(x) for x in o.get("conclusions", []))
-    overall = section("overall", "Overall findings and conclusions",
-                      f'<div class="callout"><span class="lab">{rich(o.get("verdict_label", "Conclusion"))}</span><p>{rich(o.get("verdict_text", ""))}</p></div><p>{rich(o.get("summary", ""))}</p>'
-                      f'<div class="tiles">{kp}</div><h4>Key findings</h4><div class="xgrid">{finds}</div>'
-                      + (f"<h4>Conclusions</h4>{concl}" if concl else "") + f"<h4>What to do next</h4>{actions}"
-                      '<p class="hint">The detailed analysis follows: what the scores mean, the viewing order, each design, gender and age. Technical details are in the appendix at the end.</p>')
+    overall = findings_section(spec)
     retest = section("actions", "How to test it next", '<dl class="kv">' + "".join(f"<dt>{e(k.replace('_', ' ').title())}</dt><dd>{rich(x)}</dd>" for k, x in spec.get("retest", {}).items()) + "</dl>")
     limits = "".join(f"<li>{rich(x)}</li>" for x in spec.get("limits", []))
     changes = "".join(f"<li>{rich(x)}</li>" for x in spec.get("would_change", []))
@@ -1245,26 +1599,32 @@ def build(spec, base):
         "Webcam eye tracking": "Gaze estimated from participants' own webcams in the RealEye platform. It shows where attention concentrates, with less precision than lab trackers.",
         "Quality filter": m.get("quality_filter", "Only viewers with data quality Average or better.")}.items())
     appendix = section("technical", "Technical appendix",
-                       '<p class="muted">For analysts and researchers: how the study was run, the data used, and the limits of the evidence.</p>' + method_block(spec) + participants_appendix(spec) + vai_tech_notes()
+                       '<p class="muted">For analysts and researchers: how the study was run, the data used, and the limits of the evidence.</p>' + method_block(spec) + participants_appendix(spec) + version_block(spec) + vai_tech_notes()
                        + f'<h3>Evidence and limits</h3><ul class="plain">{limits}</ul>' + (f'<h4>What would change the recommendation</h4><ul class="plain">{changes}</ul>' if changes else "")
                        + f'<h3>Definitions</h3><dl class="kv">{defs}</dl><h3>Sources</h3><ul class="plain">{sources}</ul><h3>Dashboard AOI VAI report (unfiltered copy)</h3>'
                        + "".join(dashboard_vai(spec, v, i) for i, v in enumerate(variants)))
-    nav = "".join(f'<a href="#{i}">{t}</a>' for i, t in (("tested", "Designs tested"), ("who", "Participants"), ("overall", "Findings"), ("vai", "VAI"), ("order", "Viewing order"), ("design-A", "Analysis"), ("compare", "Comparison"),
-                                                          ("audience", "Gender and age"), ("actions", "Next steps"), ("technical", "Appendix"), ("agent", "Ask an AI")))
-    body = "".join(('<a id="design-A"></a>' if i == 0 else "") + design_sections(spec, v, i) for i, v in enumerate(variants))
+    nav = "".join(f'<a href="#{i}">{t}</a>' for i, t in (("overall", "Findings"), ("tested", "Designs"), ("who", "Participants"), ("vai", "VAI"), ("order", "Viewing order"), ("design-A", "Analysis"), ("compare", "Comparison"),
+                                                          ("audience", "Gender and age"), ("actions", "Next steps"), ("technical", "Appendix"), ("blueprint", "Blueprint"), ("agent", "Ask an AI")))
+    body = "".join(f'<a id="design-{v["id"]}"></a>' + design_sections(spec, v, i) for i, v in enumerate(variants))
     study = spec.get("app_title") or m.get("study") or spec.get("title", "")
     printer = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8"><path d="M6 9V3h12v6M6 18H4v-7h16v7h-2M7 14h10v7H7z"/></svg>'
     info = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5c5c5c" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>'
-    page = (f'<div class="kicker"><span class="re-tag">Report</span><span class="t">Neuromarketing report</span></div>'
+    page = (f'<div class="kicker"><span class="re-tag">Report</span><span class="t">Neuromarketing report</span><span class="ver">made with {SKILL_NAME} v{SKILL_VERSION} · {e(spec["_generated"])}</span></div>'
             f'<div class="hd"><div><h1>{e(spec.get("title", ""))}</h1><p>{e(spec.get("subtitle", ""))} {e(spec.get("date", ""))}{" · " + e(spec["prepared_for"]) if spec.get("prepared_for") else ""}</p></div>'
             f'<button class="btn" onclick="window.print()">{printer} Print / Save as PDF</button></div>'
             f'<div class="strip">{info}<div><b>How this was measured</b><span>{e(m.get("banner", "RealEye platform, webcam eye tracking."))}</span></div></div>'
-            f'{intro_section(spec)}<div class="tiles">{tiles}</div>{participants_section(spec)}{overall}{vai_guide(spec)}{order_section(spec)}{body}{compare_section(spec)}{audience_section(spec)}{retest}{appendix}{agent_section(spec)}'
-            '<footer>Generated with the RealEye neuromarketing-image-report skill. Eye tracking shows where people looked, not what they understood, liked or will buy.</footer>')
+            f'{overall}{intro_section(spec)}<div class="tiles">{tiles}</div>{participants_section(spec)}{vai_guide(spec)}{order_section(spec)}{body}{compare_section(spec)}{audience_section(spec)}{retest}{appendix}{blueprint_section(spec)}{agent_section(spec)}'
+            f'<footer>Generated with the RealEye {SKILL_NAME} skill v{SKILL_VERSION} (report format {SCHEMA_VERSION}) on {e(spec["_generated"])}. Eye tracking shows where people looked, not what they understood, liked or will buy.</footer>')
+    ids = set(re.findall(r'\bid="([^"]+)"', page))
+    for r in sorted(set(REFS)):
+        if r not in ids:
+            ERRORS.append(f"a link points to #{r}, which does not exist in the report")
+    if ERRORS:
+        raise ReportError("\n".join("- " + x_ for x_ in dict.fromkeys(ERRORS)))
     tips = make_tips(spec)
     nav, page = tips(nav), tips(page)
     css_imgs = "".join(f".{c}{{background-image:url('{u}')}}" for u, c in IMAGES.items())
-    return (f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+    return (f'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="{SKILL_NAME} {SKILL_VERSION}">'
             f'<title>{e(spec.get("title", "Neuromarketing report"))}</title>'
             '<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">'
             f'<style>{CSS}</style></head><body><div class="bar"><span class="logo"><b>Re</b>alEye</span><span class="sep"></span><span class="study">{e(study)}</span><nav>{nav}</nav></div>'
@@ -1279,7 +1639,12 @@ def main():
     src = Path(a.json_file).resolve()
     spec = json.loads(src.read_text(encoding="utf-8"))
     out = Path(a.output) if a.output else src.with_suffix(".html")
-    out.write_text(build(spec, src.parent), encoding="utf-8")
+    try:
+        html_out = build(spec, src.parent)
+    except ReportError as ex:
+        print("The report data has problems, nothing was written:\n" + str(ex), file=sys.stderr)
+        return 1
+    out.write_text(html_out, encoding="utf-8")
     print(f"wrote {out} ({out.stat().st_size / 1024:.0f} KB)")
 
 

@@ -34,9 +34,12 @@ Collect these for the intro tiles, the *Who took part* card and the appendix. Ne
 2. **Status, type, settings:** open `/dashboard/study/<STUDY_ID>/` and read the page text (page JavaScript `document.querySelector('main').innerText`): study status (Running or Finished), the participant counter ("8711 / 10000"), and the *Study contents* list with each stimulus' display time, finish mode and instruction setting. Click *Study details* for the study type, random order and panelist demographics (what viewers were asked).
 3. **RealEye version:** the dashboard sidebar footer shows it ("RealEye v26.11.20.1"; read it with page JavaScript or a zoom on the bottom-left corner). The version at data-collection time is not stored, so report it as the dashboard version at analysis.
 4. **Participants:** run `scripts/dashboard_participants.js` (edit `CONFIG`; it fills `window.__PARTICIPANTS`; poll `window.__partDone`). It gives collected and analysed counts, the data-quality distribution, gender, age bands (from the self-reported age; check for implausible values such as age 1), device, tracker set-up, participant type, median browser window, and the first and last collection dates. Dates are as the dashboard stores them; report them as shown.
-5. Put the results in `study_info` and `participants` (see the guide) and add the readable `tracker_text`, `participant_type_text`, `screen_text` and `age_text` lines for the appendix.
+5. **Study set-up for the blueprint:** from the study page and *Study details*, note for each stimulus the file name, display time, finish mode and instructions, whether the order is random, the participant target and the questions asked, and put them in `blueprint`. This is what someone needs to create the same study again.
+6. Put the results in `study_info` and `participants` (see the guide) and add the readable `tracker_text`, `participant_type_text`, `screen_text` and `age_text` lines for the appendix.
 
 ## 3. AOI shapes and colours
+
+The report must keep the exact AOI geometry so the study can be recreated. Keep the shapes as numbers, in percent of the image (the report converts them to pixels using the image size, 1024 × 1536 for the example; set `image_px` when it differs). Rectangles come from the dashboard in pixels, polygons as fractions.
 
 Run `scripts/dashboard_aoi_shapes.js` (on the AOI VAI report page to also get the legend colours). Convert the colours to hex. Put each AOI's polygon in `aois[].shape` and its colour in `aois[].color`. Name the AOIs by what they cover on the image (for example "Brand name (banner)", not the label printed on the pack).
 

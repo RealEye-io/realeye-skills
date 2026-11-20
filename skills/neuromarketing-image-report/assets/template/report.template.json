@@ -2,6 +2,7 @@
  "title": "<Report title: the creative and what was compared, e.g. “Wake up the red in your hair”: two shampoo ad versions>",
  "subtitle": "<One line: what viewers noticed, in what order, for how long, by audience>",
  "date": "<date>",
+ "skill_version": "<the version from SKILL.md>",
  "method": {
   "platform": "RealEye platform",
   "tracking": "Webcam eye tracking: participants viewed the images in their own browsers while RealEye estimated their gaze from their webcams.",
@@ -118,6 +119,26 @@
    "age_text": "<age_text>"
   }
  },
+ "blueprint": {
+  "study_name": "<study_name>",
+  "target_participants": "<target_participants>",
+  "demographics_asked": "<demographics_asked>",
+  "random_order": "<random_order>",
+  "stimuli": {
+   "A": {
+    "file_name": "<file_name>",
+    "display_seconds": 10,
+    "finish_on": "<finish_on>",
+    "instructions": "<instructions>"
+   },
+   "B": {
+    "file_name": "<file_name>",
+    "display_seconds": 10,
+    "finish_on": "<finish_on>",
+    "instructions": "<instructions>"
+   }
+  }
+ },
  "aoi_order": [
   "Tagline",
   "Pack (product)",
@@ -153,37 +174,170 @@
   ],
   "findings": [
    {
-    "tag": "strength",
-    "title": "<Report title: the creative and what was compared, e.g. “Wake up the red in your hair”: two shampoo ad versions>",
-    "text": "<text>"
+    "tag": "<strength | risk | opportunity | weak-evidence>",
+    "title": "<Finding 1: a short headline>",
+    "conclusion": "<What you conclude, in one or two plain sentences a brand manager can act on>",
+    "why": "<Why: how the conclusion follows from the data. Name the comparison (elements, designs, audiences, windows), the numbers and the reasoning, and what rules out the obvious alternative>",
+    "evidence": [
+     {
+      "text": "<One proof point in words, with the numbers>",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Tagline",
+        "window": 10,
+        "metric": "vai",
+        "audience": "All",
+        "value": 0
+       }
+      ],
+      "ref": [
+       "order"
+      ],
+      "dash": [
+       {
+        "design": "A",
+        "kind": "heatmap",
+        "window": 10
+       }
+      ]
+     },
+     {
+      "text": "<A second proof point: a gap between two audiences or designs>",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Brand name (banner)",
+        "window": 10,
+        "metric": "vai",
+        "audience": "Women",
+        "minus": {
+         "audience": "Men"
+        }
+       }
+      ],
+      "ref": [
+       "audience"
+      ]
+     }
+    ],
+    "so_what": "<What this means for the decision>",
+    "confidence": "<high | medium | low>",
+    "confidence_note": "<Why: sample sizes, consistency across windows, designs and audiences>"
    },
    {
-    "tag": "risk",
-    "title": "<Report title: the creative and what was compared, e.g. “Wake up the red in your hair”: two shampoo ad versions>",
-    "text": "<text>"
+    "tag": "<strength | risk | opportunity | weak-evidence>",
+    "title": "<Finding 2: a short headline>",
+    "conclusion": "<What you conclude, in one or two plain sentences a brand manager can act on>",
+    "why": "<Why: how the conclusion follows from the data. Name the comparison (elements, designs, audiences, windows), the numbers and the reasoning, and what rules out the obvious alternative>",
+    "evidence": [
+     {
+      "text": "<One proof point in words, with the numbers>",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Tagline",
+        "window": 10,
+        "metric": "vai",
+        "audience": "All",
+        "value": 0
+       }
+      ],
+      "ref": [
+       "order"
+      ],
+      "dash": [
+       {
+        "design": "A",
+        "kind": "heatmap",
+        "window": 10
+       }
+      ]
+     },
+     {
+      "text": "<A second proof point: a gap between two audiences or designs>",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Brand name (banner)",
+        "window": 10,
+        "metric": "vai",
+        "audience": "Women",
+        "minus": {
+         "audience": "Men"
+        }
+       }
+      ],
+      "ref": [
+       "audience"
+      ]
+     }
+    ],
+    "so_what": "<What this means for the decision>",
+    "confidence": "<high | medium | low>",
+    "confidence_note": "<Why: sample sizes, consistency across windows, designs and audiences>"
    },
    {
-    "tag": "risk",
-    "title": "<Report title: the creative and what was compared, e.g. “Wake up the red in your hair”: two shampoo ad versions>",
-    "text": "<text>"
-   },
-   {
-    "tag": "strength",
-    "title": "<Report title: the creative and what was compared, e.g. “Wake up the red in your hair”: two shampoo ad versions>",
-    "text": "<text>"
-   },
-   {
-    "tag": "weak-evidence",
-    "title": "<Report title: the creative and what was compared, e.g. “Wake up the red in your hair”: two shampoo ad versions>",
-    "text": "<text>"
+    "tag": "<strength | risk | opportunity | weak-evidence>",
+    "title": "<Finding 3: a short headline>",
+    "conclusion": "<What you conclude, in one or two plain sentences a brand manager can act on>",
+    "why": "<Why: how the conclusion follows from the data. Name the comparison (elements, designs, audiences, windows), the numbers and the reasoning, and what rules out the obvious alternative>",
+    "evidence": [
+     {
+      "text": "<One proof point in words, with the numbers>",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Tagline",
+        "window": 10,
+        "metric": "vai",
+        "audience": "All",
+        "value": 0
+       }
+      ],
+      "ref": [
+       "order"
+      ],
+      "dash": [
+       {
+        "design": "A",
+        "kind": "heatmap",
+        "window": 10
+       }
+      ]
+     },
+     {
+      "text": "<A second proof point: a gap between two audiences or designs>",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Brand name (banner)",
+        "window": 10,
+        "metric": "vai",
+        "audience": "Women",
+        "minus": {
+         "audience": "Men"
+        }
+       }
+      ],
+      "ref": [
+       "audience"
+      ]
+     }
+    ],
+    "so_what": "<What this means for the decision>",
+    "confidence": "<high | medium | low>",
+    "confidence_note": "<Why: sample sizes, consistency across windows, designs and audiences>"
    }
   ],
   "conclusions": [
-   "<Plain-language conclusion for the brand manager: what to keep, change, test>",
-   "<Plain-language conclusion for the brand manager: what to keep, change, test>",
-   "<Plain-language conclusion for the brand manager: what to keep, change, test>",
-   "<Plain-language conclusion for the brand manager: what to keep, change, test>",
-   "<Plain-language conclusion for the brand manager: what to keep, change, test>"
+   {
+    "title": "<Conclusion headline>",
+    "text": "<What to keep, change or test>",
+    "based_on": [
+     1
+    ]
+   }
   ]
  },
  "variants": [
@@ -195,6 +349,10 @@
    "stimulus": {
     "src": "stimulus-A.jpg"
    },
+   "image_px": [
+    1024,
+    1536
+   ],
    "heatmap": {
     "src": "heatmap-A.jpg",
     "caption": "<what the image shows: item, view, audience, window>"
@@ -1346,6 +1504,10 @@
    "stimulus": {
     "src": "stimulus-B.jpg"
    },
+   "image_px": [
+    1024,
+    1536
+   ],
    "heatmap": {
     "src": "heatmap-B.jpg",
     "caption": "<what the image shows: item, view, audience, window>"
@@ -2499,20 +2661,32 @@
  "actions": [
   {
    "title": "<Report title: the creative and what was compared, e.g. “Wake up the red in your hair”: two shampoo ad versions>",
+   "based_on": [
+    1
+   ],
    "text": "<text>",
    "preserve": "<preserve>"
   },
   {
    "title": "<Report title: the creative and what was compared, e.g. “Wake up the red in your hair”: two shampoo ad versions>",
+   "based_on": [
+    1
+   ],
    "text": "<text>"
   },
   {
    "title": "<Report title: the creative and what was compared, e.g. “Wake up the red in your hair”: two shampoo ad versions>",
+   "based_on": [
+    1
+   ],
    "text": "<text>",
    "preserve": "<preserve>"
   },
   {
    "title": "<Report title: the creative and what was compared, e.g. “Wake up the red in your hair”: two shampoo ad versions>",
+   "based_on": [
+    1
+   ],
    "text": "<text>"
   }
  ],
