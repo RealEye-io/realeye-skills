@@ -1,5 +1,8 @@
 # Example brief: Blueleaf sparkling water ad
 
+> **Report rule:** the HTML report uses only VAI and its components (Reach, Speed, Hold). Raw metrics mentioned below (fixation ratio, TTFF, fixation time, counts) explain RealEye exports and must not appear in the report.
+
+
 **Fictional example.** The creative, audience, and numbers are illustrative. This is not a RealEye study, an analysis of a customer's item, or a performance benchmark.
 
 ## Decision at a glance

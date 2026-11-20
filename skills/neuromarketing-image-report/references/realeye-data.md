@@ -1,5 +1,8 @@
 # RealEye data and metric definitions
 
+> **Report rule:** the HTML report uses only VAI and its components (Reach, Speed, Hold). Raw metrics mentioned below (fixation ratio, TTFF, fixation time, counts) explain RealEye exports and must not appear in the report.
+
+
 ## Get the smallest useful evidence package
 
 1. **One image item:** From Study > Results, use **Heatmap** beside the item. On the item Heatmap page, apply the intended participant filters, verify fixation vs gaze mode and the time slider, and export **AOI Overall Stats** from **Download**. Get the stimulus image and matching heatmap if needed. If the download opens an email-delivery prompt for a large export, have the user supply the resulting file. See [Heatmap Analyzer](https://www.realeye.io/support/how-to-analyze-heatmaps) and [CSV downloads](https://www.realeye.io/support/data-export-csv-files).
