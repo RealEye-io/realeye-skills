@@ -10,19 +10,21 @@ Image paths in the JSON are relative to the JSON file.
 
 ## What the report contains (generated)
 
-1. **Header** with a banner stating the test was run on the **RealEye platform with webcam eye tracking**
+Main sections, written for brand managers (plain language, no technical detail):
+
+1. **Header** with one plain line: the test ran on the **RealEye platform with webcam eye tracking**
 2. **Overall findings and conclusions** (first): verdict, KPI tiles, key findings, conclusions, what to do next
-3. **About this study**: platform, tracking, sample, quality filter, windows, audiences
-4. **How to read VAI**: definition, the three components, how to interpret, component patterns, worked example drawn from the data
-5. **Viewing order**: order by VAI Speed for every design and window, stability statement, AOIs reached by half of viewers or more per window, numbered markers on the AOI image
-6. **One section per design**: AOI overlay and dashboard heatmap, VAI table for 3, 5 and 10 s, components chart, build-up lines, **audience tables for gender, age and gender × age** (VAI with Reach · Speed · Hold per AOI and window), **heatmap sheets for every audience and window**, embedded dashboard AOI VAI report
-7. **Head-to-head comparison** (2+ designs): VAI, Reach, Speed and Hold differences per AOI and window, charts
-8. **Gender and age insights**: findings plus women-vs-men, 18–24 vs 25–34 and gender × age gap tables
-9. **Retest plan, evidence and limits, definitions**
+3. **What the scores mean (VAI)**: Reach, Speed, Hold in one line each, how to use VAI, component patterns, worked example drawn from the data
+4. **Viewing order**: order by VAI Speed for every design and window, stability statement, elements reached by half of viewers or more per window, numbered markers on the image
+5. **One section per design**: image with its elements outlined and the dashboard heatmap, scores for 3, 5 and 10 s, Reach · Speed · Hold chart, build-up lines, **gender, age and gender × age tables** (VAI with Reach · Speed · Hold per element and window), **heatmap sheets for every audience and window**
+6. **Head-to-head comparison** (2+ designs) and **gender and age insights** (women-vs-men, 18–24 vs 25–34 and gender × age gap tables)
+7. **How to test it next** (retest plan)
+
+**Technical appendix** (last, for analysts): about this study (platform, tracking, sample, participant quality filter, windows, audiences, tracker precision), technical notes on VAI, evidence and limits, definitions, sources, and the embedded **dashboard AOI VAI report** (unfiltered) per design.
 
 ## Standing rules (see SKILL.md)
 
-VAI only · RealEye webcam statement · conclusions first, then depth · VAI explainer · clear viewing order · quality Average or better · every audience × window with heatmaps · dashboard AOI VAI report embedded and labelled unfiltered · clean complete images with no pointer.
+Brand-manager main sections, technical detail in the appendix · VAI only · RealEye webcam line · conclusions first, then depth · plain VAI explainer · clear viewing order · quality Average or better (appendix) · every audience × window with heatmaps · dashboard AOI VAI report embedded and labelled unfiltered · clean complete images with no pointer.
 
 ## Getting the data from the RealEye dashboard
 

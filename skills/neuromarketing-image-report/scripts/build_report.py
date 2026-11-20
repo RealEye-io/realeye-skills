@@ -217,8 +217,8 @@ def window_table(spec, v, vi):
         a = next(x for x in v["aois"] if x["name"] == nm)
         rows += (f'<tr><th scope="row"><i class="dot" style="background:{a.get("color", "#999")}"></i>{e(nm)}<small>{e(a.get("role", ""))}</small></th>'
                  + "".join(cell(seg, w, ai, color(vi)) for w in ["3", "5", "10"]) + "</tr>")
-    return (f'<div class="tablewrap"><table class="seg"><thead><tr><th>AOI</th>{head}</tr></thead><tbody>{rows}</tbody></table></div>'
-            '<p class="muted small">Each cell: <b>VAI</b> (large) and Reach · Speed · Hold (small), 0–100. Windows are cumulative and start at 0.5 s.</p>')
+    return (f'<div class="tablewrap"><table class="seg"><thead><tr><th>Element</th>{head}</tr></thead><tbody>{rows}</tbody></table></div>'
+            '<p class="muted small">Each cell: <b>VAI</b> (large) and Reach · Speed · Hold (small), 0–100.</p>')
 
 
 def segment_table(spec, v, vi, kind, title):
@@ -231,7 +231,7 @@ def segment_table(spec, v, vi, kind, title):
         for wi, w in enumerate(["3", "5", "10"]):
             lab = f'<th scope="row" rowspan="3">{e(nm)}</th>' if wi == 0 else ""
             rows += f'<tr class="{"grp" if wi == 0 else ""}">{lab}<th class="w">{WIN_LABEL[w]}</th>' + "".join(cell(s, w, ai, color(vi)) for s in segs) + "</tr>"
-    return (f'<h5>{e(title)}</h5><div class="tablewrap"><table class="seg"><thead><tr><th>AOI</th><th>Window</th>{head}</tr></thead><tbody>{rows}</tbody></table></div>')
+    return (f'<h5>{e(title)}</h5><div class="tablewrap"><table class="seg"><thead><tr><th>Element</th><th>Window</th>{head}</tr></thead><tbody>{rows}</tbody></table></div>')
 
 
 def gap_table(spec, variants, a_label, b_label, title):
@@ -249,7 +249,7 @@ def gap_table(spec, variants, a_label, b_label, title):
                 strong = abs(dv) >= 10
                 cells += f'<td class="{"big" if strong else ""}"><b>{dv:+.1f}</b><small>Speed {ds:+.1f}</small></td>'
             rows += f'<tr><th scope="row"><span class="vtag" style="background:{color(vi)}">{e(v["id"])}</span> {e(nm)}</th>{cells}</tr>'
-    return (f'<h5>{e(title)}</h5><div class="tablewrap"><table class="seg"><thead><tr><th>Design · AOI</th>'
+    return (f'<h5>{e(title)}</h5><div class="tablewrap"><table class="seg"><thead><tr><th>Design · element</th>'
             + "".join(f"<th>{WIN_LABEL[w]}</th>" for w in ["3", "5", "10"]) + f'</tr></thead><tbody>{rows}</tbody></table></div>'
             '<p class="muted small">VAI points (large) and VAI Speed points (small). Bold-shaded cells differ by 10 or more VAI points.</p>')
 
@@ -259,10 +259,10 @@ def method_section(spec):
     m = spec["method"]
     rows = "".join(f"<div><dt>{e(k)}</dt><dd>{e(v)}</dd></div>" for k, v in (
         ("Platform", m.get("platform")), ("Eye tracking", m.get("tracking")), ("Study", m.get("study")),
-        ("Participants analysed", m.get("participants")), ("Quality filter", m.get("quality_filter")),
+        ("Participants analysed", m.get("participants")), ("Participant quality filter", m.get("quality_filter")),
         ("Time windows", m.get("windows")), ("Segments", m.get("segments")), ("Task and exposure", m.get("task")),
-        ("Source", m.get("source"))) if v)
-    return f'<section class="card" id="method"><h2>About this study</h2><dl class="ctx">{rows}</dl><p class="muted small">{e(m.get("note", ""))}</p></section>'
+        ("Source", m.get("source")), ("Tracker precision", m.get("precision"))) if v)
+    return f'<h3 class="sub3">About this study</h3><dl class="ctx">{rows}</dl><p class="muted small">{e(m.get("note", ""))}</p>'
 
 
 def vai_guide(spec):
@@ -287,27 +287,32 @@ def vai_guide(spec):
     ]
     prow = "".join(f"<tr><td>{a}</td><td>{b}</td><td>{c}</td><td>{d}</td><td>{f}</td></tr>" for a, b, c, d, f in patterns)
     return f"""
-<section class="card" id="vai"><h2>How to read VAI</h2>
-<p><b>VAI (Visual Attention Index)</b> is RealEye's measured attention score for an area of the image (an AOI, Area of Interest). It runs from 0 to 100 and is the <b>equal-weight mean of three components</b>, each measured from the viewers' webcam eye tracking:</p>
+<section class="card" id="vai"><h2>What the scores mean (VAI)</h2>
+<p><b>VAI (Visual Attention Index)</b> is RealEye's attention score for an element of the image (the tagline, the pack, the face, the logo). It runs from 0 to 100 and is the <b>average of three simple measures</b>:</p>
 <div class="comp3">
- <div><h4>Reach</h4><p>The share of viewers who looked at the AOI at least once. It answers <i>did people get there?</i></p></div>
- <div><h4>Speed</h4><p>How soon the AOI is noticed after it becomes visible. It answers <i>how early in the viewing order?</i> and is used here to rank the viewing order.</p></div>
- <div><h4>Hold</h4><p>How long attention stays on the AOI relative to the time window. It answers <i>did people stay?</i></p></div>
+ <div><h4>Reach</h4><p>How many viewers looked at it at all. <i>Did people get there?</i></p></div>
+ <div><h4>Speed</h4><p>How soon they noticed it. <i>How early in the viewing order?</i> It is used here to rank the viewing order.</p></div>
+ <div><h4>Hold</h4><p>How long attention stayed on it. <i>Did people stay?</i></p></div>
 </div>
-<h4>How to interpret it</h4>
+<h4>How to use it</h4>
 <ul class="findings">
-<li><b>VAI is relative, not absolute.</b> It is not a percentage of viewers and not a share of attention. Use it to rank AOIs within one design, and to compare the same AOI across designs, windows or audiences.</li>
-<li><b>Compare like with like:</b> the same AOI, the same time window and a similar number of viewers (N). Large AOIs and AOIs on top of other AOIs naturally score higher.</li>
-<li><b>Windows are cumulative.</b> "First 3 s" is 0.5–3 s, "first 5 s" is 0.5–5 s and "first 10 s" is 0.5–10 s. The first 0.5 s is skipped to reduce the effect of where viewers happened to be looking when the image appeared. Reach and Speed can only rise as the window grows. Hold is relative to the window, so it can fall even when viewers keep looking.</li>
-<li><b>Read the components, not just the total.</b> The same VAI can hide very different stories (see the patterns below).</li>
-<li><b>Higher is not always the goal.</b> A logo can be effective at moderate VAI; what matters is that each AOI scores as the design intends. The aim is to find blind spots and a viewing order that matches the intended hierarchy.</li>
-<li><b>Small groups are noisy.</b> Segments with fewer than {MIN_N} viewers are marked † and should be read as anecdotal.</li>
-<li><b>VAI shows attention, not outcome.</b> It does not say whether viewers understood, liked or will buy. Pair it with recall or choice data.</li>
+<li><b>Compare, don't grade.</b> VAI is not a percentage of viewers. Use it to rank the elements within a design and to compare the same element across designs, time windows or audiences.</li>
+<li><b>Look at the three measures, not just the total.</b> The same VAI can hide very different stories (see the table below).</li>
+<li><b>Higher is not always better.</b> A logo can do its job at a moderate score. What matters is that each element scores as the design intends.</li>
+<li><b>It shows attention, not outcome.</b> It does not say whether viewers understood, liked or will buy; confirm with a recall or choice test.</li>
 </ul>
 <h4>Component patterns and what to do</h4>
 <div class="tablewrap"><table><thead><tr><th>Reach</th><th>Speed</th><th>Hold</th><th>Reading</th><th>Typical action</th></tr></thead><tbody>{prow}</tbody></table></div>
 {example}
-</section>""".replace("{MIN_N}", str(MIN_N))
+</section>"""
+
+
+def vai_tech_notes():
+    return f"""<h3 class="sub3">Technical notes on VAI</h3><ul class="findings">
+<li><b>Compare like with like:</b> the same element, the same time window and a similar number of viewers (N). Large elements, and elements that overlap others, naturally score higher.</li>
+<li><b>Windows are cumulative.</b> "First 3 s" is 0.5–3 s, "first 5 s" is 0.5–5 s and "first 10 s" is 0.5–10 s. The first 0.5 s is skipped to reduce the effect of where viewers happened to be looking when the image appeared. Reach and Speed can only rise as the window grows; Hold is relative to the window, so it can fall even when viewers keep looking.</li>
+<li><b>Small groups are noisy.</b> Audiences with fewer than {MIN_N} viewers are marked † and should be read as anecdotal.</li>
+<li><b>VAI is the equal-weight mean of Reach, Speed and Hold</b> and is not a share of the image's attention.</li></ul>"""
 
 
 def order_section(spec):
@@ -329,24 +334,24 @@ def order_section(spec):
                 tds += f'<td class="vc"><b class="rk">#{rk}</b><small>Speed {sp:.0f} · Reach {rc:.0f}%</small></td>'
             rows += f'<tr><th scope="row">{e(nm)}</th>{tds}</tr>'
         reach_txt = "".join(
-            f'<li><b>{WIN_LABEL[w]}:</b> {lst([f"{nm} ({val(seg, w, n.index(nm), "reach"):.0f}%)" for nm in orders[w] if val(seg, w, n.index(nm), "reach") >= 50]) or "no AOI"} reached by half of viewers or more.</li>'
+            f'<li><b>{WIN_LABEL[w]}:</b> {lst([f"{nm} ({val(seg, w, n.index(nm), "reach"):.0f}%)" for nm in orders[w] if val(seg, w, n.index(nm), "reach") >= 50]) or "no element"} reached by half of the viewers or more.</li>'
             for w in ["3", "5", "10"])
         seq = " → ".join(orders["10"])
         blocks += (f'<div class="ordercol"><h4><span class="vtag" style="background:{color(vi)}">{e(v["id"])}</span> {e(v["name"])}</h4>'
                    f'<p class="seq">{e(seq)}</p>'
-                   f'<p class="muted small">{"The order is identical in the first 3, 5 and 10 s." if stable else "The order changes between windows (see table)."}</p>'
-                   f'<div class="tablewrap"><table class="seg"><thead><tr><th>AOI</th>' + "".join(f"<th>{WIN_LABEL[w]}</th>" for w in ["3", "5", "10"]) +
+                   f'<p class="muted small">{"The order is the same in the first 3, 5 and 10 seconds." if stable else "The order changes between windows (see table)."}</p>'
+                   f'<div class="tablewrap"><table class="seg"><thead><tr><th>Element</th>' + "".join(f"<th>{WIN_LABEL[w]}</th>" for w in ["3", "5", "10"]) +
                    f'</tr></thead><tbody>{rows}</tbody></table></div><ul class="findings">{reach_txt}</ul></div>')
     same = len({tuple(rank_names(spec, seg_of(v, "All"), "10")) for v in variants}) == 1
-    lead = (f"In {'both designs' if len(variants) > 1 else 'the design'} viewers notice the AOIs in this order: "
+    lead = (f"In {'both designs' if len(variants) > 1 else 'the design'} viewers notice the elements in this order: "
             f"<b>{' → '.join(rank_names(spec, seg_of(variants[0], 'All'), '10'))}</b>"
             + (", and the order does not change between the first 3, 5 and 10 seconds." if stable_all and same else ".")
             if same else "The viewing order differs between the designs (see below).")
-    overlays = "".join(figure(spec["_base"], v.get("aoi_overlay"), "AOI image with viewing order", markers=order_markers(spec, v), cls="ov") for v in variants)
+    overlays = "".join(figure(spec["_base"], v.get("aoi_overlay"), "Image with viewing order", markers=order_markers(spec, v), cls="ov") for v in variants)
     return f"""
 <section class="card" id="order"><h2>Viewing order</h2>
 <p class="lead">{lead}</p>
-<p class="muted small">The viewing order is a relative hierarchy across viewers, not one person's scan path. AOIs are ranked by <b>VAI Speed</b> (how soon each is noticed): #1 is noticed soonest. The numbered circles on the images below show the first-10-seconds order.</p>
+<p class="muted small">The order in which viewers notice the elements, across all viewers (not one person's scan path). #1 is noticed soonest; it is ranked by VAI Speed. The numbered circles show the first-10-seconds order.</p>
 <div class="figs">{overlays}</div>
 <div class="two">{blocks}</div></section>"""
 
@@ -376,23 +381,22 @@ def variant_section(spec, v, vi):
 <section class="card variant" id="variant-{e(v['id'])}">
   <div class="variant-head"><span class="badge" style="background:{color(vi)}">{e(v['id'])}</span>
     <div><h3>Design {e(v['id'])}: {e(v['name'])}</h3><p class="muted">{e(v.get('description', ''))}</p></div>
-    <div class="nbox"><b>{seg['n']}</b><span>viewers analysed (Average quality or better)</span></div></div>
+    <div class="nbox"><b>{seg['n']}</b><span>viewers</span></div></div>
   <div class="figs">{figure(base, v.get('aoi_overlay'), 'Analysed image with AOIs', cls='ov')}{figure(base, v.get('heatmap'), 'Measured heatmap', cls='hm')}</div>
   {leg}
-  <h4>VAI and its components, all viewers</h4>
+  <h4>Scores for all viewers</h4>
   {window_table(spec, v, vi)}
-  <h4>Components in the first 10 seconds</h4>{components_chart(spec, v, seg, "10")}
+  <h4>Reach, Speed and Hold in the first 10 seconds</h4>{components_chart(spec, v, seg, "10")}
   <h4>How attention builds up over time</h4>{leg}<div class="grid2">{mini}</div>
   <h4>What the data says</h4><ul class="findings">{flist}</ul>
-  <h3 class="sub3">Audience cuts: gender, age and gender × age</h3>
-  <p class="muted small">Every cell is the VAI for that audience, AOI and window (components below it). Only viewers with data quality Average or better are included. Audiences with fewer than {MIN_N} viewers (†) are muted. Viewers with other or unspecified gender, or no recorded age, are in the overall results but not in these cuts.</p>
+  <h3 class="sub3">By gender, age and gender × age</h3>
+  <p class="muted small">Each cell is the VAI for that audience, element and window, with Reach · Speed · Hold underneath. † marks a small audience (fewer than {MIN_N} viewers): read it as indicative.</p>
   {segment_table(spec, v, vi, "gender", "By gender")}
   {segment_table(spec, v, vi, "age", "By age")}
   {segment_table(spec, v, vi, "gender_age", "By gender × age")}
   <h3 class="sub3">Heatmaps by audience and time window</h3>
   <p class="muted small">{e(v.get('heatmap_note', ''))}</p>
   {sheets}
-  {dashboard_vai(v, vi, base)}
 </section>"""
 
 
@@ -405,7 +409,7 @@ def compare_section(spec):
     sa, sb = seg_of(A, "All"), seg_of(B, "All")
     charts = ""
     for w in ["3", "5", "10"]:
-        charts += f'<h4>VAI by AOI, {WIN_LABEL[w]}</h4>' + bars(n, [(f'{A["id"]} · {A["name"]}', color(0), [val(sa, w, i, "vai") for i in range(len(n))]),
+        charts += f'<h4>VAI by element, {WIN_LABEL[w]}</h4>' + bars(n, [(f'{A["id"]} · {A["name"]}', color(0), [val(sa, w, i, "vai") for i in range(len(n))]),
                                                                   (f'{B["id"]} · {B["name"]}', color(1), [val(sb, w, i, "vai") for i in range(len(n))])], "VAI")
     rows = ""
     for ai, nm in enumerate(n):
@@ -423,8 +427,8 @@ def compare_section(spec):
         rows += f'<tr><th scope="row">{e(nm)}</th>{tds}</tr>'
     return f"""
 <section class="card" id="compare"><h2>Head-to-head: design {e(B['id'])} versus design {e(A['id'])}</h2>
-<p class="muted small">Differences are {e(B['id'])} minus {e(A['id'])}, in VAI points. R, S and H are the Reach, Speed and Hold differences. "Indicative" means the Reach gap is larger than sampling noise (95% interval on the share of viewers); the groups may overlap, so treat it as indicative.</p>
-<div class="tablewrap"><table class="seg"><thead><tr><th>AOI</th>{''.join(f'<th>{WIN_LABEL[w]}</th>' for w in ['3', '5', '10'])}</tr></thead><tbody>{rows}</tbody></table></div>
+<p class="muted small">Differences are {e(B['id'])} minus {e(A['id'])}, in VAI points. R, S and H are the Reach, Speed and Hold differences. "Indicative" means the Reach gap is larger than chance would explain; the viewer groups may overlap, so treat it as a signal, not proof.</p>
+<div class="tablewrap"><table class="seg"><thead><tr><th>Element</th>{''.join(f'<th>{WIN_LABEL[w]}</th>' for w in ['3', '5', '10'])}</tr></thead><tbody>{rows}</tbody></table></div>
 {legend([(f'{A["id"]} · {A["name"]}', color(0)), (f'{B["id"]} · {B["name"]}', color(1))])}{charts}</section>"""
 
 
@@ -440,7 +444,7 @@ def audience_section(spec):
     return f"""
 <section class="card" id="audience"><h2>Gender and age insights</h2>
 <ul class="findings">{text}</ul>{gaps}{gga}{ga}
-<p class="muted small">† Audiences with fewer than {MIN_N} viewers are anecdotal. See each design's section for the full gender, age and gender × age tables and heatmaps.</p></section>"""
+<p class="muted small">† Small audiences (fewer than {MIN_N} viewers) are indicative only. Full tables and heatmaps are in each design's section.</p></section>"""
 
 
 def dashboard_vai(v, vi, base):
@@ -495,9 +499,9 @@ def build(spec, base):
         "Windows": "First 3, 5 and 10 s are cumulative and start at 0.5 s.",
         "Webcam eye tracking": "Gaze estimated from participants' own webcams in the RealEye platform. It shows where attention concentrates, with less precision than lab trackers.",
         "Quality filter": m.get("quality_filter", "Only viewers with data quality Average or better.")}.items())
-    nav = "".join(f'<a href="#{i}">{t}</a>' for i, t in (("overall", "Findings"), ("method", "Study"), ("vai", "How to read VAI"), ("order", "Viewing order"), ("variants", "Per design"), ("compare", "Comparison"), ("audience", "Gender and age"), ("actions", "Actions"), ("limits", "Evidence")))
+    nav = "".join(f'<a href="#{i}">{t}</a>' for i, t in (("overall", "Findings"), ("vai", "What VAI means"), ("order", "Viewing order"), ("variants", "Per design"), ("compare", "Comparison"), ("audience", "Gender and age"), ("actions", "Next steps"), ("technical", "Technical appendix")))
     var_html = "".join(variant_section(spec, v, i) for i, v in enumerate(variants))
-    banner = (f'<div class="banner"><b>How this was measured.</b> {e(m.get("banner", "RealEye platform, webcam eye tracking."))}</div>')
+    banner = (f'<div class="banner"><b>How this was measured:</b> {e(m.get("banner", "RealEye platform, webcam eye tracking."))}</div>')
 
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -576,21 +580,27 @@ footer{{color:var(--muted);font-size:.8rem;text-align:center;padding:24px 0}}
 <h4>Key findings</h4><div class="finds">{finds}</div>
 {('<h4>Conclusions</h4><ul class="findings">' + concl + '</ul>') if concl else ''}
 <h4>What to do next</h4><ol class="actions">{actions}</ol>
-<p class="muted small">The detailed analysis follows: study method, how to read VAI, the viewing order, each design in depth, gender and age cuts, and the evidence behind these conclusions.</p></section>
+<p class="muted small">The detailed analysis follows: what the scores mean, the viewing order, each design, gender and age. Technical details are in the appendix at the end.</p></section>
 
-{method_section(spec)}
 {vai_guide(spec)}
 {order_section(spec)}
 <div id="variants">{var_html}</div>
 {compare_section(spec)}
 {audience_section(spec)}
 
-<section class="card" id="actions"><h2>Retest plan</h2><dl class="kv">{retest}</dl></section>
+<section class="card" id="actions"><h2>How to test it next</h2><dl class="kv">{retest}</dl></section>
 
-<section class="card" id="limits"><h2>Evidence and limits</h2><ul>{limits}</ul>
+<section class="card" id="technical"><h2>Technical appendix</h2>
+<p class="muted">For analysts and researchers: how the study was run, the data used, and the limits of the evidence.</p>
+{method_section(spec)}
+{vai_tech_notes()}
+<h3 class="sub3">Evidence and limits</h3><ul>{limits}</ul>
 {('<h4>What would change the recommendation</h4><ul>' + changes + '</ul>') if changes else ''}
-<h4>Sources</h4><ul>{sources}</ul>
-<h4>Definitions</h4><dl class="kv">{defs}</dl></section>
+<h3 class="sub3">Definitions</h3><dl class="kv">{defs}</dl>
+<h3 class="sub3">Sources</h3><ul>{sources}</ul>
+<h3 class="sub3">Dashboard AOI VAI report (unfiltered copy)</h3>
+{''.join(dashboard_vai(v, i, spec['_base']) for i, v in enumerate(variants))}
+</section>
 <footer>Generated with the RealEye neuromarketing-image-report skill. Eye tracking shows where people looked, not what they understood, liked or will buy.</footer>
 </div>
 <style>{"".join(f".{c}{{background-image:url('{u}')}}" for u, c in IMAGES.items())}</style>
