@@ -1,0 +1,3359 @@
+{
+ "title": "“Wake up the red in your hair”: two shampoo ad versions",
+ "subtitle": "What viewers noticed, in what order, and for how long, using RealEye's VAI, by gender, age and time window.",
+ "date": "20 Nov 2026",
+ "skill_version": "1.18.1",
+ "method": {
+  "platform": "RealEye platform",
+  "tracking": "Webcam eye tracking: participants viewed the images in their own browsers while RealEye estimated their gaze from their webcams.",
+  "banner": "This test was run on the RealEye platform with webcam eye tracking: viewers saw the images on their own devices and their gaze was recorded through their webcams.",
+  "precision": "Webcam eye tracking is less precise than a lab tracker, so small elements are measured less precisely than large ones.",
+  "study": "#demo Images and Video demo (2023-10-25), stimuli 5 (design A) and 6 (design B) of 15",
+  "participants": "Design A: 229 viewers (12 of 241 removed for low data quality). Design B: 227 viewers (5 of 232 removed).",
+  "quality_filter": "Only viewers with data quality Average or better are analysed.",
+  "windows": "First 3 s (0.5–3 s), first 5 s (0.5–5 s) and first 10 s (0.5–10 s), cumulative.",
+  "segments": "All viewers; men and women; ages 18–24, 25–34 and 35+; and every gender × age combination. Groups under 100 viewers are marked ‡ (indicative) and under 30 †.",
+  "task": "Free viewing, up to 10 s, one image at a time (demo study).",
+  "source": "RealEye dashboard: AOI report statistics, AOI VAI report and fixation data, with the filters above.",
+  "note": "Viewers with other or unspecified gender, or no recorded age, are in the overall results but not in the gender and age cuts."
+ },
+ "dashboard": {
+  "base": "https://app.realeye.io",
+  "study_id": "3425a080-2716-4c14-8b60-111a1b96c399",
+  "min_quality": 3
+ },
+ "app_title": "#demo Images and Video demo (2023-10-25)",
+ "study_info": {
+  "created": "25 Oct 2023",
+  "status": "Running, 8,711 of 10,000 participants so far",
+  "type": "Images and Videos",
+  "realeye_version": "v26.11.20.1",
+  "version_note": "dashboard version at analysis, 20 Nov 2026",
+  "tracker": "RealEye webcam eye tracking (RealEye webcam tracker v3), used for every analysed viewer",
+  "analysed_on": "20 Nov 2026",
+  "settings": "Both designs: shown for 10 s, finished on keypress, instructions off, random order off",
+  "panel": "Own participants (not the RealEye panel), asked for their gender and age"
+ },
+ "participants": {
+  "A": {
+   "collected": 241,
+   "analysed": 229,
+   "collected_from": "2026-03-24",
+   "collected_to": "2026-11-12",
+   "quality": {
+    "Very low": 3,
+    "Low": 9,
+    "Average": 16,
+    "Good": 50,
+    "Very good": 25,
+    "Perfect": 138
+   },
+   "gender": {
+    "Men": 59,
+    "Women": 88,
+    "Other": 8,
+    "Not specified": 74
+   },
+   "age": {
+    "bands": {
+     "Under 18": 11,
+     "18–24": 82,
+     "25–34": 28,
+     "35–44": 2,
+     "45–54": 3,
+     "55+": 2
+    },
+    "with_age": 128,
+    "median": 23,
+    "mean": 24.6
+   },
+   "device": {
+    "Desktop": 201,
+    "Tablet": 28
+   },
+   "tracker_text": "RealEye webcam tracker v3 (229 of 229 viewers)",
+   "participant_type_text": "Own participants (229 of 229 viewers)",
+   "screen_text": "1512 × 900 px",
+   "age_text": "median 23, mean 24.6, reported range 11–100 (self-reported, so some values are implausible)"
+  },
+  "B": {
+   "collected": 232,
+   "analysed": 227,
+   "collected_from": "2026-03-27",
+   "collected_to": "2026-11-12",
+   "quality": {
+    "Very low": 0,
+    "Low": 5,
+    "Average": 13,
+    "Good": 50,
+    "Very good": 17,
+    "Perfect": 147
+   },
+   "gender": {
+    "Men": 67,
+    "Women": 81,
+    "Other": 9,
+    "Not specified": 70
+   },
+   "age": {
+    "bands": {
+     "Under 18": 9,
+     "18–24": 83,
+     "25–34": 31,
+     "35–44": 9,
+     "45–54": 4,
+     "55+": 1
+    },
+    "with_age": 137,
+    "median": 23,
+    "mean": 24.9
+   },
+   "device": {
+    "Desktop": 187,
+    "Tablet": 39,
+    "Smartphone": 1
+   },
+   "tracker_text": "RealEye webcam tracker v3 (227 of 227 viewers)",
+   "participant_type_text": "Own participants (227 of 227 viewers)",
+   "screen_text": "1470 × 900 px",
+   "age_text": "median 23, mean 24.9, reported range 1–88 (self-reported, so some values are implausible)"
+  }
+ },
+ "blueprint": {
+  "study_name": "Shampoo A/B: profile gaze versus direct gaze",
+  "target_participants": "10,000 (the study was still running)",
+  "demographics_asked": "gender and age",
+  "random_order": "off",
+  "stimuli": {
+   "A": {
+    "file_name": "shampoo product.png",
+    "display_seconds": 10,
+    "finish_on": "keypress",
+    "instructions": "off"
+   },
+   "B": {
+    "file_name": "shampoo camera.png",
+    "display_seconds": 10,
+    "finish_on": "keypress",
+    "instructions": "off"
+   }
+  }
+ },
+ "aoi_order": [
+  "Tagline",
+  "Pack (product)",
+  "Face",
+  "Logo",
+  "Brand name (banner)"
+ ],
+ "overall": {
+  "verdict_label": "Conclusion: move the brand name into the warm zone and keep A's gaze cue, then test recall",
+  "verdict_text": "In both designs viewers notice the tagline first, then the pack, the face, the logo and last the brand name banner, and that order does not change from the first 3 to the first 10 seconds. The brand banner is the weak spot: its {{cmp:vai:Brand name (banner):10:A,B}}. Design A reaches the logo and banner more often; design B holds the face better. Without a recall result this is a diagnosis, not a winner.",
+  "summary": "All scores are RealEye VAI (0–100) and its three measures: Reach (how many viewers looked), Speed (how soon) and Hold (how long attention stayed).",
+  "kpis": [
+   {
+    "label": "Viewing order, both designs",
+    "value": "Tagline → Pack → Face → Logo → Banner",
+    "note": "same in the first 3, 5 and 10 s"
+   },
+   {
+    "label": "Brand banner VAI, first 10 s",
+    "value": "A 14.3 · B 8.3",
+    "note": "{{diff:vai:Brand name (banner):10:A,B}}. {{cmp:reach:Brand name (banner):10:A,B}}"
+   },
+   {
+    "label": "Face VAI, first 10 s",
+    "value": "A 54.2 · B 58.4",
+    "note": "{{diff:vai:Face:10:A,B}}: direct gaze holds the face"
+   },
+   {
+    "label": "Tagline VAI, women minus men",
+    "value": "A +7 · B +10",
+    "note": "+16 / +12 in the first 3 s"
+   }
+  ],
+  "findings": [
+   {
+    "tag": "strength",
+    "title": "Tagline and pack lead, in every window",
+    "conclusion": "The tagline is noticed first and the pack second, in both designs and in the first 3, 5 and 10 seconds. This part of the layout works.",
+    "why": "VAI Speed puts the tagline first and the pack second for all viewers in every window and in both designs (viewing order). In the first 3 s the tagline has the highest VAI of all elements ({{cmp:vai:Tagline:3:A,B}}) with Reach near 80%, and the pack catches up by 10 s as more viewers get to it ({{cmp:vai:Pack (product):10:A,B}}). A high early VAI means many viewers look at it, soon and for a while, so the entry point is the claim and the anchor is the product.",
+    "evidence": [
+     {
+      "text": "Viewing order for all viewers is Tagline, Pack, Face, Logo, Banner in the first 3, 5 and 10 s, in both designs.",
+      "ref": [
+       "order",
+       "dA-summary",
+       "dB-summary"
+      ]
+     },
+     {
+      "text": "First 3 s: {{cmp:vai:Tagline:3:A,B}}; its Reach is near 80%.",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Tagline",
+        "window": 3,
+        "metric": "vai",
+        "value": 57.5
+       },
+       {
+        "design": "B",
+        "aoi": "Tagline",
+        "window": 3,
+        "metric": "vai",
+        "value": 57.6
+       },
+       {
+        "design": "A",
+        "aoi": "Tagline",
+        "window": 3,
+        "metric": "reach"
+       },
+       {
+        "design": "B",
+        "aoi": "Tagline",
+        "window": 3,
+        "metric": "reach"
+       }
+      ],
+      "dash": [
+       {
+        "design": "A",
+        "kind": "heatmap",
+        "window": 3
+       },
+       {
+        "design": "B",
+        "kind": "heatmap",
+        "window": 3
+       }
+      ]
+     },
+     {
+      "text": "The pack starts lower and catches up. First 3 s: {{cmp:vai:Pack (product):3:A,B}}. First 10 s: {{cmp:vai:Pack (product):10:A,B}}.",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Pack (product)",
+        "window": 3,
+        "value": 42.2
+       },
+       {
+        "design": "B",
+        "aoi": "Pack (product)",
+        "window": 3,
+        "value": 41.0
+       },
+       {
+        "design": "A",
+        "aoi": "Pack (product)",
+        "window": 10,
+        "value": 61.2
+       },
+       {
+        "design": "B",
+        "aoi": "Pack (product)",
+        "window": 10,
+        "value": 61.8
+       }
+      ]
+     }
+    ],
+    "so_what": "Keep both where they are; any change to the layout should be tested against them.",
+    "confidence": "high",
+    "confidence_note": "Both designs have more than 220 viewers and the order is identical in every window."
+   },
+   {
+    "tag": "risk",
+    "title": "The brand name banner is the weak spot",
+    "conclusion": "Few viewers reach the brand name banner, late and briefly, so the brand name is mostly seen only on the pack label.",
+    "why": "The banner has the lowest VAI of the five elements in every window and in both designs, and all three components are low: Reach (how many looked) in the first 10 s is low: {{cmp:reach:Brand name (banner):10:A,B}}, Speed (how soon) puts it last in the viewing order, and Hold (how long) is about 1. The heatmaps (an illustration only) look the same way, but the conclusion rests on the numbers.",
+    "evidence": [
+     {
+      "text": "First 10 s: {{cmp:vai:Brand name (banner):10:A,B}}. It is the lowest of any element and grows only slowly from the first 3 s to the first 10 s in both designs.",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Brand name (banner)",
+        "window": 3,
+        "value": 3.6
+       },
+       {
+        "design": "A",
+        "aoi": "Brand name (banner)",
+        "window": 5,
+        "value": 7.5
+       },
+       {
+        "design": "A",
+        "aoi": "Brand name (banner)",
+        "window": 10,
+        "value": 14.3
+       },
+       {
+        "design": "B",
+        "aoi": "Brand name (banner)",
+        "window": 3,
+        "value": 1.2
+       },
+       {
+        "design": "B",
+        "aoi": "Brand name (banner)",
+        "window": 5,
+        "value": 3.6
+       },
+       {
+        "design": "B",
+        "aoi": "Brand name (banner)",
+        "window": 10,
+        "value": 8.3
+       }
+      ]
+     },
+     {
+      "text": "First 10 s: {{cmp:reach:Brand name (banner):10:A,B}}; {{cmp:hold:Brand name (banner):10:A,B}}.",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Brand name (banner)",
+        "window": 10,
+        "metric": "reach",
+        "value": 27.1
+       },
+       {
+        "design": "B",
+        "aoi": "Brand name (banner)",
+        "window": 10,
+        "metric": "reach",
+        "value": 16.3
+       },
+       {
+        "design": "A",
+        "aoi": "Brand name (banner)",
+        "window": 10,
+        "metric": "hold",
+        "value": 1.2
+       }
+      ]
+     },
+     {
+      "text": "For illustration only: the heatmaps show the bottom band cold. The numbers above carry the conclusion.",
+      "ref": [
+       "dA-heat",
+       "dA-sheets",
+       "dB-heat",
+       "dB-sheets"
+      ],
+      "dash": [
+       {
+        "design": "A",
+        "kind": "heatmap",
+        "window": 10
+       },
+       {
+        "design": "B",
+        "kind": "heatmap",
+        "window": 10
+       }
+      ]
+     }
+    ],
+    "so_what": "The brand name needs a better place or size before the design can be expected to build brand recall.",
+    "confidence": "high",
+    "confidence_note": "The gap is large and consistent across windows, designs and audiences. VAI shows attention, not recall."
+   },
+   {
+    "tag": "risk",
+    "title": "Direct gaze helps the face and costs the brand",
+    "conclusion": "In design B the face holds attention better, while the logo and the banner score lower than in A.",
+    "why": "Comparing B with A on the same elements and window (first 10 s): the face scores 4.2 VAI points higher in B and its Hold is 4.2 higher, so viewers stay on it longer; the logo scores 4.1 lower and the banner 6.0 lower. Attention that goes to the face is not going to the brand. The designs differ in more than the model's gaze direction, so the pose is the likely cause, not a proven one.",
+    "evidence": [
+     {
+      "text": "Face VAI and Hold are higher in B than in A (first 10 s).",
+      "data": [
+       {
+        "design": "B",
+        "aoi": "Face",
+        "window": 10,
+        "metric": "vai",
+        "minus": {
+         "design": "A"
+        },
+        "value": 4.2
+       },
+       {
+        "design": "B",
+        "aoi": "Face",
+        "window": 10,
+        "metric": "hold",
+        "minus": {
+         "design": "A"
+        },
+        "value": 4.2
+       }
+      ]
+     },
+     {
+      "text": "Logo and banner VAI are lower in B than in A (first 10 s).",
+      "data": [
+       {
+        "design": "B",
+        "aoi": "Logo",
+        "window": 10,
+        "minus": {
+         "design": "A"
+        },
+        "value": -4.1
+       },
+       {
+        "design": "B",
+        "aoi": "Brand name (banner)",
+        "window": 10,
+        "minus": {
+         "design": "A"
+        },
+        "value": -6.0
+       }
+      ]
+     },
+     {
+      "text": "For illustration only: where the heatmap concentrates in each design.",
+      "ref": [
+       "dA-heat",
+       "dB-heat"
+      ]
+     }
+    ],
+    "so_what": "Test a direct-gaze face with the brand name on the eye line, so the strong face also carries the brand.",
+    "confidence": "medium",
+    "confidence_note": "The differences are consistent but small, and the two images differ in other ways than gaze."
+   },
+   {
+    "tag": "strength",
+    "title": "Women get to the claim first",
+    "conclusion": "Women score higher on the tagline than men in every window and in both designs; the gap is biggest in the first 3 seconds.",
+    "why": "Women minus men on the tagline is +15.6 in A and +12.1 in B in the first 3 s, and +7.2 and +10.4 in the first 10 s, mainly through Speed: women notice the claim sooner. In A, men score higher on the face early (27.8 against 19.0 in the first 3 s), so the two groups open the image differently.",
+    "evidence": [
+     {
+      "text": "Tagline VAI, women minus men, first 3 s.",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Tagline",
+        "window": 3,
+        "audience": "Women",
+        "minus": {
+         "audience": "Men"
+        },
+        "value": 15.6
+       },
+       {
+        "design": "B",
+        "aoi": "Tagline",
+        "window": 3,
+        "audience": "Women",
+        "minus": {
+         "audience": "Men"
+        },
+        "value": 12.1
+       }
+      ]
+     },
+     {
+      "text": "Tagline VAI, women minus men, first 10 s.",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Tagline",
+        "window": 10,
+        "audience": "Women",
+        "minus": {
+         "audience": "Men"
+        },
+        "value": 7.2
+       },
+       {
+        "design": "B",
+        "aoi": "Tagline",
+        "window": 10,
+        "audience": "Women",
+        "minus": {
+         "audience": "Men"
+        },
+        "value": 10.4
+       }
+      ],
+      "dash": [
+       {
+        "design": "A",
+        "kind": "heatmap",
+        "audience": "Women",
+        "window": 3
+       },
+       {
+        "design": "A",
+        "kind": "heatmap",
+        "audience": "Men",
+        "window": 3
+       }
+      ]
+     },
+     {
+      "text": "Men's face VAI is higher than women's early in A.",
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Face",
+        "window": 3,
+        "audience": "Men",
+        "value": 27.8
+       },
+       {
+        "design": "A",
+        "aoi": "Face",
+        "window": 3,
+        "audience": "Women",
+        "value": 19.0
+       }
+      ]
+     }
+    ],
+    "so_what": "Do not move or shrink the tagline without retesting with women.",
+    "confidence": "medium",
+    "confidence_note": "The direction is the same in both designs, but every group is under 100 viewers (Women 88 and 81, Men 59 and 67), so the result is indicative, not certain."
+   },
+   {
+    "tag": "weak-evidence",
+    "title": "Age groups other than 18–24 are small",
+    "conclusion": "Only the 18–24 group is large enough to read; it behaves like the whole sample. Other age groups are too small to separate real differences from noise.",
+    "why": "18–24 viewers number 82 (A) and 83 (B). The 25–34 groups have 28 and 31 viewers and the 35+ groups fewer than 15: under 30 is anecdotal and even 30 to 99 is only indicative. The 18–24 groups (82 and 83) are also under the 100 viewers needed to be certain. Differences seen in those groups are marked † in the tables and are hypotheses to test, not findings.",
+    "evidence": [
+     {
+      "text": "Age mix of the analysed viewers: most are 18–24 and many gave no age.",
+      "ref": [
+       "who"
+      ]
+     },
+     {
+      "text": "VAI by age for every element and window, with small groups marked. Tagline in design A, first 10 s, as an example of how group size changes what can be read.",
+      "ref": [
+       "dA-age",
+       "dB-age"
+      ],
+      "data": [
+       {
+        "design": "A",
+        "aoi": "Tagline",
+        "window": 10,
+        "audience": "18–24"
+       },
+       {
+        "design": "A",
+        "aoi": "Tagline",
+        "window": 10,
+        "audience": "25–34"
+       },
+       {
+        "design": "A",
+        "aoi": "Tagline",
+        "window": 10,
+        "audience": "35+"
+       }
+      ]
+     }
+    ],
+    "so_what": "To read age effects, recruit more viewers aged 25 and over before drawing conclusions.",
+    "confidence": "high",
+    "confidence_note": "The limit is the sample size, not the effect."
+   }
+  ],
+  "conclusions": [
+   {
+    "title": "Keep the tagline and the pack where they are",
+    "text": "The tagline is the entry point and the pack the anchor; they already lead the viewing order.",
+    "based_on": [
+     1
+    ]
+   },
+   {
+    "title": "Give the brand name a better place",
+    "text": "The brand name is reliably seen only on the pack label. The bottom banner adds little: move the brand name into the tagline-to-pack column, or raise and enlarge the banner.",
+    "based_on": [
+     2,
+     3
+    ]
+   },
+   {
+    "title": "Use A's profile gaze as the base, and test a brand-carrying direct gaze",
+    "text": "A's profile gaze leaves more attention for the logo and banner; test a direct-gaze face with the brand name on the eye line.",
+    "based_on": [
+     3
+    ]
+   },
+   {
+    "title": "Protect the claim for women",
+    "text": "Women reach the claim sooner than men in both designs: do not move or shrink the tagline without retesting.",
+    "based_on": [
+     4
+    ]
+   },
+   {
+    "title": "Confirm with recall, not attention alone",
+    "text": "VAI shows attention, not understanding: confirm the changes with an unaided brand and message recall test.",
+    "based_on": [
+     1,
+     2,
+     5
+    ]
+   }
+  ]
+ },
+ "hypotheses": [
+  {
+   "hypothesis": "The tagline “Wake up the red in your hair” is the first thing viewers read.",
+   "verdict": "supported",
+   "conclusion": "Yes. In both designs the tagline is noticed before every other element, in the first 3, 5 and 10 seconds.",
+   "why": "Viewing order by VAI Speed puts the tagline first for all viewers in every window and in both designs. In the first 3 s it also has the highest VAI of all elements ({{cmp:vai:Tagline:3:A,B}}), with Reach already near 80%. The claim is the entry point, as designed.",
+   "evidence": [
+    {
+     "text": "The viewing order is the same in every window and design.",
+     "ref": [
+      "order"
+     ]
+    },
+    {
+     "text": "{{cmp:vai:Tagline:3:A,B}}.",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Tagline",
+       "window": 3,
+       "value": 57.5
+      },
+      {
+       "design": "B",
+       "aoi": "Tagline",
+       "window": 3,
+       "value": 57.6
+      },
+      {
+       "design": "A",
+       "aoi": "Tagline",
+       "window": 3,
+       "metric": "reach"
+      },
+      {
+       "design": "B",
+       "aoi": "Tagline",
+       "window": 3,
+       "metric": "reach"
+      }
+     ]
+    }
+   ],
+   "so_what": "Keep the tagline where it is.",
+   "confidence": "high"
+  },
+  {
+   "hypothesis": "The model's sideways gaze in A leads viewers' eyes to the pack.",
+   "verdict": "not supported",
+   "conclusion": "No measurable effect: the pack gets the same attention in A and in B, so the sideways gaze does not add attention to it.",
+   "why": "If the gaze cue worked, the pack would score clearly higher in A, where the model looks at it, than in B, where she looks at the viewer. In the first 10 s the pack scores {{cmp:vai:Pack (product):10:A,B}} and is noticed at the same speed ({{cmp:speed:Pack (product):10:A,B}}). The pack is second in the viewing order in both designs.",
+   "evidence": [
+    {
+     "text": "{{cmp:vai:Pack (product):10:A,B}}.",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Pack (product)",
+       "window": 10,
+       "value": 61.2
+      },
+      {
+       "design": "B",
+       "aoi": "Pack (product)",
+       "window": 10,
+       "value": 61.8
+      }
+     ]
+    },
+    {
+     "text": "{{cmp:speed:Pack (product):10:A,B}}.",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Pack (product)",
+       "window": 10,
+       "metric": "speed"
+      },
+      {
+       "design": "B",
+       "aoi": "Pack (product)",
+       "window": 10,
+       "metric": "speed"
+      }
+     ],
+     "ref": [
+      "order"
+     ]
+    }
+   ],
+   "so_what": "Do not count on the gaze direction to steer viewers to the product; use placement and size.",
+   "confidence": "medium",
+   "confidence_note": "Two designs with more than 220 viewers each; the images differ in more than the gaze."
+  },
+  {
+   "hypothesis": "Viewers see the brand name “BunnyEnchantment” in the banner at the bottom.",
+   "verdict": "not supported",
+   "conclusion": "Only a minority do: the banner is the least seen element in both designs, and it is reached late and briefly.",
+   "why": "The banner has the lowest VAI of the five elements in every window ({{cmp:vai:Brand name (banner):10:A,B}} in the first 10 s). Reach shows how few get there: {{cmp:reach:Brand name (banner):10:A,B}}, with a Hold of about 1.",
+   "evidence": [
+    {
+     "text": "{{cmp:reach:Brand name (banner):10:A,B}}.",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Brand name (banner)",
+       "window": 10,
+       "metric": "reach",
+       "value": 27.1
+      },
+      {
+       "design": "B",
+       "aoi": "Brand name (banner)",
+       "window": 10,
+       "metric": "reach",
+       "value": 16.3
+      }
+     ]
+    },
+    {
+     "text": "For illustration only: the heatmaps show the bottom band cold. The numbers above carry the conclusion.",
+     "ref": [
+      "dA-heat",
+      "dB-heat"
+     ]
+    }
+   ],
+   "so_what": "The brand name needs a better place or size.",
+   "confidence": "high"
+  },
+  {
+   "hypothesis": "The model's face attracts attention without taking it away from the product.",
+   "verdict": "partly supported",
+   "conclusion": "The face attracts attention in both designs, and the pack does not lose attention to it. With direct gaze the face scores higher but the logo and banner score lower.",
+   "why": "The face is reached by most viewers ({{cmp:reach:Face:10:A,B}}) and scores {{cmp:vai:Face:10:A,B}}. The pack is not affected ({{cmp:vai:Pack (product):10:A,B}}), but the logo ({{cmp:vai:Logo:10:A,B}}) and the banner ({{cmp:vai:Brand name (banner):10:A,B}}) lose attention in B.",
+   "evidence": [
+    {
+     "text": "{{cmp:vai:Face:10:A,B}}.",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Face",
+       "window": 10,
+       "value": 54.2
+      },
+      {
+       "design": "B",
+       "aoi": "Face",
+       "window": 10,
+       "value": 58.4
+      }
+     ]
+    },
+    {
+     "text": "{{cmp:vai:Logo:10:A,B}}.",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Logo",
+       "window": 10,
+       "value": 28.0
+      },
+      {
+       "design": "B",
+       "aoi": "Logo",
+       "window": 10,
+       "value": 23.9
+      }
+     ]
+    }
+   ],
+   "so_what": "A direct-gaze face needs the brand name close to the eyes.",
+   "confidence": "medium"
+  },
+  {
+   "hypothesis": "The ad works equally well for women and men.",
+   "verdict": "partly supported",
+   "conclusion": "Both groups see the same elements in the same order, but women reach the tagline faster, and in A men look at the face earlier.",
+   "why": "The viewing order is the same for men and women. The speed differs: in the first 3 s women score higher on the tagline ({{gap:vai:Tagline:3:A:Women,Men}}; {{gap:vai:Tagline:3:B:Women,Men}}), while men score higher on the face in A ({{gap:vai:Face:3:A:Men,Women}}).",
+   "evidence": [
+    {
+     "text": "{{gap:vai:Tagline:3:A:Women,Men}}.",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Tagline",
+       "window": 3,
+       "audience": "Women",
+       "minus": {
+        "audience": "Men"
+       },
+       "value": 15.6
+      },
+      {
+       "design": "B",
+       "aoi": "Tagline",
+       "window": 3,
+       "audience": "Women",
+       "minus": {
+        "audience": "Men"
+       },
+       "value": 12.1
+      }
+     ]
+    },
+    {
+     "text": "{{gap:vai:Face:3:A:Men,Women}}.",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Face",
+       "window": 3,
+       "audience": "Men",
+       "value": 27.8
+      },
+      {
+       "design": "A",
+       "aoi": "Face",
+       "window": 3,
+       "audience": "Women",
+       "value": 19.0
+      }
+     ],
+     "ref": [
+      "order-audience"
+     ]
+    }
+   ],
+   "so_what": "Do not move or shrink the tagline without retesting with women.",
+   "confidence": "medium",
+   "confidence_note": "Every group is under 100 viewers per design (Women 88 and 81, Men 59 and 67), so the result is indicative, not certain."
+  },
+  {
+   "hypothesis": "Viewers will remember the brand name after seeing the ad.",
+   "verdict": "cannot tell",
+   "conclusion": "Attention data cannot show memory, but it points to a risk: few viewers look at the brand name.",
+   "why": "Recall was not measured. What is measured is that the banner is reached by {{cmp:reach:Brand name (banner):10:A,B}} and the logo on the pack by {{cmp:reach:Logo:10:A,B}}. Viewers who never look at the brand name cannot recall it from the image, but those who do may still forget it. A recall question in the study would answer this.",
+   "evidence": [
+    {
+     "text": "{{cmp:reach:Logo:10:A,B}}.",
+     "data": [
+      {
+       "design": "A",
+       "aoi": "Logo",
+       "window": 10,
+       "metric": "reach",
+       "value": 52.8
+      },
+      {
+       "design": "B",
+       "aoi": "Logo",
+       "window": 10,
+       "metric": "reach",
+       "value": 45.8
+      }
+     ]
+    },
+    {
+     "text": "How to measure recall in the next round.",
+     "ref": [
+      "improve"
+     ]
+    }
+   ],
+   "so_what": "Add an unaided brand recall question before judging the designs on brand building.",
+   "confidence": "low"
+  }
+ ],
+ "study_improvements": [
+  {
+   "category": "aois",
+   "title": "Split the big elements into the parts that matter",
+   "text": "Split the pack into the label, the “b” logo and the cap, and the tagline into “Wake up” and “the red in your hair”. Add AOIs for the model's eyes and hair, and one for the whole bottom band including the product shot.",
+   "why": "Large AOIs hide differences inside them (the pack reaches 92% of viewers, but we cannot tell which part they look at). Smaller AOIs show exactly which word or part carries the attention."
+  },
+  {
+   "category": "aois",
+   "title": "Add an AOI for any element you want people to act on",
+   "text": "If the final ad has a call to action, a price, a claim or a certification, add an AOI for it so its VAI can be compared with the elements here.",
+   "why": "An element without an AOI cannot be measured."
+  },
+  {
+   "category": "respondents",
+   "title": "Collect more viewers in the groups that are too small to read",
+   "text": "To be certain about a result, aim for at least 100 viewers in every group you want to compare (each design, gender, age band and gender × age cell). Ages 25 and over are fewer than 50 viewers per design, and the 35+ group fewer than 15.",
+   "why": "Groups under 100 viewers are only indicative and groups under 30 anecdotal, so most gender and age findings in this report are not certain."
+  },
+  {
+   "category": "respondents",
+   "title": "Know who is looking: ask gender and age before the test",
+   "text": "About a third of viewers (74 in A, 70 in B) did not give a gender, and 40 to 45% gave no age. Make the questions required, or recruit through the RealEye panel with the target audience set.",
+   "why": "Every viewer without an answer drops out of the gender and age cuts."
+  },
+  {
+   "category": "respondents",
+   "title": "Match the audience to the buyers",
+   "text": "Most viewers are 18–24 and on a desktop. If the shampoo targets other ages or mobile shoppers, recruit them, and test on smartphones.",
+   "why": "Attention to an ad differs by audience and device."
+  },
+  {
+   "category": "survey",
+   "title": "Ask a few questions right after the image",
+   "text": "Short questions after viewing turn attention data into evidence about memory and choice. Ask them in this order, with the image no longer visible.",
+   "questions": [
+    {
+     "question": "Which brand was advertised? (open text)",
+     "why": "Unaided brand recall: shows whether looking at the banner or the logo turns into remembering the brand.",
+     "answer_type": "open text"
+    },
+    {
+     "question": "What was the main message of the ad? (open text)",
+     "why": "Message recall: shows whether the tagline that everyone reads is understood.",
+     "answer_type": "open text"
+    },
+    {
+     "question": "What was the first thing you noticed? (open text)",
+     "why": "Compares what viewers say with what the eye tracking measured.",
+     "answer_type": "open text"
+    },
+    {
+     "question": "How likely are you to buy this shampoo? (1 to 7)",
+     "why": "Purchase intent as a guardrail: checks that the design that gets attention does not lower interest.",
+     "answer_type": "1 to 7 scale"
+    },
+    {
+     "question": "How appealing is the ad? (1 to 7)",
+     "why": "Separates attention from liking.",
+     "answer_type": "1 to 7 scale"
+    },
+    {
+     "question": "Do you already know the brand? (yes, heard of it, no)",
+     "why": "Brand familiarity changes how viewers look at a brand name and must be controlled for.",
+     "answer_type": "single choice"
+    },
+    {
+     "question": "Which of the two shampoos would you pick from a shelf? (choice)",
+     "why": "A product choice is closer to behaviour than attention or intent.",
+     "answer_type": "single choice"
+    }
+   ]
+  },
+  {
+   "category": "benchmark",
+   "title": "Compare with the best similar designs",
+   "text": "Run the same elements (tagline, pack, face, logo, brand name) on the best-performing ads in the category, from your own earlier campaigns and from competitors, with the same time windows and viewer filter. Compare each element's VAI, Reach, Speed and Hold with those benchmarks.",
+   "why": "A VAI of 14 for a brand name only means something against what a good brand name scores in comparable ads.",
+   "steps": [
+    "Pick 3 to 5 category leaders and your own best earlier ad.",
+    "Add them to the same study (or to a study run the same way) and draw the same kinds of AOIs.",
+    "Compare each element's VAI against the benchmark and aim for the level of the best performers."
+   ]
+  },
+  {
+   "category": "benchmark",
+   "title": "Screen many creatives quickly with predicted attention",
+   "text": "To compare against many competitor creatives you cannot test with viewers, use RealEye's Attention Predictor to screen them, then confirm the shortlist with real viewers. Label predicted results as predicted.",
+   "why": "Predicted attention is fast and cheap, but it is not measured attention."
+  },
+  {
+   "category": "other",
+   "title": "Test in a realistic setting",
+   "text": "Show the image in a feed or on a shelf next to competing products, and for the time viewers really spend on it, instead of a forced 10 s view.",
+   "why": "Isolated viewing can overstate how much attention an element gets in the real world."
+  }
+ ],
+ "variants": [
+  {
+   "id": "A",
+   "presents": "A tall shampoo ad: the tagline “Wake up the red in your hair.” at the top, a red BunnyEnchantment shampoo tube (Ravishing Red) on the left, a woman with red hair who looks sideways toward the product, and the brand name banner at the bottom.",
+   "purpose": "Get the claim read first, then the product, and let the model's sideways gaze lead viewers' eyes to the pack and the brand.",
+   "item_id": "1e2f982c-be53-4f72-949c-a01218d0e57b",
+   "name": "Profile gaze (shampoo product.png)",
+   "description": "The model looks toward the pack.",
+   "stimulus": {
+    "src": "stimulus-A.jpg"
+   },
+   "image_px": [
+    1024,
+    1536
+   ],
+   "heatmap": {
+    "src": "heatmap-A.jpg",
+    "caption": "All viewers, first 10 seconds. Warmer colours mean more attention."
+   },
+   "heatmap_sheets": {
+    "3": "heat-sheet-A-3.jpg",
+    "5": "heat-sheet-A-5.jpg",
+    "10": "heat-sheet-A-10.jpg"
+   },
+   "heatmap_note": "One heatmap per audience and time window. Warmer colours mean more attention. Each map is scaled on its own, so compare where attention goes, not how strong it is. Small audiences look noisier.",
+   "aois": [
+    {
+     "name": "Tagline",
+     "role": "The claim “Wake up the red in your hair.”",
+     "color": "#96d732",
+     "shape": [
+      [
+       3.5,
+       3.4
+      ],
+      [
+       44.0,
+       3.8
+      ],
+      [
+       44.4,
+       11.6
+      ],
+      [
+       35.4,
+       24.4
+      ],
+      [
+       23.5,
+       31.1
+      ],
+      [
+       4.4,
+       31.2
+      ]
+     ],
+     "marker": [
+      23.7,
+      17.5
+     ]
+    },
+    {
+     "name": "Pack (product)",
+     "role": "The shampoo tube (pack shot)",
+     "color": "#d73296",
+     "shape": [
+      [
+       5.4,
+       33.6
+      ],
+      [
+       11.6,
+       83.7
+      ],
+      [
+       34.5,
+       83.6
+      ],
+      [
+       41.4,
+       33.4
+      ]
+     ],
+     "marker": [
+      23.3,
+      38.0
+     ]
+    },
+    {
+     "name": "Face",
+     "role": "The model’s face",
+     "color": "#6ec850",
+     "shape": [
+      [
+       42.5,
+       13.7
+      ],
+      [
+       92.6,
+       13.7
+      ],
+      [
+       92.6,
+       51.0
+      ],
+      [
+       42.5,
+       51.0
+      ]
+     ],
+     "marker": [
+      67.6,
+      32.3
+     ]
+    },
+    {
+     "name": "Logo",
+     "role": "The “b” logo on the pack",
+     "color": "#3296d7",
+     "shape": [
+      [
+       15.1,
+       54.9
+      ],
+      [
+       32.9,
+       54.9
+      ],
+      [
+       32.9,
+       66.9
+      ],
+      [
+       15.1,
+       66.9
+      ]
+     ],
+     "marker": [
+      23.9,
+      60.9
+     ]
+    },
+    {
+     "name": "Brand name (banner)",
+     "role": "The BunnyEnchantment brand name banner at the bottom",
+     "color": "#d77732",
+     "shape": [
+      [
+       10.1,
+       86.5
+      ],
+      [
+       87.0,
+       86.5
+      ],
+      [
+       87.0,
+       93.6
+      ],
+      [
+       10.1,
+       93.6
+      ]
+     ],
+     "marker": [
+      48.4,
+      90.0
+     ]
+    }
+   ],
+   "segments": [
+    {
+     "label": "All",
+     "kind": "overall",
+     "n": 229,
+     "values": [
+      57.5,
+      80.3,
+      62.4,
+      29.8,
+      42.2,
+      71.6,
+      41.2,
+      13.7,
+      23.6,
+      40.6,
+      23.7,
+      6.5,
+      7.9,
+      14.8,
+      7.2,
+      1.6,
+      3.6,
+      6.6,
+      3.6,
+      0.8,
+      58.4,
+      82.5,
+      70.6,
+      22.2,
+      52.6,
+      82.5,
+      57.7,
+      17.5,
+      38.3,
+      68.1,
+      37.0,
+      9.8,
+      15.0,
+      28.8,
+      14.1,
+      2.2,
+      7.5,
+      14.8,
+      6.7,
+      1.0,
+      61.5,
+      89.1,
+      79.0,
+      16.5,
+      61.2,
+      91.7,
+      73.5,
+      18.4,
+      54.2,
+      89.5,
+      60.4,
+      12.8,
+      28.0,
+      52.8,
+      28.6,
+      2.7,
+      14.3,
+      27.1,
+      14.5,
+      1.2
+     ]
+    },
+    {
+     "label": "Men",
+     "kind": "gender",
+     "n": 59,
+     "values": [
+      49.8,
+      72.9,
+      53.4,
+      23.2,
+      45.4,
+      76.3,
+      45.9,
+      14.1,
+      27.8,
+      49.2,
+      24.9,
+      9.4,
+      4.9,
+      8.5,
+      5.4,
+      0.7,
+      2.1,
+      3.4,
+      2.6,
+      0.3,
+      52.1,
+      76.3,
+      62.0,
+      18.1,
+      53.5,
+      81.4,
+      61.1,
+      18.0,
+      38.5,
+      66.1,
+      38.7,
+      10.6,
+      13.7,
+      27.1,
+      12.0,
+      2.1,
+      6.0,
+      11.9,
+      5.1,
+      0.9,
+      58.7,
+      88.1,
+      73.9,
+      14.2,
+      60.5,
+      88.1,
+      73.8,
+      19.6,
+      51.3,
+      83.1,
+      58.1,
+      12.9,
+      30.0,
+      57.6,
+      29.3,
+      3.1,
+      13.1,
+      25.4,
+      12.7,
+      1.2
+     ]
+    },
+    {
+     "label": "Women",
+     "kind": "gender",
+     "n": 88,
+     "values": [
+      65.4,
+      90.9,
+      70.3,
+      35.1,
+      41.2,
+      71.6,
+      39.3,
+      12.8,
+      19.0,
+      33.0,
+      19.9,
+      4.0,
+      9.6,
+      18.2,
+      8.6,
+      2.0,
+      3.4,
+      6.8,
+      2.5,
+      0.8,
+      65.4,
+      90.9,
+      79.4,
+      26.0,
+      53.8,
+      87.5,
+      57.6,
+      16.4,
+      39.4,
+      72.7,
+      35.4,
+      9.9,
+      15.2,
+      28.4,
+      15.6,
+      1.7,
+      7.7,
+      15.9,
+      6.2,
+      1.0,
+      65.9,
+      93.2,
+      86.1,
+      18.4,
+      63.2,
+      95.5,
+      75.9,
+      18.1,
+      56.1,
+      93.2,
+      62.2,
+      12.8,
+      27.7,
+      51.1,
+      29.7,
+      2.3,
+      15.4,
+      29.5,
+      15.4,
+      1.3
+     ]
+    },
+    {
+     "label": "18–24",
+     "kind": "age",
+     "n": 82,
+     "values": [
+      62.8,
+      86.6,
+      66.3,
+      35.5,
+      40.9,
+      70.7,
+      38.8,
+      13.2,
+      23.4,
+      39.0,
+      24.4,
+      6.8,
+      9.3,
+      18.3,
+      8.0,
+      1.6,
+      2.7,
+      4.9,
+      3.0,
+      0.4,
+      62.9,
+      87.8,
+      75.4,
+      25.5,
+      52.1,
+      82.9,
+      56.5,
+      17.0,
+      40.7,
+      72.0,
+      38.6,
+      11.4,
+      15.4,
+      29.3,
+      15.5,
+      1.5,
+      7.3,
+      14.6,
+      6.2,
+      1.0,
+      63.9,
+      91.5,
+      82.8,
+      17.5,
+      62.6,
+      93.9,
+      74.2,
+      19.6,
+      56.3,
+      91.5,
+      63.3,
+      14.3,
+      28.3,
+      52.4,
+      29.9,
+      2.5,
+      14.4,
+      26.8,
+      14.9,
+      1.4
+     ]
+    },
+    {
+     "label": "25–34",
+     "kind": "age",
+     "n": 28,
+     "values": [
+      58.5,
+      82.1,
+      60.6,
+      32.7,
+      43.9,
+      75.0,
+      46.3,
+      10.3,
+      17.2,
+      32.1,
+      16.5,
+      3.1,
+      9.0,
+      14.3,
+      11.1,
+      1.7,
+      3.1,
+      7.1,
+      1.4,
+      0.6,
+      58.6,
+      82.1,
+      68.6,
+      25.1,
+      53.7,
+      85.7,
+      60.7,
+      14.8,
+      35.7,
+      67.9,
+      30.8,
+      8.5,
+      15.1,
+      28.6,
+      14.7,
+      1.9,
+      5.3,
+      10.7,
+      4.6,
+      0.4,
+      60.1,
+      85.7,
+      77.0,
+      17.7,
+      60.9,
+      89.3,
+      75.2,
+      18.2,
+      49.1,
+      82.1,
+      54.4,
+      10.7,
+      34.2,
+      64.3,
+      34.7,
+      3.5,
+      18.9,
+      39.3,
+      15.9,
+      1.5
+     ]
+    },
+    {
+     "label": "35+",
+     "kind": "age",
+     "n": 7,
+     "values": [
+      62.1,
+      85.7,
+      75.6,
+      24.9,
+      51.4,
+      85.7,
+      46.4,
+      22.0,
+      36.9,
+      71.4,
+      32.4,
+      6.8,
+      7.6,
+      14.3,
+      5.2,
+      3.5,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      70.9,
+      100.0,
+      84.3,
+      28.4,
+      56.6,
+      85.7,
+      63.9,
+      20.1,
+      55.4,
+      100.0,
+      56.1,
+      10.2,
+      9.0,
+      14.3,
+      9.2,
+      3.6,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      72.2,
+      100.0,
+      92.5,
+      23.9,
+      66.1,
+      100.0,
+      77.9,
+      20.4,
+      64.0,
+      100.0,
+      79.2,
+      12.8,
+      22.4,
+      42.9,
+      22.2,
+      2.2,
+      10.9,
+      28.6,
+      3.6,
+      0.6
+     ]
+    },
+    {
+     "label": "Men 18–24",
+     "kind": "gender_age",
+     "n": 24,
+     "values": [
+      48.6,
+      66.7,
+      50.7,
+      28.5,
+      37.8,
+      66.7,
+      35.9,
+      10.8,
+      27.9,
+      45.8,
+      26.3,
+      11.7,
+      4.6,
+      8.3,
+      4.7,
+      0.8,
+      5.2,
+      8.3,
+      6.4,
+      0.8,
+      49.9,
+      70.8,
+      58.2,
+      20.5,
+      45.6,
+      70.8,
+      51.1,
+      14.9,
+      37.5,
+      62.5,
+      38.0,
+      12.0,
+      10.5,
+      20.8,
+      9.3,
+      1.3,
+      9.5,
+      16.7,
+      10.5,
+      1.4,
+      53.7,
+      79.2,
+      67.5,
+      14.3,
+      55.0,
+      83.3,
+      65.0,
+      16.7,
+      52.1,
+      83.3,
+      58.1,
+      14.8,
+      25.6,
+      50.0,
+      24.3,
+      2.6,
+      15.9,
+      29.2,
+      16.6,
+      1.8
+     ]
+    },
+    {
+     "label": "Men 25–34",
+     "kind": "gender_age",
+     "n": 10,
+     "values": [
+      57.3,
+      90.0,
+      54.6,
+      27.2,
+      47.5,
+      80.0,
+      47.9,
+      14.5,
+      15.1,
+      30.0,
+      13.6,
+      1.5,
+      4.9,
+      10.0,
+      4.2,
+      0.5,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      58.4,
+      90.0,
+      65.9,
+      19.3,
+      54.5,
+      80.0,
+      62.2,
+      21.3,
+      34.2,
+      70.0,
+      26.5,
+      6.1,
+      18.2,
+      40.0,
+      12.0,
+      2.6,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      59.8,
+      90.0,
+      76.9,
+      12.6,
+      64.5,
+      90.0,
+      75.2,
+      28.2,
+      42.3,
+      70.0,
+      49.4,
+      7.4,
+      42.2,
+      80.0,
+      41.4,
+      5.3,
+      14.9,
+      30.0,
+      13.3,
+      1.5
+     ]
+    },
+    {
+     "label": "Men 35+",
+     "kind": "gender_age",
+     "n": 5,
+     "values": [
+      56.3,
+      80.0,
+      72.6,
+      16.4,
+      60.6,
+      100.0,
+      57.8,
+      23.9,
+      51.6,
+      100.0,
+      45.4,
+      9.5,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      67.9,
+      100.0,
+      81.7,
+      22.0,
+      65.0,
+      100.0,
+      76.6,
+      18.4,
+      60.8,
+      100.0,
+      69.7,
+      12.6,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      70.5,
+      100.0,
+      91.3,
+      20.1,
+      69.6,
+      100.0,
+      88.9,
+      20.0,
+      66.8,
+      100.0,
+      85.6,
+      14.9,
+      18.4,
+      40.0,
+      14.4,
+      0.7,
+      8.2,
+      20.0,
+      4.2,
+      0.3
+     ]
+    },
+    {
+     "label": "Women 18–24",
+     "kind": "gender_age",
+     "n": 57,
+     "values": [
+      68.3,
+      94.7,
+      72.4,
+      37.8,
+      43.0,
+      73.7,
+      40.8,
+      14.4,
+      20.7,
+      35.1,
+      22.4,
+      4.5,
+      11.4,
+      22.8,
+      9.6,
+      2.0,
+      1.8,
+      3.5,
+      1.6,
+      0.2,
+      68.0,
+      94.7,
+      82.3,
+      26.8,
+      55.8,
+      89.5,
+      59.8,
+      18.1,
+      41.5,
+      75.4,
+      37.9,
+      11.2,
+      17.8,
+      33.3,
+      18.4,
+      1.6,
+      6.4,
+      14.0,
+      4.5,
+      0.8,
+      67.9,
+      96.5,
+      88.9,
+      18.4,
+      65.9,
+      98.2,
+      78.6,
+      20.8,
+      57.9,
+      94.7,
+      64.8,
+      14.1,
+      29.9,
+      54.4,
+      32.8,
+      2.5,
+      14.0,
+      26.3,
+      14.5,
+      1.2
+     ]
+    },
+    {
+     "label": "Women 25–34",
+     "kind": "gender_age",
+     "n": 17,
+     "values": [
+      58.3,
+      76.5,
+      62.6,
+      36.0,
+      40.0,
+      70.6,
+      42.4,
+      7.1,
+      19.5,
+      35.3,
+      19.1,
+      4.2,
+      8.0,
+      11.8,
+      10.0,
+      2.1,
+      5.0,
+      11.8,
+      2.4,
+      1.0,
+      57.6,
+      76.5,
+      68.7,
+      27.7,
+      52.3,
+      88.2,
+      57.6,
+      11.0,
+      36.1,
+      64.7,
+      34.1,
+      9.5,
+      10.2,
+      17.6,
+      11.4,
+      1.5,
+      8.7,
+      17.6,
+      7.6,
+      0.7,
+      59.4,
+      82.4,
+      75.9,
+      19.9,
+      58.0,
+      88.2,
+      73.7,
+      12.1,
+      52.5,
+      88.2,
+      56.9,
+      12.3,
+      27.4,
+      52.9,
+      27.0,
+      2.3,
+      19.9,
+      41.2,
+      17.2,
+      1.4
+     ]
+    },
+    {
+     "label": "Women 35+",
+     "kind": "gender_age",
+     "n": 2,
+     "values": [
+      76.4,
+      100.0,
+      83.2,
+      46.0,
+      28.4,
+      50.0,
+      18.0,
+      17.2,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      26.7,
+      50.0,
+      18.0,
+      12.2,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      78.3,
+      100.0,
+      90.6,
+      44.3,
+      35.4,
+      50.0,
+      32.2,
+      24.1,
+      42.1,
+      100.0,
+      22.3,
+      4.2,
+      31.6,
+      50.0,
+      32.2,
+      12.6,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      76.4,
+      100.0,
+      95.6,
+      33.5,
+      57.3,
+      100.0,
+      50.4,
+      21.6,
+      57.0,
+      100.0,
+      63.2,
+      7.7,
+      32.5,
+      50.0,
+      41.6,
+      6.0,
+      17.8,
+      50.0,
+      2.2,
+      1.3
+     ]
+    }
+   ],
+   "findings": [
+    "Viewing order in the first 10 s: Tagline (VAI 61.5) → Pack (61.2) → Face (54.2) → Logo (28.0) → Brand banner (14.3). The same order holds in the first 3 and 5 s.",
+    "The tagline leads from the start: VAI 57.5 in the first 3 s with Reach 80%. The pack catches up: VAI 42.2 → 52.6 → 61.2 and Reach 72% → 83% → 92%.",
+    "The face builds slowly: VAI 23.6 → 38.3 → 54.2 (Speed 23.7 → 37.0 → 60.4), so it is mostly a second-half element.",
+    "Logo and banner are the weak spots: Reach 52.8% and 27.1%, Hold 2.7 and 1.2 in the first 10 s. In the first 3 s the banner reaches only 6.6% of viewers.",
+    "Women lead on the tagline (VAI +15.6 in the first 3 s, +7.2 in the first 10 s versus men); men score higher on the face early (27.8 vs 19.0 in the first 3 s)."
+   ],
+   "dashboard_vai": {
+    "scope": "all 240 participants with data, not quality-filtered",
+    "participants": 240,
+    "windows": [
+     "0.5–3 s",
+     "0.5–5 s",
+     "0.5–10 s"
+    ],
+    "summary": {
+     "Tagline": {
+      "vai": 57.1,
+      "reach": 81.4,
+      "speed": 68.2,
+      "hold": 21.8
+     },
+     "Pack (product)": {
+      "vai": 50.5,
+      "reach": 79.7,
+      "speed": 55.8,
+      "hold": 15.9
+     },
+     "Face": {
+      "vai": 37.6,
+      "reach": 64.0,
+      "speed": 39.3,
+      "hold": 9.6
+     },
+     "Logo": {
+      "vai": 16.5,
+      "reach": 31.3,
+      "speed": 16.2,
+      "hold": 2.1
+     },
+     "Brand name (banner)": {
+      "vai": 8.1,
+      "reach": 15.4,
+      "speed": 7.9,
+      "hold": 1.0
+     }
+    },
+    "by_window": {
+     "vai": {
+      "Tagline": [
+       55.3,
+       56.4,
+       59.7
+      ],
+      "Pack (product)": [
+       40.9,
+       50.9,
+       59.6
+      ],
+      "Face": [
+       23.1,
+       37.2,
+       52.6
+      ],
+      "Logo": [
+       7.7,
+       14.6,
+       27.2
+      ],
+      "Brand name (banner)": [
+       3.5,
+       7.2,
+       13.6
+      ]
+     },
+     "reach": {
+      "Tagline": [
+       77.5,
+       80.0,
+       86.7
+      ],
+      "Pack (product)": [
+       69.6,
+       80.0,
+       89.6
+      ],
+      "Face": [
+       39.6,
+       65.8,
+       86.7
+      ],
+      "Logo": [
+       14.6,
+       27.9,
+       51.3
+      ],
+      "Brand name (banner)": [
+       6.3,
+       14.2,
+       25.8
+      ]
+     },
+     "speed": {
+      "Tagline": [
+       59.9,
+       68.0,
+       76.5
+      ],
+      "Pack (product)": [
+       40.0,
+       56.1,
+       71.5
+      ],
+      "Face": [
+       23.2,
+       36.0,
+       58.5
+      ],
+      "Logo": [
+       7.0,
+       13.8,
+       27.7
+      ],
+      "Brand name (banner)": [
+       3.4,
+       6.4,
+       13.8
+      ]
+     },
+     "hold": {
+      "Tagline": [
+       28.5,
+       21.2,
+       15.8
+      ],
+      "Pack (product)": [
+       13.2,
+       16.8,
+       17.7
+      ],
+      "Face": [
+       6.6,
+       9.7,
+       12.5
+      ],
+      "Logo": [
+       1.6,
+       2.1,
+       2.6
+      ],
+      "Brand name (banner)": [
+       0.8,
+       1.0,
+       1.2
+      ]
+     }
+    },
+    "aoi_colors": {
+     "Tagline": "#96d732",
+     "Pack (product)": "#d73296",
+     "Face": "#6ec850",
+     "Logo": "#3296d7",
+     "Brand name (banner)": "#d77732"
+    },
+    "aoi_image": {
+     "src": "aoi-A.jpg",
+     "crop": [
+      435,
+      12,
+      941,
+      771
+     ],
+     "caption": "Analysed image with AOIs (dashboard AOI VAI report)."
+    },
+    "insights": [
+     "Tagline: strongest compiled VAI. Consider whether it should carry the main message or call to action.",
+     "Brand name banner: lowest VAI Reach. Check its size, overlap, contrast and placement before deciding whether it needs more visibility.",
+     "Tagline: highest VAI Speed. Check whether this ordering supports the intended visual hierarchy."
+    ],
+    "note": "Copy of the RealEye AOI VAI Report. The dashboard cannot filter that report by participant quality, so it covers every participant with data. The quality-filtered tables above hold the same measures and are the primary analysis."
+   }
+  },
+  {
+   "id": "B",
+   "presents": "The same shampoo ad and layout, but the woman looks straight at the viewer.",
+   "purpose": "Test whether eye contact makes the ad more engaging by drawing viewers to the model's face, at the risk of pulling attention away from the pack and the brand.",
+   "item_id": "3a01baec-b658-43ee-acb6-26ad47f11d40",
+   "name": "Direct gaze (shampoo camera.png)",
+   "description": "The model looks straight at the viewer.",
+   "stimulus": {
+    "src": "stimulus-B.jpg"
+   },
+   "image_px": [
+    1024,
+    1536
+   ],
+   "heatmap": {
+    "src": "heatmap-B.jpg",
+    "caption": "All viewers, first 10 seconds. Warmer colours mean more attention."
+   },
+   "heatmap_sheets": {
+    "3": "heat-sheet-B-3.jpg",
+    "5": "heat-sheet-B-5.jpg",
+    "10": "heat-sheet-B-10.jpg"
+   },
+   "heatmap_note": "One heatmap per audience and time window. Warmer colours mean more attention. Each map is scaled on its own, so compare where attention goes, not how strong it is. Small audiences look noisier.",
+   "aois": [
+    {
+     "name": "Tagline",
+     "role": "The claim “Wake up the red in your hair.”",
+     "color": "#96d732",
+     "shape": [
+      [
+       3.5,
+       3.4
+      ],
+      [
+       44.0,
+       3.8
+      ],
+      [
+       44.4,
+       11.6
+      ],
+      [
+       35.4,
+       24.4
+      ],
+      [
+       23.5,
+       29.8
+      ],
+      [
+       4.5,
+       29.9
+      ]
+     ],
+     "marker": [
+      23.7,
+      16.6
+     ]
+    },
+    {
+     "name": "Pack (product)",
+     "role": "The shampoo tube (pack shot)",
+     "color": "#d73296",
+     "shape": [
+      [
+       6.0,
+       32.6
+      ],
+      [
+       12.9,
+       88.0
+      ],
+      [
+       35.4,
+       88.0
+      ],
+      [
+       42.0,
+       32.5
+      ]
+     ],
+     "marker": [
+      23.9,
+      41.9
+     ]
+    },
+    {
+     "name": "Face",
+     "role": "The model’s face",
+     "color": "#6ec850",
+     "shape": [
+      [
+       43.8,
+       13.7
+      ],
+      [
+       94.8,
+       13.7
+      ],
+      [
+       94.8,
+       56.4
+      ],
+      [
+       43.8,
+       56.4
+      ]
+     ],
+     "marker": [
+      69.4,
+      35.0
+     ]
+    },
+    {
+     "name": "Logo",
+     "role": "The “b” logo on the pack",
+     "color": "#3296d7",
+     "shape": [
+      [
+       15.9,
+       56.5
+      ],
+      [
+       33.7,
+       56.5
+      ],
+      [
+       33.7,
+       68.5
+      ],
+      [
+       15.9,
+       68.5
+      ]
+     ],
+     "marker": [
+      24.7,
+      62.5
+     ]
+    },
+    {
+     "name": "Brand name (banner)",
+     "role": "The BunnyEnchantment brand name banner at the bottom",
+     "color": "#d77732",
+     "shape": [
+      [
+       9.9,
+       89.6
+      ],
+      [
+       82.5,
+       89.6
+      ],
+      [
+       82.5,
+       96.7
+      ],
+      [
+       9.9,
+       96.7
+      ]
+     ],
+     "marker": [
+      46.0,
+      93.0
+     ]
+    }
+   ],
+   "segments": [
+    {
+     "label": "All",
+     "kind": "overall",
+     "n": 227,
+     "values": [
+      57.6,
+      80.6,
+      62.8,
+      29.5,
+      41.0,
+      68.7,
+      40.0,
+      14.4,
+      25.8,
+      43.2,
+      25.7,
+      8.6,
+      4.4,
+      8.4,
+      3.8,
+      1.0,
+      1.2,
+      2.2,
+      1.2,
+      0.3,
+      59.2,
+      84.1,
+      72.0,
+      21.6,
+      53.9,
+      85.5,
+      57.6,
+      18.7,
+      40.5,
+      70.0,
+      39.2,
+      12.4,
+      11.6,
+      23.8,
+      9.3,
+      1.7,
+      3.6,
+      7.5,
+      2.8,
+      0.6,
+      61.7,
+      89.4,
+      80.3,
+      15.5,
+      61.8,
+      92.1,
+      74.6,
+      18.8,
+      58.4,
+      94.7,
+      63.7,
+      17.0,
+      23.9,
+      45.8,
+      23.6,
+      2.4,
+      8.3,
+      16.3,
+      7.9,
+      0.8
+     ]
+    },
+    {
+     "label": "Men",
+     "kind": "gender",
+     "n": 67,
+     "values": [
+      52.4,
+      73.1,
+      58.0,
+      26.2,
+      38.6,
+      64.2,
+      36.2,
+      15.3,
+      23.0,
+      38.8,
+      21.7,
+      8.5,
+      4.5,
+      9.0,
+      3.6,
+      1.0,
+      2.8,
+      4.5,
+      3.4,
+      0.6,
+      54.4,
+      77.6,
+      66.0,
+      19.4,
+      51.6,
+      83.6,
+      52.6,
+      18.6,
+      37.8,
+      65.7,
+      34.7,
+      13.0,
+      12.5,
+      25.4,
+      10.0,
+      2.1,
+      4.1,
+      7.5,
+      4.3,
+      0.6,
+      57.6,
+      85.1,
+      74.4,
+      13.4,
+      59.3,
+      89.6,
+      70.6,
+      17.8,
+      56.9,
+      94.0,
+      59.1,
+      17.7,
+      24.9,
+      47.8,
+      24.4,
+      2.7,
+      10.5,
+      20.9,
+      9.5,
+      1.1
+     ]
+    },
+    {
+     "label": "Women",
+     "kind": "gender",
+     "n": 81,
+     "values": [
+      64.5,
+      88.9,
+      71.0,
+      33.6,
+      40.4,
+      69.1,
+      38.4,
+      13.7,
+      20.7,
+      34.6,
+      20.8,
+      6.7,
+      5.2,
+      9.9,
+      4.7,
+      1.0,
+      0.6,
+      1.2,
+      0.4,
+      0.2,
+      65.2,
+      91.4,
+      80.0,
+      24.3,
+      52.9,
+      84.0,
+      56.7,
+      18.0,
+      39.9,
+      72.8,
+      35.1,
+      11.8,
+      11.6,
+      23.5,
+      10.0,
+      1.4,
+      2.4,
+      4.9,
+      1.8,
+      0.5,
+      68.0,
+      97.5,
+      88.5,
+      18.0,
+      63.0,
+      95.1,
+      75.5,
+      18.6,
+      58.5,
+      96.3,
+      63.5,
+      15.8,
+      23.1,
+      44.4,
+      23.0,
+      2.0,
+      7.6,
+      14.8,
+      6.9,
+      1.0
+     ]
+    },
+    {
+     "label": "18–24",
+     "kind": "age",
+     "n": 83,
+     "values": [
+      62.9,
+      84.3,
+      69.7,
+      34.6,
+      35.6,
+      59.0,
+      34.2,
+      13.5,
+      19.8,
+      33.7,
+      19.1,
+      6.4,
+      4.3,
+      8.4,
+      3.3,
+      1.1,
+      0.7,
+      1.2,
+      0.8,
+      0.2,
+      63.0,
+      88.0,
+      77.3,
+      23.8,
+      50.0,
+      80.7,
+      50.6,
+      18.7,
+      36.9,
+      66.3,
+      32.8,
+      11.7,
+      11.1,
+      22.9,
+      8.5,
+      2.0,
+      2.8,
+      6.0,
+      2.0,
+      0.5,
+      64.6,
+      92.8,
+      84.8,
+      16.3,
+      61.0,
+      92.8,
+      70.9,
+      19.4,
+      57.1,
+      95.2,
+      59.8,
+      16.4,
+      24.8,
+      48.2,
+      23.5,
+      2.7,
+      8.5,
+      16.9,
+      7.7,
+      0.9
+     ]
+    },
+    {
+     "label": "25–34",
+     "kind": "age",
+     "n": 31,
+     "values": [
+      52.7,
+      74.2,
+      58.4,
+      25.6,
+      42.5,
+      71.0,
+      39.6,
+      16.8,
+      26.3,
+      41.9,
+      27.5,
+      9.6,
+      7.3,
+      12.9,
+      7.7,
+      1.2,
+      1.6,
+      3.2,
+      0.9,
+      0.5,
+      54.8,
+      77.4,
+      66.8,
+      20.2,
+      55.8,
+      90.3,
+      58.9,
+      18.2,
+      43.0,
+      77.4,
+      39.0,
+      12.6,
+      12.4,
+      22.6,
+      13.0,
+      1.5,
+      1.8,
+      3.2,
+      2.0,
+      0.3,
+      59.7,
+      87.1,
+      77.2,
+      14.8,
+      62.1,
+      93.5,
+      75.9,
+      16.8,
+      61.5,
+      100.0,
+      66.8,
+      17.5,
+      22.3,
+      41.9,
+      23.2,
+      1.8,
+      12.2,
+      25.8,
+      9.6,
+      1.1
+     ]
+    },
+    {
+     "label": "35+",
+     "kind": "age",
+     "n": 14,
+     "values": [
+      57.6,
+      78.6,
+      64.6,
+      29.8,
+      44.0,
+      78.6,
+      40.0,
+      13.6,
+      29.1,
+      50.0,
+      26.4,
+      10.9,
+      2.5,
+      7.1,
+      0.1,
+      0.2,
+      4.3,
+      7.1,
+      4.6,
+      1.1,
+      57.1,
+      78.6,
+      70.8,
+      22.0,
+      51.8,
+      78.6,
+      57.1,
+      19.8,
+      46.1,
+      78.6,
+      44.3,
+      15.4,
+      13.6,
+      28.6,
+      10.9,
+      1.4,
+      4.5,
+      7.1,
+      5.7,
+      0.6,
+      62.3,
+      92.9,
+      78.0,
+      16.1,
+      59.1,
+      85.7,
+      71.8,
+      19.7,
+      59.2,
+      92.9,
+      66.7,
+      18.0,
+      25.7,
+      50.0,
+      25.5,
+      1.5,
+      5.0,
+      7.1,
+      6.5,
+      1.4
+     ]
+    },
+    {
+     "label": "Men 18–24",
+     "kind": "gender_age",
+     "n": 37,
+     "values": [
+      53.8,
+      73.0,
+      59.0,
+      29.5,
+      32.6,
+      54.1,
+      31.2,
+      12.6,
+      23.7,
+      40.5,
+      22.2,
+      8.4,
+      5.9,
+      10.8,
+      5.4,
+      1.4,
+      1.6,
+      2.7,
+      1.9,
+      0.3,
+      55.0,
+      78.4,
+      66.5,
+      20.2,
+      48.0,
+      78.4,
+      46.6,
+      19.0,
+      36.5,
+      62.2,
+      34.7,
+      12.7,
+      12.7,
+      24.3,
+      11.0,
+      2.7,
+      3.9,
+      8.1,
+      3.1,
+      0.5,
+      57.6,
+      83.8,
+      74.6,
+      14.5,
+      58.2,
+      89.2,
+      66.5,
+      18.9,
+      57.3,
+      94.6,
+      59.8,
+      17.4,
+      25.4,
+      48.6,
+      24.6,
+      3.0,
+      9.7,
+      18.9,
+      9.4,
+      0.8
+     ]
+    },
+    {
+     "label": "Men 25–34",
+     "kind": "gender_age",
+     "n": 12,
+     "values": [
+      50.1,
+      66.7,
+      55.9,
+      27.9,
+      43.0,
+      66.7,
+      42.3,
+      20.1,
+      25.1,
+      41.7,
+      23.1,
+      10.6,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      54.3,
+      75.0,
+      64.3,
+      23.7,
+      55.6,
+      91.7,
+      58.5,
+      16.7,
+      41.3,
+      75.0,
+      34.5,
+      14.4,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      57.1,
+      83.3,
+      74.2,
+      13.9,
+      61.1,
+      91.7,
+      76.0,
+      15.8,
+      60.6,
+      100.0,
+      61.2,
+      20.4,
+      14.9,
+      33.3,
+      9.7,
+      1.7,
+      13.9,
+      33.3,
+      7.7,
+      0.8
+     ]
+    },
+    {
+     "label": "Men 35+",
+     "kind": "gender_age",
+     "n": 6,
+     "values": [
+      47.3,
+      66.7,
+      57.7,
+      17.6,
+      47.6,
+      83.3,
+      40.6,
+      18.9,
+      25.1,
+      50.0,
+      18.5,
+      6.8,
+      5.8,
+      16.7,
+      0.3,
+      0.3,
+      10.0,
+      16.7,
+      10.6,
+      2.6,
+      46.9,
+      66.7,
+      61.7,
+      12.2,
+      56.9,
+      83.3,
+      59.6,
+      27.9,
+      45.5,
+      83.3,
+      40.4,
+      12.7,
+      24.2,
+      50.0,
+      20.3,
+      2.3,
+      10.5,
+      16.7,
+      13.3,
+      1.4,
+      53.3,
+      83.3,
+      69.1,
+      7.4,
+      58.3,
+      83.3,
+      72.1,
+      19.5,
+      63.2,
+      100.0,
+      67.1,
+      22.5,
+      29.0,
+      50.0,
+      35.9,
+      1.1,
+      11.7,
+      16.7,
+      15.1,
+      3.2
+     ]
+    },
+    {
+     "label": "Women 18–24",
+     "kind": "gender_age",
+     "n": 44,
+     "values": [
+      70.3,
+      93.2,
+      78.7,
+      39.1,
+      39.7,
+      65.9,
+      38.4,
+      14.9,
+      14.0,
+      25.0,
+      12.9,
+      4.1,
+      3.2,
+      6.8,
+      1.7,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      69.5,
+      95.5,
+      86.1,
+      26.9,
+      53.0,
+      84.1,
+      56.0,
+      19.1,
+      35.6,
+      68.2,
+      28.1,
+      10.4,
+      10.3,
+      22.7,
+      6.7,
+      1.5,
+      2.1,
+      4.5,
+      1.1,
+      0.6,
+      70.3,
+      100.0,
+      93.0,
+      18.0,
+      63.6,
+      95.5,
+      75.3,
+      20.1,
+      56.3,
+      95.5,
+      58.0,
+      15.4,
+      24.3,
+      47.7,
+      22.7,
+      2.5,
+      7.9,
+      15.9,
+      6.6,
+      1.1
+     ]
+    },
+    {
+     "label": "Women 25–34",
+     "kind": "gender_age",
+     "n": 18,
+     "values": [
+      57.4,
+      83.3,
+      63.3,
+      25.4,
+      40.2,
+      72.2,
+      34.6,
+      13.9,
+      28.6,
+      44.4,
+      31.9,
+      9.4,
+      8.8,
+      16.7,
+      8.4,
+      1.3,
+      2.7,
+      5.6,
+      1.6,
+      0.9,
+      58.2,
+      83.3,
+      72.2,
+      19.1,
+      55.1,
+      88.9,
+      57.0,
+      19.3,
+      46.6,
+      83.3,
+      44.2,
+      12.2,
+      17.6,
+      33.3,
+      17.2,
+      2.1,
+      3.1,
+      5.6,
+      3.4,
+      0.5,
+      64.7,
+      94.4,
+      83.5,
+      16.2,
+      62.2,
+      94.4,
+      74.6,
+      17.6,
+      62.9,
+      100.0,
+      72.4,
+      16.2,
+      24.8,
+      44.4,
+      28.2,
+      1.7,
+      11.6,
+      22.2,
+      11.3,
+      1.4
+     ]
+    },
+    {
+     "label": "Women 35+",
+     "kind": "gender_age",
+     "n": 6,
+     "values": [
+      59.3,
+      83.3,
+      65.5,
+      28.9,
+      37.0,
+      66.7,
+      36.0,
+      8.4,
+      42.8,
+      66.7,
+      43.1,
+      18.7,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      60.9,
+      83.3,
+      73.4,
+      26.0,
+      41.7,
+      66.7,
+      49.6,
+      8.7,
+      52.9,
+      83.3,
+      56.2,
+      19.0,
+      7.5,
+      16.7,
+      5.1,
+      0.8,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      68.2,
+      100.0,
+      81.0,
+      23.6,
+      53.9,
+      83.3,
+      66.5,
+      12.0,
+      55.9,
+      83.3,
+      70.5,
+      14.0,
+      15.8,
+      33.3,
+      13.1,
+      1.1,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ]
+    }
+   ],
+   "findings": [
+    "Viewing order in the first 10 s: Tagline → Pack → Face → Logo → Brand banner by VAI Speed (80.3, 74.6, 63.7, 23.6, 7.9). Pack VAI (61.8) edges the tagline (61.7) at 10 s through higher Hold, but the tagline is still noticed first.",
+    "The face is stronger than in A: VAI 58.4 (Reach 94.7%, Hold 17.0).",
+    "The brand banner is the weakest element: VAI 1.2 → 3.6 → 8.3, Reach 16.3% in the first 10 s. The logo reaches 45.8%.",
+    "Women lead on the tagline in every window (VAI +12.1, +10.8, +10.4 versus men)."
+   ],
+   "dashboard_vai": {
+    "scope": "all 232 participants with data, not quality-filtered",
+    "participants": 232,
+    "windows": [
+     "0.5–3 s",
+     "0.5–5 s",
+     "0.5–10 s"
+    ],
+    "summary": {
+     "Tagline": {
+      "vai": 58.3,
+      "reach": 83.1,
+      "speed": 70.2,
+      "hold": 21.7
+     },
+     "Pack (product)": {
+      "vai": 51.3,
+      "reach": 80.6,
+      "speed": 56.3,
+      "hold": 16.9
+     },
+     "Face": {
+      "vai": 41.5,
+      "reach": 68.8,
+      "speed": 42.7,
+      "hold": 13.0
+     },
+     "Logo": {
+      "vai": 13.2,
+      "reach": 25.7,
+      "speed": 12.1,
+      "hold": 1.7
+     },
+     "Brand name (banner)": {
+      "vai": 4.5,
+      "reach": 8.9,
+      "speed": 3.9,
+      "hold": 0.6
+     }
+    },
+    "by_window": {
+     "vai": {
+      "Tagline": [
+       56.4,
+       58.0,
+       60.6
+      ],
+      "Pack (product)": [
+       40.2,
+       52.9,
+       60.7
+      ],
+      "Face": [
+       26.0,
+       40.4,
+       58.2
+      ],
+      "Logo": [
+       4.3,
+       11.5,
+       23.7
+      ],
+      "Brand name (banner)": [
+       1.3,
+       3.7,
+       8.4
+      ]
+     },
+     "reach": {
+      "Tagline": [
+       78.9,
+       82.3,
+       87.9
+      ],
+      "Pack (product)": [
+       67.2,
+       84.1,
+       90.5
+      ],
+      "Face": [
+       43.1,
+       69.4,
+       94.0
+      ],
+      "Logo": [
+       8.2,
+       23.7,
+       45.3
+      ],
+      "Brand name (banner)": [
+       2.6,
+       7.8,
+       16.4
+      ]
+     },
+     "speed": {
+      "Tagline": [
+       61.4,
+       70.4,
+       78.7
+      ],
+      "Pack (product)": [
+       39.2,
+       56.5,
+       73.3
+      ],
+      "Face": [
+       25.8,
+       39.1,
+       63.3
+      ],
+      "Logo": [
+       3.8,
+       9.2,
+       23.3
+      ],
+      "Brand name (banner)": [
+       1.1,
+       2.7,
+       7.9
+      ]
+     },
+     "hold": {
+      "Tagline": [
+       28.9,
+       21.2,
+       15.2
+      ],
+      "Pack (product)": [
+       14.1,
+       18.3,
+       18.3
+      ],
+      "Face": [
+       9.1,
+       12.8,
+       17.3
+      ],
+      "Logo": [
+       1.0,
+       1.7,
+       2.4
+      ],
+      "Brand name (banner)": [
+       0.3,
+       0.6,
+       0.8
+      ]
+     }
+    },
+    "aoi_colors": {
+     "Tagline": "#96d732",
+     "Pack (product)": "#d73296",
+     "Face": "#6ec850",
+     "Logo": "#3296d7",
+     "Brand name (banner)": "#d77732"
+    },
+    "aoi_image": {
+     "src": "aoi-B.jpg",
+     "crop": [
+      435,
+      12,
+      941,
+      771
+     ],
+     "caption": "Analysed image with AOIs (dashboard AOI VAI report)."
+    },
+    "insights": [
+     "Tagline: strongest compiled VAI. Consider whether it should carry the main message or call to action.",
+     "Brand name banner: lowest VAI Reach. Check its size, overlap, contrast and placement before deciding whether it needs more visibility.",
+     "Tagline: highest VAI Speed. Check whether this ordering supports the intended visual hierarchy."
+    ],
+    "note": "Copy of the RealEye AOI VAI Report. The dashboard cannot filter that report by participant quality, so it covers every participant with data. The quality-filtered tables above hold the same measures and are the primary analysis."
+   }
+  }
+ ],
+ "segment_findings": [
+  "Gender: women score higher on the tagline than men in every window and in both designs (A +15.6, +13.3, +7.2; B +12.1, +10.8, +10.4 VAI points for the first 3, 5 and 10 s), mainly through Speed (+12 to +17). In A, men score higher on the face and pack early (face VAI 27.8 vs 19.0 in the first 3 s).",
+  "Gender × age: the tagline gap is clearest among 18–24 viewers, where both groups are large enough: women minus men is +14.2 in A (57 vs 24 viewers) and +12.7 in B (44 vs 37) in the first 10 s.",
+  "Gender: face, pack, logo and banner show no consistent gap between women and men; banner VAI differences are 3 points or less in every window.",
+  "Age: 18–24 viewers behave like the overall sample. In A, viewers aged 25–34 score higher on the logo (34.2 vs 28.3) and banner (18.9 vs 14.4) in the first 10 s, but with 28 viewers this is a hypothesis, not a finding. In B the 25–34 group scores 12.2 on the banner against 8.5 for 18–24 (31 viewers).",
+  "Age: viewers aged 35+ (7 in A, 14 in B) and most gender × age cells outside 18–24 are under 30 viewers. Recruit at least 100 viewers per audience if audience-specific recommendations matter."
+ ],
+ "actions": [
+  {
+   "title": "Move the brand name out of the cold bottom band",
+   "based_on": [
+    2,
+    3
+   ],
+   "text": "Banner: {{cmp:vai:Brand name (banner):10:A,B}}. Place the brand name next to the tagline or on the pack at a larger size, or raise and enlarge the banner into the zone the heatmaps show is warm.",
+   "preserve": "The tagline and the pack, which lead the viewing order."
+  },
+  {
+   "title": "Use A's profile gaze as the base for brand visibility",
+   "based_on": [
+    3
+   ],
+   "text": "In A the logo and banner score higher in every window (first 3 s: logo {{cmp:vai:Logo:3:A,B}}; banner {{cmp:vai:Brand name (banner):3:A,B}})."
+  },
+  {
+   "title": "Keep the claim prominent for women",
+   "based_on": [
+    1,
+    4
+   ],
+   "text": "Women's tagline VAI is 7 to 16 points above men's in every window. Retest before changing the tagline's position or size.",
+   "preserve": "Tagline position and size."
+  },
+  {
+   "title": "Test B's face strength without losing the brand",
+   "based_on": [
+    3
+   ],
+   "text": "{B} holds the face better ({{cmp:vai:Face:10:A,B}}). Test a direct-gaze face with the brand name on the eye line or beside the face."
+  }
+ ],
+ "retest": {
+  "design": "Randomly assign target viewers to one version each, in a realistic feed or shelf context, with at least 100 Average-or-better viewers in every group you want to analyse (each design, gender, age band and gender × age cell).",
+  "primary_outcome": "Unaided brand recall and main-message recall in the same respondent, with accepted answers agreed beforehand.",
+  "guardrail": "Purchase intent.",
+  "diagnostic_vai_metric": "Brand name and logo VAI, Reach and Speed in the first 3 s, by gender and age."
+ },
+ "limits": [
+  "No survey or choice data were available, so nothing here shows recall, liking, preference or intent. VAI measures attention only.",
+  "Webcam eye tracking has less spatial precision than a lab tracker, so small AOIs are measured less precisely than large ones, and AOIs are not directly comparable by size.",
+  "Only viewers with data quality Average or better are analysed (A: 229 of 241, B: 227 of 232). The embedded dashboard AOI VAI report cannot be quality-filtered and covers all participants with data.",
+  "Both images sit in the same 15-stimulus study with different viewer counts, so groups probably overlap and order effects are possible; comparisons are indicative.",
+  "About a third of viewers have other or unspecified gender and about half have no recorded age; they are in the overall results but not in the audience cuts. Groups under 30 viewers are anecdotal and groups under 100 are indicative, not certain.",
+  "Heatmaps by audience are drawn from the same fixation data as the dashboard, each scaled to its own maximum; the dashboard's own heatmap is shown for all viewers.",
+  "Viewing order is a relative hierarchy across viewers (VAI Speed), not an individual scan path. AOI shapes were used as saved on each image and are not identical between the two images."
+ ],
+ "would_change": [
+  "A recall result that favours B.",
+  "A larger sample showing a reliable age gap.",
+  "A test with the brand name moved showing no gain in banner or logo VAI."
+ ],
+ "sources": [
+  "RealEye dashboard AOI statistics (VAI, Reach, Speed, Hold) per audience and window, data quality Average–Perfect",
+  "RealEye fixation data for the heatmaps, same filters",
+  "RealEye AOI VAI report for both designs (all participants with data)",
+  "No participant-level data included"
+ ]
+}
