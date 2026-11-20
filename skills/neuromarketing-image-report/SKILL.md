@@ -4,7 +4,7 @@ description: Interpret measured RealEye ET Platform webcam eye tracking for ads,
 license: MIT
 metadata:
   author: RealEye
-  version: "1.17.0"
+  version: "1.17.1"
 ---
 
 # Neuromarketing image report

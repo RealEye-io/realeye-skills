@@ -1938,7 +1938,7 @@ p.concl{font-size:17.5px;font-weight:600;color:var(--strong);margin:12px 0 4px}
 .finding.mini{border-left-width:3px;padding:14px 18px;margin:10px 0}.finding.mini h4{margin:0 0 4px;font-size:16.5px}
 ul.evs{list-style:none;padding:0;margin:6px 0}li.ev{background:var(--bg);padding:10px 14px;margin:6px 0}li.ev .evt{color:var(--ink)}.evd{margin:6px 0 2px}
 .dchip{display:inline-block;background:#fff;border:1px solid var(--line);padding:2px 8px;font-size:12.5px;margin:2px 6px 2px 0;color:var(--muted)}.dchip b{color:var(--strong)}
-.evl{font-size:13px;color:var(--muted);margin:6px 0 0}.evl span{font-weight:600}.evl .sepdot{color:#c9c5bf;margin:0 4px}a.ref{color:#d9532f;text-decoration:none;font-weight:600}a.ref:hover{text-decoration:underline}
+.evl{font-size:13px;color:var(--muted);margin:6px 0 0}.evl span{font-weight:500;color:var(--soft)}.evl .sepdot{color:#c9c5bf;margin:0 4px}a.ref,.evl a.ext,.links a.ext{color:var(--muted);text-decoration:underline;text-decoration-color:#cfcac4;text-underline-offset:3px;font-weight:500}a.ref:hover,.evl a.ext:hover,.links a.ext:hover{color:var(--strong);text-decoration-color:var(--accent)}
 .readnote{background:var(--bg);border-left:4px solid var(--accent);padding:12px 16px;margin:0 0 14px;color:var(--ink)}
 .illus{display:inline-block;background:#e9e6e1;color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 7px;margin-right:6px}
 footer{color:var(--soft);font-size:13px;text-align:center;padding:10px 0 30px}

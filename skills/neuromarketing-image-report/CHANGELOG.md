@@ -2,6 +2,9 @@
 
 The version is in `SKILL.md` (`metadata.version`) and is stamped into every report this skill builds.
 
+## 1.17.1
+- Evidence and dashboard links are subtle (muted grey, underline on hover accent) so they do not compete with the content.
+
 ## 1.17.0
 - Heatmaps are stated to be illustrations only, at every heatmap, in the findings, the VAI explainer, the definitions and the AI prompt. Conclusions must rest on VAI numbers: the build requires data-point evidence for every finding and hypothesis, and tags heatmap-only evidence as illustration.
 
